@@ -109,5 +109,10 @@ namespace Bugzilla
     /// Date/time (in the server's timezone) when the bug was created.
     /// </summary>
     public DateTime CreatedDate { get { return mCreatedDate; } }
+
+    /// <summary>
+    /// Accessor for whether the comment is private or not.
+    /// </summary>
+    public bool IsPrivate { get { return mIsPrivate; } }
   }
 }
