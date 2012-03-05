@@ -91,6 +91,34 @@ namespace Bugzilla
   }
 
   /// <summary>
+  /// Thrown when an attempt is made to attach a URL to a bug when the attachment data is invalid.
+  /// </summary>
+  public class InvalidAttachmentURLException : ApplicationException
+  {
+    /// <summary>
+    /// Creates a new instance of this class.
+    /// </summary>
+    public InvalidAttachmentURLException()
+      : base("Invalid URL data specified for attachment.")
+    {
+    }
+  }
+
+     /// <summary>
+  /// Thrown when an attempt is made to attach a URL to a bug when URL attaching is disabled.
+  /// </summary>
+  public class URLAttachmentsDisabledException : ApplicationException
+  {
+    /// <summary>
+    /// Creates a new instance of this class.
+    /// </summary>
+    public URLAttachmentsDisabledException()
+      : base("Attaching of URLs not supported.")
+    {
+    }
+  }
+
+  /// <summary>
   /// Thrown when the logged in user has insufficient security privilages for an operation.
   /// </summary>
   public class InsufficientSecurityPrivilagesException : ApplicationException

@@ -107,6 +107,7 @@ namespace Bugzilla
     /// <param name="userName">Username to log in with.</param>
     /// <param name="password">Password for the specified user.</param>
     /// <param name="remember">Whether the login cookies should expire with the session or not.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="hostName"/>is null or empty.</exception>
     public BugzillaServer(string hostName, string path, string userName, string password, bool remember) : this(hostName, path)
     {
       if (string.IsNullOrEmpty(hostName))
@@ -120,6 +121,7 @@ namespace Bugzilla
     /// </summary>
     /// <param name="hostName">Host containing the bugzilla server.</param>
     /// <param name="path">The path on the host to the Bugzilla installation.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="hostName"/>is null or empty.</exception>
     public BugzillaServer(string hostName, string path)
     {
       if (string.IsNullOrEmpty(hostName))
@@ -392,6 +394,8 @@ namespace Bugzilla
     /// <param name="id">ID of the bug instance.</param>
     /// <param name="fetchOptions">Whether the fetch the bug's data from the remote server or not.</param>
     /// <returns>A bug instance for the specified ID.</returns>
+    /// <exception cref="InvalidBugIDOrAliasException">No bug exists with the specified ID.</exception>
+    /// <exception cref="BugAccessDeniedException">Requested bug is inaccessible to the current user.</exception>
     public Bug GetBug(int id, BugFetchOptions fetchOptions)
     {
       if (fetchOptions == BugFetchOptions.NoFetch)
@@ -473,6 +477,8 @@ namespace Bugzilla
     /// <exception cref="ArgumentNullException"><paramref name="attachmentData">Attachment data</paramref> not specified.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="summary">summary</paramref> is null or blank.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="mimeType">mimeType</paramref> is null or blank.</exception>
+    /// <exception cref="AttachmentTooLargeException">Size of the attachment is too large.</exception>
+    /// <exception cref="InvalidMIMETypeException"><paramref name="mimeType"/> is invalid.</exception>
     public List<Attachment> AddAttachmentToBugs(IEnumerable<string> idsOrAliases,
                                                 byte[] attachmentData, 
                                                 string fileName, 
@@ -537,6 +543,8 @@ namespace Bugzilla
     /// <param name="startDate">If set, the date/time to get comments which were posted on or after that date.</param>
     /// <returns>Comment details for the requested comments.</returns>
     /// <exception cref="InvaildOperationException"><paramref name="bugIDsOrAliases"/>and <paramref name="commentIDs"/>are null.</exception>
+    /// <exception cref="CommentAccessDeniedException">One or more of the requested comments are inaccessible to the current user.</exception>
+    /// <exception cref="InvalidCommentIDException">One or more invalid comment IDs specified.</exception>
     public CommentCollection GetComments(IEnumerable<string> bugIDsOrAliases, 
                                           IEnumerable<int> commentIDs,
                                           DateTime? startDate)
@@ -609,8 +617,12 @@ namespace Bugzilla
     /// </summary>
     /// <param name="bugIDsOrAliases">IDs or aliases of the bugs to get the attachments for.</param>
     /// <param name="commentIDs">IDs of specific attachments to get.</param>
+    /// <param name="attachmentIDs">IDs of particular attachment to fetch.</param>
     /// <returns>Details for the requested attachments.</returns>
     /// <exception cref="InvaildOperationException"><paramref name="bugIDsOrAliases"/>and <paramref name="commentIDs"/>are null.</exception>
+    /// <exception cref="InvalidBugIDOrAliasException">One or more invalid bug IDs/aliases specified.</exception>
+    /// <exception cref="BugAccessDeniedException">Current user does not have access one or more of the specified bugs.</exception>
+    /// <exception cref="AttachmentAccessDeniedException">One or more of the specified attachments are private but the current user is not in the "insiders" group.</exception>
     public AttachmentCollection GetAttachments(IEnumerable<string> bugIDsOrAliases, IEnumerable<int> attachmentIDs)
     {
       //Either bug IDs/aliases or comment IDs must be set
