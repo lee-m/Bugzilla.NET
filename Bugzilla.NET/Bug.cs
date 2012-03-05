@@ -120,6 +120,7 @@ namespace Bugzilla
     /// </summary>
     /// <param name="startDate">If set, only comments entered after this date will be returned.</param>
     /// <returns>Details of each comment against the bug.</returns>
+    /// <exception cref="CommentAccessDeniedException">Attempted to access a private comment when the current user is not in the "insiders" group.</exception>
     public List<Comment> GetComments(DateTime? startDate)
     {
       //Fill in the request params
@@ -150,9 +151,6 @@ namespace Bugzilla
         {
           case 110:
             throw new CommentAccessDeniedException();
-
-          case 111:
-            throw new InvalidCommentIDException();
 
           default:
             throw;
@@ -193,6 +191,9 @@ namespace Bugzilla
     /// <exception cref="ArgumentNullException"><paramref name="attachmentData">Attachment data</paramref> not specified.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="summary">summary</paramref> is null or blank.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="mimeType">mimeType</paramref> is null or blank.</exception>
+    /// <exception cref="ArgumentException"><paramref name="attachmentData"/> has zero length.</exception>
+    /// <exception cref="InvalidAttachmentURLException">An attempt was made to add a URL as an attachment but the attachment data was invalid.</exception>
+    /// <exception cref="URLAttachmentsDisabledException">Attaching of URLs is disabled.</exception>
     public Attachment AddAttachment(byte[] attachmentData, 
                                     string fileName, 
                                     string summary, 
@@ -210,6 +211,9 @@ namespace Bugzilla
 
       if (string.IsNullOrEmpty(mimeType))
         throw new ArgumentNullException("mimeType");
+
+      if (attachmentData.Length == 0)
+        throw new ArgumentException("Attachment data not specified.");
 
       AddAttachmentParams attachmentParams = new AddAttachmentParams();
       attachmentParams.Comment = comment;
@@ -236,16 +240,25 @@ namespace Bugzilla
           case 601:
             throw new InvalidMIMETypeException(mimeType);
 
+          case 602:
+            throw new InvalidAttachmentURLException();
+
+          case 605:
+            throw new URLAttachmentsDisabledException();
+
           default:
             throw;
 
         }
       }
     }
-
+   
     /// <summary>
     /// Gets the attachments for this bug.
     /// </summary>
+    /// <exception cref="InvalidBugIDOrAliasException">An invalid bug ID or alias was specified.</exception>
+    /// <exception cref="BugAccessDeniedException">Access to the specified bug was denied.</exception>
+    /// <exception cref="AttachmentAccessDeniedException">Attempted to get access to a private attachment when current user is not in "insiders" group..</exception>
     public List<Attachment> GetAttachments()
     {
       GetAttachmentsParam attachmentParams = new GetAttachmentsParam();
