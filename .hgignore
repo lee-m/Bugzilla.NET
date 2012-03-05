@@ -1,0 +1,10 @@
+syntax: glob
+Visual Studio 2010/*
+bin/*
+obj/*
+*.suo
+*.user
+AltEmail.txt
+APISupport.xlsx
+TestApp/*
+XML-RPC.NET/*

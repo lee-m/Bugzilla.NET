@@ -1,0 +1,41 @@
+diff -r 491e0bf24eb0 -r ac8dfc32c6f5 src/XmlRpcSerializer.cs
+--- a/src/XmlRpcSerializer.cs	Sat Mar 03 13:50:52 2012 +0000
++++ b/src/XmlRpcSerializer.cs	Sat Mar 03 13:53:52 2012 +0000
+@@ -485,22 +485,21 @@
+       if (stm == null)
+         throw new ArgumentNullException("stm",
+           "XmlRpcSerializer.DeserializeResponse");
++      Stream newStm = new MemoryStream();
++      Util.CopyStream(stm, newStm);
++      newStm.Position = 0;
+       if (AllowInvalidHTTPContent)
+       {
+-        Stream newStm = new MemoryStream();
+-        Util.CopyStream(stm, newStm);
+-        stm = newStm;
+-        stm.Position = 0;
+         while (true)
+         {
+           // for now just strip off any leading CR-LF characters
+-          int byt = stm.ReadByte();
++          int byt = newStm.ReadByte();
+           if (byt == -1)
+             throw new XmlRpcIllFormedXmlException(
+               "Response from server does not contain valid XML.");
+           if (byt != 0x0d && byt != 0x0a && byt != ' ' && byt != '\t')
+           {
+-            stm.Position = stm.Position - 1;
++            newStm.Position = newStm.Position - 1;
+             break;
+           }
+         }
+@@ -509,7 +508,8 @@
+       xdoc.PreserveWhitespace = true;
+       try
+       {
+-        using (XmlTextReader xmlRdr = new XmlTextReader(stm))
++        newStm.Position = 0;
++        using (XmlTextReader xmlRdr = new XmlTextReader(newStm))
+         {
+ #if (!COMPACT_FRAMEWORK)
+           xmlRdr.ProhibitDtd = true;
