@@ -72,7 +72,7 @@ namespace Bugzilla.Proxies.Bug
     /// <summary>
     /// Gets a set of comments based on the comment IDs or a set of bug IDs/aliases.
     /// </summary>
-    /// <param name="?"></param>
+    /// <param name="commentParams">Parameters for retrieving the required comments.</param>
     [XmlRpcMethod("Bug.comments")]
     GetCommentsResponse GetComments(GetCommentParams commentParams);
 

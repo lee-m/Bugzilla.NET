@@ -152,6 +152,9 @@ namespace Bugzilla
   /// </summary>
   public class CommentAccessDeniedException : ApplicationException
   {
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
     public CommentAccessDeniedException()
       : base("One or more of the requested comments are not accessible to the current user.")
     {
@@ -164,6 +167,9 @@ namespace Bugzilla
   /// </summary>
   public class AttachmentAccessDeniedException : ApplicationException
   {
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
     public AttachmentAccessDeniedException()
       : base("One or more of the requested attachments are not accessible to the current user.")
     {
@@ -176,6 +182,9 @@ namespace Bugzilla
   /// </summary>
   public class BugAccessDeniedException : ApplicationException
   {
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
     public BugAccessDeniedException()
       : base("One or more of the requested bugs are not accessible to the current user.")
     {
