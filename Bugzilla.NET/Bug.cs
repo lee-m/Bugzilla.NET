@@ -256,6 +256,7 @@ namespace Bugzilla
     /// <summary>
     /// Gets the attachments for this bug.
     /// </summary>
+    /// <returns>Details of all attachments for this bug.</returns>
     /// <exception cref="InvalidBugIDOrAliasException">An invalid bug ID or alias was specified.</exception>
     /// <exception cref="BugAccessDeniedException">Access to the specified bug was denied.</exception>
     /// <exception cref="AttachmentAccessDeniedException">Attempted to get access to a private attachment when current user is not in "insiders" group..</exception>
@@ -302,6 +303,7 @@ namespace Bugzilla
     /// <summary>
     /// Gets details of all changes made to this bug.
     /// </summary>
+    /// <returns>Details of all changes made to fields or attachments for this bug.</returns>
     public BugHistory GetHistory()
     {
       GetBugHistoryParams getParams = new GetBugHistoryParams();
@@ -408,6 +410,9 @@ namespace Bugzilla
       set { mBugInfo.IsCCListAccessible = value; }
     }
 
+    /// <summary>
+    /// Accessor for the component the bug was logged against.
+    /// </summary>
     public string Component
     {
       get { return mBugInfo.Component; }

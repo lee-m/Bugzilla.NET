@@ -41,8 +41,8 @@ namespace Bugzilla
     /// <summary>
     /// Creates a new instance initialised with the specified name and version.
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="version"></param>
+    /// <param name="name">Name of the extension.</param>
+    /// <param name="version">Version of the extension.</param>
     public Extension(string name, string version)
     {
       mName = name;

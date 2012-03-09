@@ -107,7 +107,7 @@ namespace Bugzilla
     /// <param name="userName">Username to log in with.</param>
     /// <param name="password">Password for the specified user.</param>
     /// <param name="remember">Whether the login cookies should expire with the session or not.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="hostName"/>is null or empty.</exception>
+    /// <exception cref="ArgumentNullException"><paramref name="hostName"/> is null or empty.</exception>
     public BugzillaServer(string hostName, string path, string userName, string password, bool remember) : this(hostName, path)
     {
       if (string.IsNullOrEmpty(hostName))
@@ -121,7 +121,7 @@ namespace Bugzilla
     /// </summary>
     /// <param name="hostName">Host containing the bugzilla server.</param>
     /// <param name="path">The path on the host to the Bugzilla installation.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="hostName"/>is null or empty.</exception>
+    /// <exception cref="ArgumentNullException"><paramref name="hostName"/> is null or empty.</exception>
     public BugzillaServer(string hostName, string path)
     {
       if (string.IsNullOrEmpty(hostName))
@@ -303,9 +303,9 @@ namespace Bugzilla
     /// <param name="userMatches">User match strings - login or real names to match on.</param>
     /// <param name="includeDisabled">Whether to include disabled users in the search results.</param>
     /// <returns>A list of user details which matches any of the specified search parameters.</returns>
-    /// <remarks>At least one of <paramref name="ids"/></remarks>, <paramref name="loginNames"/> or <paramref name="userMatches"/>
-    /// must be non-null and have at least one value.
-    /// <exception cref="ArgumentException"><paramref name="ids"/></remarks>, <paramref name="loginNames"/> 
+    /// <remarks>At least one of <paramref name="ids"/>, <paramref name="loginNames"/> or <paramref name="userMatches"/>
+    /// must be non-null and have at least one value.</remarks>
+    /// <exception cref="ArgumentException"><paramref name="ids"/>, <paramref name="loginNames"/> 
     /// or <paramref name="userMatches"/> are all null or have no values.</exception>
     /// <exception cref="InvalidLoginOrGroupNameException">One or more user IDs or group names specified is invalid.</exception>
     /// <exception cref="UserAccessDeniedException">One or more of the requested users are not accessible to the currently logged in user.</exception>
@@ -436,6 +436,7 @@ namespace Bugzilla
     /// <summary>
     /// Adds an attachment to multiple bugs in a single operation.
     /// </summary>
+    /// <param name="idsOrAliases">IDs and/or aliases of bugs to add the attachment to.</param>
     /// <param name="fileName">Name of the file to attach.</param>
     /// <param name="summary">Short summary text of the attachment. Mandatory</param>
     /// <param name="comment">Comment text to add along with the attachment.</param>
@@ -443,7 +444,7 @@ namespace Bugzilla
     /// <param name="isPrivate">Whether the attachment should be private or not.</param>
     /// <returns>Details of the newly created attachments.</returns>
     /// <remarks>The MIME type will be automatically determined from either the extension of the file, or it's data..</remarks>
-    /// <exception cref="ArgumentNullException"><paramref name="fileName">fileName</paramref> is null or blank.</exception>
+    /// <exception cref="ArgumentNullException"><paramref name="fileName"/> is null or blank.</exception>
     public List<Attachment> AddAttachmentToBugs(IEnumerable<string> idsOrAliases,
                                                 string fileName, 
                                                 string summary, 
@@ -474,9 +475,9 @@ namespace Bugzilla
     /// <param name="isPatch">Whether the attachment is a patch file or not.</param>
     /// <param name="isPrivate">Whether the attachment should be private or not.</param>
     /// <returns>Details of the newly created attachments.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="attachmentData">Attachment data</paramref> not specified.</exception>
-    /// <exception cref="ArgumentNullException"><paramref name="summary">summary</paramref> is null or blank.</exception>
-    /// <exception cref="ArgumentNullException"><paramref name="mimeType">mimeType</paramref> is null or blank.</exception>
+    /// <exception cref="ArgumentNullException"><paramref name="attachmentData"/> not specified.</exception>
+    /// <exception cref="ArgumentNullException"><paramref name="summary"/> is null or blank.</exception>
+    /// <exception cref="ArgumentNullException"><paramref name="mimeType"/> is null or blank.</exception>
     /// <exception cref="AttachmentTooLargeException">Size of the attachment is too large.</exception>
     /// <exception cref="InvalidMIMETypeException"><paramref name="mimeType"/> is invalid.</exception>
     public List<Attachment> AddAttachmentToBugs(IEnumerable<string> idsOrAliases,
@@ -542,7 +543,7 @@ namespace Bugzilla
     /// <param name="commentIDs">IDs of specific comments to get.</param>
     /// <param name="startDate">If set, the date/time to get comments which were posted on or after that date.</param>
     /// <returns>Comment details for the requested comments.</returns>
-    /// <exception cref="InvaildOperationException"><paramref name="bugIDsOrAliases"/>and <paramref name="commentIDs"/>are null.</exception>
+    /// <exception cref="InvalidOperationException"><paramref name="bugIDsOrAliases"/> and <paramref name="commentIDs"/> are null.</exception>
     /// <exception cref="CommentAccessDeniedException">One or more of the requested comments are inaccessible to the current user.</exception>
     /// <exception cref="InvalidCommentIDException">One or more invalid comment IDs specified.</exception>
     public CommentCollection GetComments(IEnumerable<string> bugIDsOrAliases, 
@@ -616,10 +617,9 @@ namespace Bugzilla
     /// Gets attachment for each bug ID/aliases and specific attachment IDs.
     /// </summary>
     /// <param name="bugIDsOrAliases">IDs or aliases of the bugs to get the attachments for.</param>
-    /// <param name="commentIDs">IDs of specific attachments to get.</param>
     /// <param name="attachmentIDs">IDs of particular attachment to fetch.</param>
     /// <returns>Details for the requested attachments.</returns>
-    /// <exception cref="InvaildOperationException"><paramref name="bugIDsOrAliases"/>and <paramref name="commentIDs"/>are null.</exception>
+    /// <exception cref="InvalidOperationException"><paramref name="bugIDsOrAliases"/> and <paramref name="attachmentIDs"/> are null.</exception>
     /// <exception cref="InvalidBugIDOrAliasException">One or more invalid bug IDs/aliases specified.</exception>
     /// <exception cref="BugAccessDeniedException">Current user does not have access one or more of the specified bugs.</exception>
     /// <exception cref="AttachmentAccessDeniedException">One or more of the specified attachments are private but the current user is not in the "insiders" group.</exception>

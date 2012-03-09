@@ -96,7 +96,6 @@ namespace Bugzilla
     /// <summary>
     /// Creates a new instance based on XML-RPC response data.
     /// </summary>
-    /// <param name="attachmentID">ID of the comment.</param>
     /// <param name="responseAttachmentDets">XML-RPC response data.</param>
     internal Attachment(XmlRpcStruct responseAttachmentDets)
     {
