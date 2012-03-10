@@ -303,14 +303,34 @@ namespace Bugzilla
     /// <summary>
     /// Gets details of all changes made to this bug.
     /// </summary>
+    /// <exception cref="InvalidBugIDOrAliasException">No bug exists with the specified ID.</exception>
+    /// <exception cref="BugAccessDeniedException">Requested bug is inaccessible to the current user.</exception>
     /// <returns>Details of all changes made to fields or attachments for this bug.</returns>
     public BugHistory GetHistory()
     {
       GetBugHistoryParams getParams = new GetBugHistoryParams();
       getParams.IdsOrAliases = new string[] { Id.ToString() };
 
-      GetBugHistoryResponse resp = mProxy.GetHistory(getParams);
-      return new BugHistory(resp.History.First());
+      try
+      {
+        GetBugHistoryResponse resp = mProxy.GetHistory(getParams);
+        return new BugHistory(resp.History.First());
+      }
+      catch (XmlRpcFaultException e)
+      {
+        switch (e.FaultCode)
+        {
+          case 100:
+          case 101:
+            throw new InvalidBugIDOrAliasException(Id.ToString());
+
+          case 102:
+            throw new BugAccessDeniedException();
+
+          default:
+            throw;
+        }
+      }
     }
 
     #region Properties
