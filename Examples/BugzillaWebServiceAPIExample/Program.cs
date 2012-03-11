@@ -69,6 +69,14 @@ namespace Bugzilla.Examples
       //Attachments requested by ID
       List<Attachment> attachmentsByID = attachColl.Attachments;
 
+      //Create a new bug with two custom fields called 'custom_field_one' and 'custom_field_two'
+      var customFieldValues = new KeyValuePair<string, string>[] { new KeyValuePair<string, string>("cf_custom_field_one", "value_1"),
+                                                                   new KeyValuePair<string, string>("cf_custom_field_two", "value_2") };
+      int newBugID = server.CreateBug("TestProduct", "TestComponent", "New Bug 1", "unspecified", "New bug descr", "Windows", "PC", 
+                                      null, null, "alias", null, null, false, null, null, "CONFIRMED", null, 
+                                      new int[] { 1 }, new int[] { 2 }, 7.0, DateTime.Now, "www.google.com", customFieldValues);
+      Console.WriteLine("Create bug with ID {0}", newBugID);
+
       Console.Read();
     }
   }
