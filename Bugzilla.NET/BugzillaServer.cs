@@ -24,6 +24,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Net;
+using System.Reflection;
+using System.Reflection.Emit;
 
 using CookComputing.XmlRpc;
 
@@ -84,6 +86,13 @@ namespace Bugzilla
     private bool mLoggedIn;
 
     /// <summary>
+    /// Series of dymamically created types used when creating new bugs.
+    /// </summary>
+    /// <remarks>The key is the hash code of all custom fields contained within the type, the value is the dynamically
+    /// generated type containing a field within the type for each custom field.</remarks>
+    private Dictionary<int, Type> mCreateBugTypes;
+
+    /// <summary>
     /// Options to be passed to <see cref="GetBug">GetBug</see>/>.
     /// </summary>
     public enum BugFetchOptions
@@ -98,6 +107,8 @@ namespace Bugzilla
       /// </summary>
       NoFetch = 1
     }
+
+    #region Public Methods
 
     /// <summary>
     /// Creates a new instance and logs the specified user into the remote server.
@@ -138,6 +149,7 @@ namespace Bugzilla
       mUserProxy = XmlRpcProxyGen.Create<IUserProxy>();
       mBugzillaProxy = XmlRpcProxyGen.Create<IBugzillaProxy>();
       mProductProxy = XmlRpcProxyGen.Create<IProductProxy>();
+      mCreateBugTypes = new Dictionary<int, Type>();
 
 #if DEBUG
 
@@ -434,6 +446,177 @@ namespace Bugzilla
     }
 
     /// <summary>
+    /// Creates a new bug.
+    /// </summary>
+    /// <param name="product">The name of the product the bug is being filed against. Required.</param>
+    /// <param name="component">The name of a component in the specified product. Required.</param>
+    /// <param name="summary">A brief description of the bug being filed. Required.</param>
+    /// <param name="version">The version of the specified product the bug was found in. Required.</param>
+    /// <param name="description">The initial description for this bug.</param>
+    /// <param name="operatingSystem">The operating system the bug was discovered on.</param>
+    /// <param name="platform">What type of hardware the bug was experienced on.</param>
+    /// <param name="priority">What order the bug should be fixed by the assignee.</param>
+    /// <param name="severity">How severe the bug is.</param>
+    /// <param name="alias">A unique alias for the bug used to refer to it by instead of its ID.</param>
+    /// <param name="assignedTo">Who to assign the bug to.</param>
+    /// <param name="ccList">User names to CC on the bug.</param>
+    /// <param name="initialCommentPrivate">Whether the initial comment added to the bug is private or public.</param>
+    /// <param name="groups">Which groups to put this bug into.</param>
+    /// <param name="qaContact">The QA contact for the bug if the default QA contact is not to be used.</param>
+    /// <param name="status">The status that this bug should start out as.</param>
+    /// <param name="targetMilestone">A valid target milestone for the specified product.</param>
+    /// <param name="dependsOnBugIDs">IDs of any bugs this bug depends on.</param>
+    /// <param name="blockedBugIDs">IDs of any bugs this bug blocks.</param>
+    /// <param name="estimate">Estimate of how long the bug will take to fix in hours.</param>
+    /// <param name="deadline">Deadline date for fixing the bug.</param>
+    /// <param name="url">URL for the bug.</param>
+    /// <param name="customFieldValues">Set of custom fields to set on the new bug. The key is the field name and the value 
+    /// the field's value.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="product"/>, <paramref name="component"/>, 
+    /// <paramref name="summary"/> or <paramref name="version"/> is null or a blank string.</exception>
+    /// <exception cref="ArgumentException"><paramref name="description"/> is longer than 65535 characters.</exception>
+    /// <exception cref="FieldCannotBeBlankException">No value was provided for a field which cannot be blank.
+    /// Details of which field will be provided in the exception message.</exception>
+    /// <exception cref="InvalidFieldValueException">An invalid field name was specified. Details of which field will be in 
+    /// the exception message.</exception>
+    /// <exception cref="InvalidNewBugAliasException">The alias specified for the new bug was invalid in some way. Details of 
+    /// why will be in the exception message.</exception>
+    /// <exception cref="InvalidProductException">Specified product does not exist or is inaccessible.</exception>
+    /// <exception cref="CyclicBugDependenciesException">One or more of the bugs specified in <paramref name="dependsOnBugIDs"/> or
+    /// <paramref name="blockedBugIDs"/> would create a cyclic dependency.</exception>
+    /// <exception cref="GroupRestrictionDeniedException">One or more of the groups specified in <paramref name="groups"/> 
+    /// does not exist or is inaccessible.</exception>
+    /// <exception cref="InvalidUserException">The user name for the assignee, QA contact or a user in the CC list is invalid. 
+    /// Additional details of which will be in the exception message.</exception>
+    /// <exception cref="InvalidCustomFieldNameException">One of the field names in <paramref name="customFieldValues"/> is invalid. 
+    /// Additional details will be in the exception message</exception>
+    /// <returns>The ID of the newly created bug.</returns>
+    public int CreateBug(string product, 
+                         string component, 
+                         string summary, 
+                         string version, 
+                         string description,
+                         string operatingSystem, 
+                         string platform, 
+                         string priority, 
+                         string severity, 
+                         string alias,
+                         string assignedTo, 
+                         IEnumerable<string> ccList, 
+                         bool initialCommentPrivate, 
+                         IEnumerable<string> groups, 
+                         string qaContact, 
+                         string status, 
+                         string targetMilestone,
+                         IEnumerable<int> dependsOnBugIDs,
+                         IEnumerable<int> blockedBugIDs,
+                         double? estimate,
+                         DateTime? deadline,
+                         string url,
+                         IEnumerable<KeyValuePair<string, string>> customFieldValues)
+    {
+      //Check that required parameters have a value
+      if (string.IsNullOrEmpty(product))
+        throw new ArgumentNullException("product");
+
+      if(string.IsNullOrEmpty(component))
+        throw new ArgumentNullException("component");
+
+      if(string.IsNullOrEmpty(summary))
+        throw new ArgumentNullException("summary");
+
+      if (string.IsNullOrEmpty(version))
+        throw new ArgumentNullException("version");
+
+      //Description must be less than 65636 
+      if (description != null && description.Length > ushort.MaxValue)
+        throw new ArgumentException("Description must be less than 65535 characters.");
+
+      //Create a type to pass to the proxy based on any custom fields we have and set the common fields.
+      CreateBugParams createParams = GetCreateBugParamsTypeInstance(customFieldValues);
+      createParams.Product = product;
+      createParams.Component = component;
+      createParams.Summary = summary;
+      createParams.Version = version;
+      createParams.Description = description;
+      createParams.OperatingSystem = operatingSystem;
+      createParams.Platform = platform;
+      createParams.Priority = priority;
+      createParams.Severity = severity;
+      createParams.Alias = alias;
+      createParams.AssignedTo = assignedTo;
+      createParams.IsCommentPrivate = initialCommentPrivate;
+      createParams.QAContact = qaContact;
+      createParams.Status = status;
+      createParams.TargetMilestone = targetMilestone;
+      createParams.EstimatedTime = estimate;
+      createParams.URL = url;
+
+      if(deadline != null)
+        createParams.Deadline = deadline.Value.ToString("yyyy-MM-dd");
+
+      if (ccList != null)
+        createParams.CCList = ccList.ToArray();
+
+      if (groups != null)
+        createParams.Groups = groups.ToArray();
+
+      if (dependsOnBugIDs != null)
+        createParams.DependsOn = dependsOnBugIDs.ToArray();
+
+      if (blockedBugIDs != null)
+        createParams.Blocks = blockedBugIDs.ToArray();
+
+      //Set any custom field values
+      if (customFieldValues != null)
+      {
+        Type createParamsType = createParams.GetType();
+
+        foreach (KeyValuePair<string, string> customField in customFieldValues)
+          createParamsType.GetField(customField.Key).SetValue(createParams, customField.Value);
+      }
+
+      try
+      {
+        CreateBugResponse resp = mBugProxy.CreateNewBug(createParams);
+        return resp.Id;
+      }
+      catch (XmlRpcFaultException e)
+      {
+        switch(e.FaultCode)
+        {
+          case 50:
+            throw new FieldCannotBeBlankException(e.FaultString);
+
+          case 51:
+          case 104:
+            throw new InvalidFieldValueException(e.FaultString);
+
+          case 53:
+            throw new InvalidCustomFieldNameException(e.FaultString);
+
+          case 103:
+            throw new InvalidNewBugAliasException(e.FaultString);
+
+          case 106:
+            throw new InvalidProductException(e.FaultString);
+
+          case 116:
+            throw new CyclicBugDependenciesException();
+
+          case 120:
+            throw new GroupRestrictionDeniedException();
+
+          case 504:
+            throw new InvalidUserException(e.FaultString);
+
+          default:
+            throw;
+        }
+      }
+    }
+
+    /// <summary>
     /// Adds an attachment to multiple bugs in a single operation.
     /// </summary>
     /// <param name="idsOrAliases">IDs and/or aliases of bugs to add the attachment to.</param>
@@ -689,6 +872,60 @@ namespace Bugzilla
       }
     }
 
+    #endregion
+
+    #region Private Methods
+
+    /// <summary>
+    /// Creates a new type derived from <see cref="CreateBugParams"/> with additional fields added to the derived
+    /// type for each custom field.
+    /// </summary>
+    /// <param name="customFields">Custom fields the type should contain.</param>
+    /// <returns>An instance of the derived type that has the required fields set.</returns>
+    /// <remarks>Each type is cached based on the set of custom fields it contains and are re-used where
+    /// possible instead of creating types with the same set of fields over and over again.</remarks>
+    private CreateBugParams GetCreateBugParamsTypeInstance(IEnumerable<KeyValuePair<string, string>> customFields)
+    {
+      //If there aren't any custom fields, we can use the type we already have
+      if (customFields == null || customFields.Count() == 0)
+        return new CreateBugParams();
+
+      //The same set of fields may be specified multiple times but in a different order so sort
+      //the field list before we calculate the hash code
+      string[] customFieldNames = customFields.Select((f) => f.Key).ToArray();
+      Array.Sort<string>(customFieldNames, StringComparer.InvariantCultureIgnoreCase);
+
+      //Calculate the hash code for each custom field to see if we already have a type defined
+      //that can handle it
+      int fieldNamesHashCode = string.Join("", customFieldNames).GetHashCode();
+
+      //If we won't have a type capable of handling this set of custom fields, define one.
+      if (!mCreateBugTypes.ContainsKey(fieldNamesHashCode))
+      {
+        AppDomain currDomain = AppDomain.CurrentDomain;
+        AssemblyBuilder asmBuilder = currDomain.DefineDynamicAssembly(new AssemblyName("BugUpdateParamTypes"), AssemblyBuilderAccess.Run);
+        ModuleBuilder modBuilder = asmBuilder.DefineDynamicModule("BugUpdateParamTypes");
+
+        Guid typeGuid = Guid.NewGuid();
+        string typeName = string.Format("Bugzilla.Proxies.Bug.CreateNewBugParams{0}", typeGuid.ToString());
+        TypeBuilder createParamsType = modBuilder.DefineType(typeName, TypeAttributes.Public | TypeAttributes.Class, typeof(CreateBugParams));
+
+        //Add fields for each custom field specified
+        foreach (KeyValuePair<string, string> bzCustomField in customFields)
+          createParamsType.DefineField(bzCustomField.Key, typeof(string), FieldAttributes.Public);
+
+        //Finalise the type and store it away for use
+        mCreateBugTypes.Add(fieldNamesHashCode, createParamsType.CreateType());
+      }
+
+      //Create an instance of the required type
+      return (CreateBugParams)Activator.CreateInstance(mCreateBugTypes[fieldNamesHashCode]);
+    }
+
+    #endregion
+
+    #region Public Properties
+
     /// <summary>
     /// Accessor for the Bugzilla server version string.
     /// </summary>
@@ -768,5 +1005,8 @@ namespace Bugzilla
         return GetProducts(selectableProdIDs.Ids);
       }
     }
+
+    #endregion
+
   }
 }
