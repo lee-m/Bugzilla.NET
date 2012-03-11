@@ -23,6 +23,10 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("IProductProxy")]
 [assembly: InternalsVisibleTo("IBugzillaProxy")]
 
+//This is the name given to the in-memory assembly used to hold dynamically generated types used when creating
+//new bugs to store the custom field values
+[assembly: InternalsVisibleTo("BugUpdateParamTypes")]
+
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.

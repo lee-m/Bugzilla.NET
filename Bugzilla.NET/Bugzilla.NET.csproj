@@ -58,10 +58,12 @@
     <Compile Include="CommentCollection.cs" />
     <Compile Include="BugExceptions.cs" />
     <Compile Include="Extension.cs" />
+    <Compile Include="Proxies\Bug\Params\CreateBugParams.cs" />
     <Compile Include="Proxies\Bug\Params\GetAttachmentsParam.cs" />
     <Compile Include="Proxies\Bug\Params\GetBugHistoryParams.cs" />
     <Compile Include="Proxies\Bug\Responses\AddAttachmentResponse.cs" />
     <Compile Include="Proxies\Bug\Responses\AddCommentResponse.cs" />
+    <Compile Include="Proxies\Bug\Responses\CreateBugResponse.cs" />
     <Compile Include="Proxies\Bug\Responses\GetAttachmentsResponse.cs" />
     <Compile Include="Proxies\Bug\Responses\GetBugHistoryResponse.cs" />
     <Compile Include="UserExceptions.cs" />

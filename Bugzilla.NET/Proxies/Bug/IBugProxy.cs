@@ -99,5 +99,15 @@ namespace Bugzilla.Proxies.Bug
     /// <returns></returns>
     [XmlRpcMethod("Bug.history")]
     GetBugHistoryResponse GetHistory(GetBugHistoryParams historyParams);
+
+    /// <summary>
+    /// Creates a new bug with the specified parameters.
+    /// </summary>
+    /// <param name="createParams">Parameters for the new bug.</param>
+    /// <returns>The ID of the newly created bug.</returns>
+    /// <remarks>The parameters are typed as <c>object</c> as the actual type passed in at run-time may be
+    /// dynamically generated to handle the set of custom fields being set on the new bug.</remarks>
+    [XmlRpcMethod("Bug.create")]
+    CreateBugResponse CreateNewBug(object createParams);
   }
 }

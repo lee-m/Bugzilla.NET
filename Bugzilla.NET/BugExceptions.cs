@@ -190,4 +190,122 @@ namespace Bugzilla
     {
     }
   }
+
+  /// <summary>
+  /// Thrown when an attempt is made to create/update a bug and set a field which must be set to a blank value.
+  /// </summary>
+  public class FieldCannotBeBlankException : ApplicationException
+  {
+    /// <summary>
+    /// Overloaded constructor to pass in the remote error message.
+    /// </summary>
+    /// <param name="serverMessage">Error message from the server containing specific error details.</param>
+    public FieldCannotBeBlankException(string serverMessage)
+      : base(serverMessage)
+    {
+    }
+  }
+
+  /// <summary>
+  /// Thrown when an attempt is made to set a field to an invalid value.
+  /// </summary>
+  public class InvalidFieldValueException : ApplicationException
+  {
+    /// <summary>
+    /// Overloaded constructor to pass in the remote error message.
+    /// </summary>
+    /// <param name="serverMessage">Error message from the server containing specific error details.</param>
+    public InvalidFieldValueException(string serverMessage)
+      : base(serverMessage)
+    {
+    }
+  }
+
+  /// <summary>
+  /// Thrown when an invalid custom field name is specified.
+  /// </summary>
+  public class InvalidCustomFieldNameException : ApplicationException
+  {
+    /// <summary>
+    /// Overloaded constructor to pass in the remote error message.
+    /// </summary>
+    /// <param name="serverMessage">Error message from the server containing specific error details.</param>
+    public InvalidCustomFieldNameException(string serverMessage)
+      : base(serverMessage)
+    {
+    }
+  }
+
+  /// <summary>
+  /// Thrown when the alias specified when creating a new bug was invalid.
+  /// </summary>
+  public class InvalidNewBugAliasException : ApplicationException
+  {
+    /// <summary>
+    /// Overloaded constructor to pass in the remote error message.
+    /// </summary>
+    /// <param name="serverMessage">Error message from the server containing specific error details.</param>
+    public InvalidNewBugAliasException(string serverMessage)
+      : base(serverMessage)
+    {
+    }
+  }
+
+  /// <summary>
+  /// Thrown when an attempt is made to create a bug against a non-existent or inaccessible product.
+  /// </summary>
+  public class InvalidProductException : ApplicationException
+  {
+    /// <summary>
+    /// Overloaded constructor to pass in the remote error message.
+    /// </summary>
+    /// <param name="serverMessage">Error message from the server containing specific error details.</param>
+    public InvalidProductException(string serverMessage)
+    {
+    }
+  }
+
+  /// <summary>
+  /// Thrown when an atrempt is made to create a new bug with a blocks and/or depends on list which would
+  /// result in a cyclic dependency.
+  /// </summary>
+  public class CyclicBugDependenciesException : ApplicationException
+  {
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    public CyclicBugDependenciesException()
+      : base("One or more of the bugs specied in the blocks or depends on list would create a cyclic dependency.")
+    {
+    }
+  }
+
+  /// <summary>
+  /// Thrown when an attempt is made to restrict a new bug to a group which doesn't exist or cannot
+  /// be used with the specified product.
+  /// </summary>
+  public class GroupRestrictionDeniedException : ApplicationException
+  {
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    public GroupRestrictionDeniedException()
+      : base("Non-existent or invalid group name for the specified product.")
+    {
+    }
+  }
+
+  /// <summary>
+  /// Thrown when an invalid user is specified for a bug's assignee, QA contact or CC list.
+  /// </summary>
+  public class InvalidUserException : ApplicationException
+  {
+    /// <summary>
+    /// Overloaded constructor to pass in the remote error message.
+    /// </summary>
+    /// <param name="serverMessage">Error message from the server containing specific error details.</param>
+    public InvalidUserException(string serverMessage)
+    {
+    }
+  }
 }
