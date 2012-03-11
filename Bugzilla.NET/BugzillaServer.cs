@@ -118,12 +118,9 @@ namespace Bugzilla
     /// <param name="userName">Username to log in with.</param>
     /// <param name="password">Password for the specified user.</param>
     /// <param name="remember">Whether the login cookies should expire with the session or not.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="hostName"/> is null or empty.</exception>
+    /// <remarks>Calls <see cref="Login"/> with the specified username and password.</remarks>
     public BugzillaServer(string hostName, string path, string userName, string password, bool remember) : this(hostName, path)
     {
-      if (string.IsNullOrEmpty(hostName))
-        throw new ArgumentNullException("hostName");
-
       Login(userName, password, remember);
     }
 
