@@ -59,6 +59,14 @@ namespace Bugzilla
       : base(string.Format("Currently logged in user does not have rights to edit big {0}.", bugIDOrAlias))
     {
     }
+
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    public BugEditAccessDeniedException()
+      : base("Currently logged in user does not have rights to edit one or more of the specified bugs.")
+    {
+    }
   }
 
   /// <summary>
@@ -305,6 +313,34 @@ namespace Bugzilla
     /// </summary>
     /// <param name="serverMessage">Error message from the server containing specific error details.</param>
     public InvalidUserException(string serverMessage)
+    {
+    }
+  }
+
+  /// <summary>
+  /// Thrown when an invalid URL is passed when updating the see also field.
+  /// </summary>
+  public class InvalidSeeAlsoURLException : ApplicationException
+  {
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    public InvalidSeeAlsoURLException()
+      : base("Invalid see also URL specified.")
+    {
+    }
+  }
+
+  /// <summary>
+  /// Thrown when the currenltly logged in user does not have security access to edit the see also on a particular bug.
+  /// </summary>
+  public class SeeAlsoEditAccessDenied : ApplicationException
+  {
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    public SeeAlsoEditAccessDenied()
+      : base("Currently logged in user has insufficient security rights to edit the see also field.")
     {
     }
   }

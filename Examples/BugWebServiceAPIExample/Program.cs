@@ -56,6 +56,14 @@ namespace Bugzilla.Examples
 
       //Get details of of a bug from the remote server
       Bug fetchedBugDets = server.GetBug(1, BugzillaServer.BugFetchOptions.FetchData);
+
+      //Add a URL to the see also field for a bug
+      bug.UpdateSeeAlsoURLs(new string[] { "http://localhost/show_bug.cgi?id=1" }, null);
+
+      //Add a new see also URL and remove the URL added above
+      bug.UpdateSeeAlsoURLs(new string[] { "http://localhost/show_bug.cgi?id=2" },
+                            new string[] { "http://localhost/show_bug.cgi?id=1" });
+
     }
   }
 }
