@@ -59,8 +59,9 @@ namespace Bugzilla.Proxies.Bug
     /// Adds or removes URLs for the "See Also" field on bugs. 
     /// </summary>
     /// <param name="updateParams">Parameters for the update.</param>
+    /// <returns>Details of the modifications that were actually performed.</returns>
     [XmlRpcMethod("Bug.update_see_also")]
-    void UpdateSeeAlso(UpdateSeeAlsoParams updateParams);
+    UpdateSeeAlsoResponse UpdateSeeAlso(UpdateSeeAlsoParams updateParams);
 
     /// <summary>
     /// Adds an attachment to a bug.

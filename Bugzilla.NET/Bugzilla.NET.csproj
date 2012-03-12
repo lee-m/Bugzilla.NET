@@ -66,6 +66,8 @@
     <Compile Include="Proxies\Bug\Responses\CreateBugResponse.cs" />
     <Compile Include="Proxies\Bug\Responses\GetAttachmentsResponse.cs" />
     <Compile Include="Proxies\Bug\Responses\GetBugHistoryResponse.cs" />
+    <Compile Include="Proxies\Bug\Responses\UpdateSeeAlsoResponse.cs" />
+    <Compile Include="SeeAlsoModifications.cs" />
     <Compile Include="UserExceptions.cs" />
     <Compile Include="Utils\MIMETypes.cs" />
     <Compile Include="Product.cs" />

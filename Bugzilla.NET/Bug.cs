@@ -333,6 +333,74 @@ namespace Bugzilla
       }
     }
 
+    /// <summary>
+    /// Adds or removes URLs from the "see also" field on the bug.
+    /// </summary>
+    /// <param name="urlsToAdd">URLs to add. If a URL does not start with "http://" or "https://" then "http://" will be automatically added.</param>
+    /// <param name="urlsToRemove">URLs to remove.</param>
+    /// <exception cref="InvalidBugIDOrAliasException">No bug exists with the specified ID.</exception>
+    /// <exception cref="BugAccessDeniedException">Requested bug is inaccessible to the current user.</exception>
+    /// <exception cref="InvalidSeeAlsoURLException">One or more of the specified URLs are invalid.</exception>
+    /// <exception cref="SeeAlsoEditAccessDenied">Currently logged in user does not have security access to edit this bug's see also field.</exception>
+    /// <returns>Details of the actual changes which were made to the bug.</returns>
+    /// <remarks>
+    /// <para>
+    /// Attempting to add an already added URL or attempts to remove an invalid URL will be silently ignored.
+    /// </para>
+    /// If the same URL is specified in both <paramref name="urlsToAdd"/> and <paramref name="urlsToRemove"/> it will be <b>added</b>.
+    /// <para>
+    /// </para>
+    /// </remarks>
+    public SeeAlsoModifications UpdateSeeAlsoURLs(IEnumerable<string> urlsToAdd, IEnumerable<string> urlsToRemove)
+    {
+      UpdateSeeAlsoParams updateParams = new UpdateSeeAlsoParams();
+      updateParams.IdsOrAliases = new string[] { Id.ToString() };
+
+      if (urlsToAdd != null)
+        updateParams.URLsToAdd = urlsToAdd.ToArray();
+
+      if (urlsToRemove != null)
+        updateParams.URLsToRemove = urlsToRemove.ToArray();
+
+      try
+      {
+        UpdateSeeAlsoResponse resp = mProxy.UpdateSeeAlso(updateParams);
+
+        //Parse the response
+        object key = resp.Changes.Keys.Cast<object>().First();
+        XmlRpcStruct mods = (XmlRpcStruct)((XmlRpcStruct)resp.Changes[key])["see_also"];
+
+        int bugID = int.Parse(key.ToString());
+        object[] added = (object[])mods["added"];
+        object[] removed = (object[])mods["removed"];
+        return new SeeAlsoModifications(bugID, added.Cast<string>().ToArray(), removed.Cast<string>().ToArray());
+      }
+      catch(XmlRpcFaultException e)
+      {
+        switch(e.FaultCode)
+        {
+          case 100:
+          case 101:
+            throw new InvalidBugIDOrAliasException(Id.ToString());
+
+          case 102:
+            throw new BugAccessDeniedException();
+
+          case 119:
+            throw new BugEditAccessDeniedException(Id.ToString());
+
+          case 112:
+            throw new InvalidSeeAlsoURLException();
+
+          case 115:
+            throw new SeeAlsoEditAccessDenied();
+
+          default:
+            throw;
+        }
+      }
+    }
+
     #region Properties
     
     /// <summary>

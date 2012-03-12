@@ -20,31 +20,17 @@
 
 using CookComputing.XmlRpc;
 
-namespace Bugzilla.Proxies.Bug.Params
+namespace Bugzilla.Proxies.Bug.Responses
 {
   /// <summary>
-  /// Details required when updating the "see also" field.
+  /// Return value from Bug.update_see_also
   /// </summary>
-  internal struct UpdateSeeAlsoParams
+  internal struct UpdateSeeAlsoResponse
   {
     /// <summary>
-    /// List of bug ids/aliases to modify.
+    /// The set of changes that were actually performed.
     /// </summary>
-    [XmlRpcMember("ids")]
-    public string[] IdsOrAliases;
-
-    /// <summary>
-    /// List of URLs to add.
-    /// </summary>
-    [XmlRpcMember("add")]
-    [XmlRpcMissingMapping(MappingAction.Ignore)]
-    public string[] URLsToAdd;
-
-    /// <summary>
-    /// List of URLs to remove.
-    /// </summary>
-    [XmlRpcMember("remove")]
-    [XmlRpcMissingMapping(MappingAction.Ignore)]
-    public string[] URLsToRemove;
-  } 
+    [XmlRpcMember("changes")]
+    public XmlRpcStruct Changes;
+  }
 }
