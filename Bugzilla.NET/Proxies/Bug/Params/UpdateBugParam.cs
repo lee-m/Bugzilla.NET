@@ -34,18 +34,35 @@ namespace Bugzilla.Proxies.Bug.Params
     /// Resolution of the bug.
     /// </summary>
     [XmlRpcMember("resolution")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
     public string Resolution;
 
     /// <summary>
     /// Status of the bug.
     /// </summary>
     [XmlRpcMember("status")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
     public string Status;
 
     /// <summary>
     /// A comment to apply when updating the bug.
     /// </summary>
     [XmlRpcMember("comment")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
     public CommentParam Comment;
+
+    /// <summary>
+    /// Whether to reset to assigned to field back to the default value.
+    /// </summary>
+    [XmlRpcMember("reset_assigned_to")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public bool ResetAssignedTo;
+
+    /// <summary>
+    /// Whether to reset to QA contact field back to the default value.
+    /// </summary>
+    [XmlRpcMember("reset_qa_contact")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public bool ResetQAContact;
   }
 }
