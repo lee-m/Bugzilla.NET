@@ -401,6 +401,78 @@ namespace Bugzilla
       }
     }
 
+    /// <summary>
+    /// Resets the assignee for this bug back to the default for its component.
+    /// <param name="commentText">The text of any comment to add whilst making the changes. May be <code>null</code> or a blank string
+    /// to indicate no comment should be created.</param>
+    /// <param name="privateComment">If adding a comment along with the changes, whether the comment should be private or public.</param>
+    /// </summary>
+    public void ResetAssignedTo(string commentText, bool privateComment)
+    {
+      UpdateBugParam updateParams = new UpdateBugParam();
+      updateParams.Ids = new int[] { Id };
+      updateParams.ResetAssignedTo = true;
+
+      if (!string.IsNullOrEmpty(commentText))
+      {
+        updateParams.Comment = new CommentParam();
+        updateParams.Comment.CommentText = commentText;
+        updateParams.Comment.IsPrivate = privateComment;
+      }
+
+      try
+      {
+        mProxy.UpdateBug(updateParams);
+      }
+      catch(XmlRpcFaultException e)
+      {
+        switch(e.FaultCode)
+        {
+          case 115:
+            throw new BugEditAccessDeniedException(Id.ToString());
+
+          default:
+            throw new ApplicationException(string.Format("Error saving changes to bug. Details: {0}", e.Message));
+        }
+      }
+    }
+
+    /// <summary>
+    /// Resets the QA contact for this bug back to the default for its component.
+    /// <param name="commentText">The text of any comment to add whilst making the changes. May be <code>null</code> or a blank string
+    /// to indicate no comment should be created.</param>
+    /// <param name="privateComment">If adding a comment along with the changes, whether the comment should be private or public.</param>
+    /// </summary>
+    public void ResetQAContact(string commentText, bool privateComment)
+    {
+      UpdateBugParam updateParams = new UpdateBugParam();
+      updateParams.Ids = new int[] { Id };
+      updateParams.ResetQAContact = true;
+
+      if (!string.IsNullOrEmpty(commentText))
+      {
+        updateParams.Comment = new CommentParam();
+        updateParams.Comment.CommentText = commentText;
+        updateParams.Comment.IsPrivate = privateComment;
+      }
+
+      try
+      {
+        mProxy.UpdateBug(updateParams);
+      }
+      catch (XmlRpcFaultException e)
+      {
+        switch (e.FaultCode)
+        {
+          case 115:
+            throw new BugEditAccessDeniedException(Id.ToString());
+
+          default:
+            throw new ApplicationException(string.Format("Error saving changes to bug. Details: {0}", e.Message));
+        }
+      }
+    }
+
     #region Properties
     
     /// <summary>
