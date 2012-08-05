@@ -56,14 +56,14 @@ namespace Bugzilla.Proxies.Bug.Params
     /// </summary>
     [XmlRpcMember("reset_assigned_to")]
     [XmlRpcMissingMapping(MappingAction.Ignore)]
-    public bool ResetAssignedTo;
+    public bool? ResetAssignedTo;
 
     /// <summary>
     /// Whether to reset to QA contact field back to the default value.
     /// </summary>
     [XmlRpcMember("reset_qa_contact")]
     [XmlRpcMissingMapping(MappingAction.Ignore)]
-    public bool ResetQAContact;
+    public bool? ResetQAContact;
 
     /// <summary>
     /// The amount of time left (in hours) to work on this bug.
