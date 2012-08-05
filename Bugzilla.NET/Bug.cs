@@ -405,9 +405,10 @@ namespace Bugzilla
     /// Resets the assignee for this bug back to the default for its component.
     /// <param name="commentText">The text of any comment to add whilst making the changes. May be <code>null</code> or a blank string
     /// to indicate no comment should be created.</param>
-    /// <param name="privateComment">If adding a comment along with the changes, whether the comment should be private or public.</param>
+    /// <param name="privateComment">If adding a comment along with the changes, whether the comment should be private or public.  Defaults
+    /// to a public comment if not set.</param>
     /// </summary>
-    public void ResetAssignedTo(string commentText, bool privateComment)
+    public void ResetAssignedTo(string commentText, bool? privateComment)
     {
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
@@ -417,7 +418,7 @@ namespace Bugzilla
       {
         updateParams.Comment = new CommentParam();
         updateParams.Comment.CommentText = commentText;
-        updateParams.Comment.IsPrivate = privateComment;
+        updateParams.Comment.IsPrivate = privateComment.GetValueOrDefault();
       }
 
       try
@@ -441,9 +442,10 @@ namespace Bugzilla
     /// Resets the QA contact for this bug back to the default for its component.
     /// <param name="commentText">The text of any comment to add whilst making the changes. May be <code>null</code> or a blank string
     /// to indicate no comment should be created.</param>
-    /// <param name="privateComment">If adding a comment along with the changes, whether the comment should be private or public.</param>
+    /// <param name="privateComment">If adding a comment along with the changes, whether the comment should be private or public. Defaults
+    /// to a public comment if not set.</param>
     /// </summary>
-    public void ResetQAContact(string commentText, bool privateComment)
+    public void ResetQAContact(string commentText, bool? privateComment)
     {
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
@@ -453,7 +455,7 @@ namespace Bugzilla
       {
         updateParams.Comment = new CommentParam();
         updateParams.Comment.CommentText = commentText;
-        updateParams.Comment.IsPrivate = privateComment;
+        updateParams.Comment.IsPrivate = privateComment.GetValueOrDefault();
       }
 
       try
