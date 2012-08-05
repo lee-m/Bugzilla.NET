@@ -64,5 +64,19 @@ namespace Bugzilla.Proxies.Bug.Params
     [XmlRpcMember("reset_qa_contact")]
     [XmlRpcMissingMapping(MappingAction.Ignore)]
     public bool ResetQAContact;
+
+    /// <summary>
+    /// The amount of time left (in hours) to work on this bug.
+    /// </summary>
+    [XmlRpcMember("remaining_time")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public double? WorkTimeRemaining;
+
+    /// <summary>
+    /// The amount of time worked (in hours) on the bug.
+    /// </summary>
+    [XmlRpcMember("work_time")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public double? TimeWorked;
   }
 }
