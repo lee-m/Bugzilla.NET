@@ -74,6 +74,7 @@ namespace Bugzilla
       mCommentText = responseCommentDets["text"].ToString();
       mAuthor = responseCommentDets["author"].ToString();
       mCreatedDate = DateTime.Parse(responseCommentDets["time"].ToString());
+      mIsPrivate = Boolean.Parse(responseCommentDets["is_private"].ToString());
 
       //Attachment ID may or may not be present
       if (responseCommentDets.ContainsKey("attachment_id"))
