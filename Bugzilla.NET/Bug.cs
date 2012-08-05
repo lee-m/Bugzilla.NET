@@ -473,6 +473,78 @@ namespace Bugzilla
       }
     }
 
+    /// <summary>
+    /// Sets the number of hours work remaining on the bug.
+    /// </summary>
+    /// <param name="remainingWorkTime">The amount of work time remaining in hours.</param>
+    /// <param name="commentText">If set, the text of a comment to add at the same time as the remaining work time is updated.</param>
+    /// <param name="privateComment">If adding a comment, indicates whether the comment is private or not. Defaults to false if not set.</param>
+    public void SetNumberOfHoursWorkRemaining(double remainingWorkTime, string commentText, bool? privateComment)
+    {
+      UpdateBugParam updateParams = new UpdateBugParam();
+      updateParams.Ids = new int[] { Id };
+      updateParams.WorkTimeRemaining = remainingWorkTime;
+
+      if (!string.IsNullOrEmpty(commentText))
+      {
+        updateParams.Comment = new CommentParam();
+        updateParams.Comment.CommentText = commentText;
+        updateParams.Comment.IsPrivate = privateComment.GetValueOrDefault();
+      }
+
+      try
+      {
+        mProxy.UpdateBug(updateParams);
+      }
+      catch (XmlRpcFaultException e)
+      {
+        switch (e.FaultCode)
+        {
+          case 115:
+            throw new BugEditAccessDeniedException(Id.ToString());
+
+          default:
+            throw new ApplicationException(string.Format("Error saving changes to bug. Details: {0}", e.Message));
+        }
+      }
+    }
+
+    /// <summary>
+    /// Updates the number of hours worked on this bug.
+    /// </summary>
+    /// <param name="hoursWorked">Number of hours worked on the bug.</param>
+    /// <param name="commentText">If set, the text of a comment to add whilst updating the remaining work time.</param>
+    /// <param name="privateComment">If adding a comment, whether the comment is private or not. If not set, defaults to public.</param>
+    public void UpdateNumberOfHoursWorked(double hoursWorked, string commentText, bool? privateComment)
+    {
+      UpdateBugParam updateParams = new UpdateBugParam();
+      updateParams.Ids = new int[] { Id };
+      updateParams.TimeWorked = hoursWorked;
+
+      if (!string.IsNullOrEmpty(commentText))
+      {
+        updateParams.Comment = new CommentParam();
+        updateParams.Comment.CommentText = commentText;
+        updateParams.Comment.IsPrivate = privateComment.GetValueOrDefault();
+      }
+
+      try
+      {
+        mProxy.UpdateBug(updateParams);
+      }
+      catch (XmlRpcFaultException e)
+      {
+        switch (e.FaultCode)
+        {
+          case 115:
+            throw new BugEditAccessDeniedException(Id.ToString());
+
+          default:
+            throw new ApplicationException(string.Format("Error saving changes to bug. Details: {0}", e.Message));
+        }
+      }
+    }
+
     #region Properties
     
     /// <summary>
