@@ -22,6 +22,9 @@ using CookComputing.XmlRpc;
 
 namespace Bugzilla.Proxies.Bug.Params
 {
+  /// <summary>
+  /// Parameters passed when updating details of a bug.
+  /// </summary>
   internal struct UpdateBugParam
   {
     /// <summary>
@@ -78,5 +81,12 @@ namespace Bugzilla.Proxies.Bug.Params
     [XmlRpcMember("work_time")]
     [XmlRpcMissingMapping(MappingAction.Ignore)]
     public double? TimeWorked;
+
+    /// <summary>
+    /// If set, the public/private status of a set of comments on the bug to update.
+    /// </summary>
+    [XmlRpcMember("comment_is_private")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public XmlRpcStruct CommentVisibilityChanges;
   }
 }

@@ -547,6 +547,51 @@ namespace Bugzilla
       }
     }
 
+    /// <summary>
+    /// Toggles the public/private status of a set of existing comments on this bug.
+    /// </summary>
+    /// <param name="commentStatusChanges">A set of comment ID/private status pairs.</param>
+    /// <param name="changeComment">If non-null, the text of a comment to add alongside the changes.</param>
+    /// <param name="changeCommentPrivate">If non-null, indicates whether the change comment should be private. If not set, defaults to a public comment.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="commentStatusChanges"/> is <code>null</code>.</exception>
+    public void ToggleCommentsPublicPrivateStatus(IEnumerable<Tuple<int, bool>> commentStatusChanges,
+                                                  string changeComment, 
+                                                  bool? changeCommentPrivate)
+    {
+      if (commentStatusChanges == null)
+        throw new ArgumentNullException("commentStatusChanges");
+
+      UpdateBugParam updateParams = new UpdateBugParam();
+      updateParams.Ids = new int[] { Id };
+      updateParams.CommentVisibilityChanges = new XmlRpcStruct();
+
+      if (!string.IsNullOrEmpty(changeComment))
+      {
+        updateParams.Comment = new CommentParam();
+        updateParams.Comment.CommentText = changeComment;
+        updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
+      }
+
+      foreach (Tuple<int, bool> commentStatus in commentStatusChanges)
+        updateParams.CommentVisibilityChanges.Add(commentStatus.Item1.ToString(), commentStatus.Item2);
+
+      try
+      {
+        mProxy.UpdateBug(updateParams);
+      }
+      catch (XmlRpcFaultException e)
+      {
+        switch (e.FaultCode)
+        {
+          case 115:
+            throw new BugEditAccessDeniedException(Id.ToString());
+
+          default:
+            throw new ApplicationException(string.Format("Error saving changes to bug. Details: {0}", e.Message));
+        }
+      }
+    }
+
     #region Properties
     
     /// <summary>
