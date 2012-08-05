@@ -31,12 +31,14 @@ namespace Bugzilla.Proxies.Bug.Params
     /// The comment text.
     /// </summary>
     [XmlRpcMember("comment")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
     public string CommentText;
 
     /// <summary>
     /// Whether the comment is private or not.
     /// </summary>
     [XmlRpcMember("is_private")]
-    public bool IsPrivate;
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public bool? IsPrivate;
   }
 }
