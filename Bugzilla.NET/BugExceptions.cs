@@ -332,6 +332,20 @@ namespace Bugzilla
   }
 
   /// <summary>
+  /// Thrown when an invalid keyword is specified for a bug.
+  /// </summary>
+  public class InvalidKeywordException : ApplicationException
+  {
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    public InvalidKeywordException(string msg)
+      : base(msg)
+    {
+    }
+  }
+
+  /// <summary>
   /// Thrown when the currenltly logged in user does not have security access to edit the see also on a particular bug.
   /// </summary>
   public class SeeAlsoEditAccessDenied : ApplicationException
