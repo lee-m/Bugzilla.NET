@@ -592,6 +592,72 @@ namespace Bugzilla
       }
     }
 
+    /// <summary>
+    /// Updates the set of keywords on this bug to add new keywords, remove deleted keywords or set a new set of keywords.
+    /// </summary>
+    /// <param name="newKeywords">If non-null, the new keywords to add.</param>
+    /// <param name="deletedKeywords">If non-null, the keywords to remove from the bug.</param>
+    /// <param name="resetKeywords">If non-null, the new set of keywords to set on the bug.</param>
+    /// <param name="changeComment">If non-null, the text of a comment to add at the same time as resetting the keywords.</param>
+    /// <param name="changeCommentPrivate">If adding a change comment, whether the comment should be private or not.</param>
+    /// <remarks>
+    /// Specifying <paramref name="resetKeywords"/> will override any values passed in via <paramref name="newKeywords"/>
+    /// or <paramref name="deletedKeywords"/>.
+    /// </remarks>
+    /// <exception cref="InvalidKeywordException">One or more invalid keywords were specified.</exception>
+    /// <exception cref="BugEditAccessDeniedException">Currently logged in user does not have the required security rights to modify this bug.</exception>
+    public void UpdateKeywords(IEnumerable<string> newKeywords, 
+                               IEnumerable<string> deletedKeywords,
+                               IEnumerable<string> resetKeywords,
+                               string changeComment, 
+                               bool? changeCommentPrivate)
+    {
+      //At least one of the new, deleted or reset parameters need to be specified otherwise there's nothing to do.
+      if (newKeywords == null
+          && deletedKeywords == null
+          && resetKeywords == null)
+        throw new ArgumentException("At least one of new keywords, deleted keywords or keywords to set needs to be provided.");
+
+      UpdateBugParam updateParams = new UpdateBugParam();
+      updateParams.Ids = new int[] { Id };
+      updateParams.KeywordModifications = new XmlRpcStruct();
+
+      if(newKeywords != null)
+        updateParams.KeywordModifications.Add("add", newKeywords.ToArray());
+
+      if(deletedKeywords != null)
+        updateParams.KeywordModifications.Add("remove", newKeywords.ToArray());
+
+      if(resetKeywords != null)
+        updateParams.KeywordModifications.Add("set", newKeywords.ToArray());
+
+      if (!string.IsNullOrEmpty(changeComment))
+      {
+        updateParams.Comment = new CommentParam();
+        updateParams.Comment.CommentText = changeComment;
+        updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
+      }
+
+      try
+      {
+        mProxy.UpdateBug(updateParams);
+      }
+      catch (XmlRpcFaultException e)
+      {
+        switch (e.FaultCode)
+        {
+          case 51:
+            throw new InvalidKeywordException(e.FaultString);
+
+          case 115:
+            throw new BugEditAccessDeniedException(Id.ToString());
+
+          default:
+            throw new ApplicationException(string.Format("Error saving changes to bug. Details: {0}", e.Message));
+        }
+      }
+    }
+
     #region Properties
     
     /// <summary>

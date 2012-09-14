@@ -88,5 +88,12 @@ namespace Bugzilla.Proxies.Bug.Params
     [XmlRpcMember("comment_is_private")]
     [XmlRpcMissingMapping(MappingAction.Ignore)]
     public XmlRpcStruct CommentVisibilityChanges;
+
+    /// <summary>
+    /// The set of keywords to add, remove or set on the bug.
+    /// </summary>
+    [XmlRpcMember("keywords")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public XmlRpcStruct KeywordModifications;
   }
 }
