@@ -658,6 +658,60 @@ namespace Bugzilla
       }
     }
 
+    /// <summary>
+    /// Updates the CC list for this bug.
+    /// </summary>
+    /// <param name="usersToAdd">Set of <b>full</b> usernames to add to the CC list.</param>
+    /// <param name="usersToRemove">Set of <b>full</b> usernames to remove from the CC list.</param>
+    /// <param name="changeComment">If set, the text of a comment to add at the same time as updating the CC list.</param>
+    /// <param name="changeCommentPrivate">If adding a change comment, indicates whether the comment is private or not.</param>
+    /// <exception cref="ArgumentException">Both <paramref name="usersToAdd"/> and <paramref name="usersToRemove"/> are null/Nothing.</exception>
+    public void UpdateCCList(IEnumerable<string> usersToAdd, 
+                             IEnumerable<string> usersToRemove,
+                             string changeComment,
+                             bool? changeCommentPrivate)
+    {
+      if (usersToAdd == null
+         && usersToRemove == null)
+        throw new ArgumentException("At least one set of users to add and/or remove must be provided.");
+
+      UpdateBugParam updateParams = new UpdateBugParam();
+      updateParams.Ids = new int[] { Id };
+      updateParams.CCListModifications = new XmlRpcStruct();
+
+      if (usersToAdd != null)
+        updateParams.CCListModifications.Add("add", usersToAdd.ToArray());
+
+      if (usersToRemove != null)
+        updateParams.CCListModifications.Add("remove", usersToRemove.ToArray());
+
+      if (!string.IsNullOrEmpty(changeComment))
+      {
+        updateParams.Comment = new CommentParam();
+        updateParams.Comment.CommentText = changeComment;
+        updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
+      }
+
+      try
+      {
+        mProxy.UpdateBug(updateParams);
+      }
+      catch (XmlRpcFaultException e)
+      {
+        switch (e.FaultCode)
+        {
+          case 51:
+            throw new InvalidUserException(e.FaultString);
+
+          case 115:
+            throw new BugEditAccessDeniedException(Id.ToString());
+
+          default:
+            throw new ApplicationException(string.Format("Error saving changes to bug. Details: {0}", e.Message));
+        }
+      }
+    }
+                             
     #region Properties
     
     /// <summary>

@@ -95,5 +95,12 @@ namespace Bugzilla.Proxies.Bug.Params
     [XmlRpcMember("keywords")]
     [XmlRpcMissingMapping(MappingAction.Ignore)]
     public XmlRpcStruct KeywordModifications;
+
+    /// <summary>
+    /// The set of usernames to add or remove on the bug.
+    /// </summary>
+    [XmlRpcMember("cc")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public XmlRpcStruct CCListModifications;
   }
 }
