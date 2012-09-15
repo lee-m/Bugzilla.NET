@@ -99,12 +99,14 @@ namespace Bugzilla.Proxies.Bug.Responses
     /// Old value of the field.
     /// </summary>
     [XmlRpcMember("removed")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
     public string OldValue;
     
     /// <summary>
     /// New value of the field.
     /// </summary>
     [XmlRpcMember("added")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
     public string NewValue;
 
     /// <summary>
