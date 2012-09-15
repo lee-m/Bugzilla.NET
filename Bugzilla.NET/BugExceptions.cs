@@ -269,6 +269,7 @@ namespace Bugzilla
     /// </summary>
     /// <param name="serverMessage">Error message from the server containing specific error details.</param>
     public InvalidProductException(string serverMessage)
+      : base(serverMessage)
     {
     }
   }
@@ -313,6 +314,7 @@ namespace Bugzilla
     /// </summary>
     /// <param name="serverMessage">Error message from the server containing specific error details.</param>
     public InvalidUserException(string serverMessage)
+      : base(serverMessage)
     {
     }
   }
@@ -339,6 +341,7 @@ namespace Bugzilla
     /// <summary>
     /// Default constructor.
     /// </summary>
+    /// <param name="msg">Exception message text.</param>
     public InvalidKeywordException(string msg)
       : base(msg)
     {
