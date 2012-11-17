@@ -724,51 +724,51 @@ namespace Bugzilla
     /// <param name="changeCommentPrivate">If adding a change comment, indicates whether the comment is private or not.</param>
     public void Update(string changeComment, bool? changeCommentPrivate)
     {
+      UpdateBugParam updateParams = new UpdateBugParam();
+      updateParams.Ids = new int[] { Id };
+      updateParams.Product = Product;
+      updateParams.AssignedTo = AssignedTo;
+      updateParams.AccessibleToCCList = AccessibleToCCListMembers;
+      updateParams.Component = Component;
+      updateParams.Deadline = Deadline;
+      updateParams.DuplicateOf = DuplicateOf;
+      updateParams.EstimatedResolutionTime = EstimatedResolutionTimeHours;
+      updateParams.OperatingSystem = OperatingSystem;
+      updateParams.Platform = Platform;
+      updateParams.Priority = Priority;
+      updateParams.QAContact = QAContact;
+      updateParams.IsAccessibleByReporter = IsAccessibleByReporter;
+      updateParams.Resolution = Resolution;
+      updateParams.Severity = Severity;
+      updateParams.Status = Status;
+      updateParams.Summary = Summary;
+      updateParams.TargetMilestone = TargetMilestone;
+      updateParams.URL = URL;
+      updateParams.Version = Version;
+      updateParams.Whiteboard = StatusWhiteboard;
+
+      //Set the depends on field to the current list of dependencies
+      updateParams.DependsOnModifications = new XmlRpcStruct();
+      updateParams.DependsOnModifications.Add("set", DependsOn);
+
+      //Set the blocks list to
+      updateParams.BlocksModifications = new XmlRpcStruct();
+      updateParams.BlocksModifications.Add("set", Blocks);
+
+      //Set the list of keywords
+      updateParams.KeywordModifications = new XmlRpcStruct();
+      updateParams.KeywordModifications.Add("set", Keywords);
+        
+      //Add the change comment if specified
+      if (!string.IsNullOrEmpty(changeComment))
+      {
+        updateParams.Comment = new CommentParam();
+        updateParams.Comment.CommentText = changeComment;
+        updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
+      }
+
       try
       {
-        UpdateBugParam updateParams = new UpdateBugParam();
-        updateParams.Ids = new int[] { Id };
-        updateParams.Product = Product;
-        updateParams.AssignedTo = AssignedTo;
-        updateParams.AccessibleToCCList = AccessibleToCCListMembers;
-        updateParams.Component = Component;
-        updateParams.Deadline = Deadline;
-        updateParams.DuplicateOf = DuplicateOf;
-        updateParams.EstimatedResolutionTime = EstimatedResolutionTimeHours;
-        updateParams.OperatingSystem = OperatingSystem;
-        updateParams.Platform = Platform;
-        updateParams.Priority = Priority;
-        updateParams.QAContact = QAContact;
-        updateParams.IsAccessibleByReporter = IsAccessibleByReporter;
-        updateParams.Resolution = Resolution;
-        updateParams.Severity = Severity;
-        updateParams.Status = Status;
-        updateParams.Summary = Summary;
-        updateParams.TargetMilestone = TargetMilestone;
-        updateParams.URL = URL;
-        updateParams.Version = Version;
-        updateParams.Whiteboard = StatusWhiteboard;
-
-        //Set the depends on field to the current list of dependencies
-        updateParams.DependsOnModifications = new XmlRpcStruct();
-        updateParams.DependsOnModifications.Add("set", DependsOn);
-
-        //Set the blocks list to
-        updateParams.BlocksModifications = new XmlRpcStruct();
-        updateParams.BlocksModifications.Add("set", Blocks);
-
-        //Set the list of keywords
-        updateParams.KeywordModifications = new XmlRpcStruct();
-        updateParams.KeywordModifications.Add("set", Keywords);
-        
-        //Add the change comment if specified
-        if (!string.IsNullOrEmpty(changeComment))
-        {
-          updateParams.Comment = new CommentParam();
-          updateParams.Comment.CommentText = changeComment;
-          updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
-        }
-
         mProxy.UpdateBug(updateParams);
       }
       catch (XmlRpcFaultException e)
@@ -805,6 +805,43 @@ namespace Bugzilla
 
           default:
             throw new ApplicationException(string.Format("Error saving changes to bug. Details: {0}", e.Message));
+        }
+      }
+    }
+
+    /// <summary>
+    /// Marks this bug as a duplicate of another bug.
+    /// </summary>
+    /// <param name="duplicateBugID">ID of the bug to mark this bug as a duplicate of.</param>
+    /// <param name="changeComment">If set, the text of a comment to add at the same time as updating the CC list.</param>
+    /// <param name="changeCommentPrivate">If adding a change comment, indicates whether the comment is private or not.</param>
+    public void MarkAsDuplicate(int duplicateBugID, string changeComment, bool? changeCommentPrivate)
+    {
+      UpdateBugParam updateParams = new UpdateBugParam();
+      updateParams.Ids = new int[] { Id };
+      updateParams.DuplicateOf = duplicateBugID;
+
+      //Add the change comment if specified
+      if (!string.IsNullOrEmpty(changeComment))
+      {
+        updateParams.Comment = new CommentParam();
+        updateParams.Comment.CommentText = changeComment;
+        updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
+      }
+
+      try
+      {
+        mProxy.UpdateBug(updateParams);
+      }
+      catch (XmlRpcFaultException e)
+      {
+        switch(e.FaultCode)
+        {
+          case 115:
+            throw new BugEditAccessDeniedException(Id.ToString());
+
+          case 118:
+            throw new CyclicBugDuplicateException(e.FaultString);
         }
       }
     }
