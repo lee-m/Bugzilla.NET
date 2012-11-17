@@ -56,6 +56,11 @@ namespace Bugzilla
     private readonly string mHostName;
 
     /// <summary>
+    /// Base path to the root Bugzilla landing page - i.e. http://localhost/bugzilla
+    /// </summary>
+    private readonly string mBugzillaBasePath;
+
+    /// <summary>
     /// Complete URL to the XMLRPC.cgi script on the bugzilla server.
     /// </summary>
     private readonly string mURL;
@@ -84,6 +89,11 @@ namespace Bugzilla
     /// Whether a user is logged in or not.
     /// </summary>
     private bool mLoggedIn;
+
+    /// <summary>
+    /// If the login's "remember" parameter was set, these are the login cookies.
+    /// </summary>
+    private CookieCollection mLoginCookies;
 
     /// <summary>
     /// Series of dymamically created types used when creating new bugs.
@@ -119,7 +129,7 @@ namespace Bugzilla
     /// <param name="password">Password for the specified user.</param>
     /// <param name="remember">Whether the login cookies should expire with the session or not.</param>
     /// <remarks>Calls <see cref="Login"/> with the specified username and password.</remarks>
-    public BugzillaServer(string hostName, string path, string userName, string password, bool remember) : this(hostName, path)
+    public BugzillaServer(string hostName, string path, string userName, string password, bool remember) : this(hostName, path, null)
     {
       Login(userName, password, remember);
     }
@@ -129,8 +139,9 @@ namespace Bugzilla
     /// </summary>
     /// <param name="hostName">Host containing the bugzilla server.</param>
     /// <param name="path">The path on the host to the Bugzilla installation.</param>
+    /// <param name="loginCookies">Any previously saved login details from a previous session to re-use to avoid having to login again.</param>
     /// <exception cref="ArgumentNullException"><paramref name="hostName"/> is null or empty.</exception>
-    public BugzillaServer(string hostName, string path)
+    public BugzillaServer(string hostName, string path, CookieCollection loginCookies)
     {
       if (string.IsNullOrEmpty(hostName))
         throw new ArgumentNullException("hostName");
@@ -138,10 +149,11 @@ namespace Bugzilla
       mHostName = hostName;
 
       if (!string.IsNullOrEmpty(path))
-        mURL = string.Format(@"http://{0}/{1}/xmlrpc.cgi", hostName, path);
+        mBugzillaBasePath = string.Format(@"http://{0}/{1}", hostName, path);
       else
-        mURL = string.Format(@"http://{0}/xmlrpc.cgi", hostName);
+        mBugzillaBasePath = string.Format(@"http://{0}", hostName);
 
+      mURL = string.Format("{0}/xmlrpc.cgi", mBugzillaBasePath);
       mBugProxy = XmlRpcProxyGen.Create<IBugProxy>();
       mUserProxy = XmlRpcProxyGen.Create<IUserProxy>();
       mBugzillaProxy = XmlRpcProxyGen.Create<IBugzillaProxy>();
@@ -162,6 +174,9 @@ namespace Bugzilla
       mUserProxy.Url = mURL;
       mBugzillaProxy.Url = mURL;
       mProductProxy.Url = mURL;
+
+      if(loginCookies != null)
+        SetProxyCookies(loginCookies);
     }
 
     /// <summary>
@@ -193,12 +208,8 @@ namespace Bugzilla
         UserIDResponse resp = mUserProxy.Login(new LoginParam { LoginName = userName, Password = password, Remember = remember });
         mLoggedIn = true;
 
-        foreach (Cookie Cookie in mUserProxy.CookieContainer.GetCookies(new Uri("http://" + mHostName)))
-        {
-          mBugProxy.CookieContainer.Add(Cookie);
-          mBugzillaProxy.CookieContainer.Add(Cookie);
-          mProductProxy.CookieContainer.Add(Cookie);
-        }
+        mLoginCookies = mUserProxy.CookieContainer.GetCookies(new Uri(mBugzillaBasePath));
+        SetProxyCookies(mLoginCookies);
 
         return resp.Id;
       }
@@ -998,6 +1009,20 @@ namespace Bugzilla
       return (CreateBugParams)Activator.CreateInstance(mCreateBugTypes[fieldNamesHashCode]);
     }
 
+    /// <summary>
+    /// Adds each cookie in the collection to each proxy's cookie container.
+    /// </summary>
+    /// <param name="cookies">Collection of cookies to add to each proxy.</param>
+    private void SetProxyCookies(CookieCollection cookies)
+    {
+      foreach (Cookie cookie in cookies)
+      {
+        mBugProxy.CookieContainer.Add(cookie);
+        mBugzillaProxy.CookieContainer.Add(cookie);
+        mProductProxy.CookieContainer.Add(cookie);
+      }
+    }
+
     #endregion
 
     #region Public Properties
@@ -1082,7 +1107,14 @@ namespace Bugzilla
       }
     }
 
-    #endregion
+    /// <summary>
+    /// Accessor for the login cookies to remember the login across sessions.
+    /// </summary>
+    public CookieCollection LoginCookies
+    {
+      get { return mLoginCookies; }
+    }
 
+    #endregion
   }
 }
