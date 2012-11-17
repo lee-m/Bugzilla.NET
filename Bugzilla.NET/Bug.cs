@@ -110,7 +110,7 @@ namespace Bugzilla
             throw new InsufficientSecurityPrivilagesException();
 
           default:
-            throw;
+            throw new BugzillaException(string.Format("Error adding comment to bug. Details: {0}", e.Message));
         }
       }
     }
@@ -153,7 +153,7 @@ namespace Bugzilla
             throw new CommentAccessDeniedException();
 
           default:
-            throw;
+            throw new BugzillaException(string.Format("Error getting comments for bug. Details: {0}", e.Message));
         }
       }
     }
@@ -247,8 +247,7 @@ namespace Bugzilla
             throw new URLAttachmentsDisabledException();
 
           default:
-            throw;
-
+            throw new BugzillaException(string.Format("Error adding attachment to bug. Details: {0}", e.Message));
         }
       }
     }
@@ -295,7 +294,7 @@ namespace Bugzilla
             throw new AttachmentAccessDeniedException();
 
           default:
-            throw;
+            throw new BugzillaException(string.Format("Error getting attachments for bug. Details: {0}", e.Message));
         }
       }
     }
@@ -328,7 +327,7 @@ namespace Bugzilla
             throw new BugAccessDeniedException();
 
           default:
-            throw;
+            throw new BugzillaException(string.Format("Error getting history for bug. Details: {0}", e.Message));
         }
       }
     }
@@ -396,7 +395,7 @@ namespace Bugzilla
             throw new SeeAlsoEditAccessDenied();
 
           default:
-            throw;
+            throw new BugzillaException(string.Format("Error updating see also field for bug. Details: {0}", e.Message));
         }
       }
     }
@@ -433,7 +432,7 @@ namespace Bugzilla
             throw new BugEditAccessDeniedException(Id.ToString());
 
           default:
-            throw new ApplicationException(string.Format("Error saving changes to bug. Details: {0}", e.Message));
+            throw new BugzillaException(string.Format("Error resetting the assigned to field. Details: {0}", e.Message));
         }
       }
     }
@@ -470,7 +469,7 @@ namespace Bugzilla
             throw new BugEditAccessDeniedException(Id.ToString());
 
           default:
-            throw new ApplicationException(string.Format("Error saving changes to bug. Details: {0}", e.Message));
+            throw new BugzillaException(string.Format("Error resetting the QA contact. Details: {0}", e.Message));
         }
       }
     }
@@ -508,7 +507,7 @@ namespace Bugzilla
             throw new BugEditAccessDeniedException(Id.ToString());
 
           default:
-            throw new ApplicationException(string.Format("Error saving changes to bug. Details: {0}", e.Message));
+            throw new BugzillaException(string.Format("Error setting the number of hours work remaining. Details: {0}", e.Message));
         }
       }
     }
@@ -550,7 +549,7 @@ namespace Bugzilla
             throw new BugEditAccessDeniedException(Id.ToString());
 
           default:
-            throw new ApplicationException(string.Format("Error saving changes to bug. Details: {0}", e.Message));
+            throw new BugzillaException(string.Format("Error updating number of hours worked. Details: {0}", e.Message));
         }
       }
     }
@@ -595,7 +594,7 @@ namespace Bugzilla
             throw new BugEditAccessDeniedException(Id.ToString());
 
           default:
-            throw new ApplicationException(string.Format("Error saving changes to bug. Details: {0}", e.Message));
+            throw new BugzillaException(string.Format("Error toggling comments privacy statuses. Details: {0}", e.Message));
         }
       }
     }
@@ -661,7 +660,7 @@ namespace Bugzilla
             throw new BugEditAccessDeniedException(Id.ToString());
 
           default:
-            throw new ApplicationException(string.Format("Error saving changes to bug. Details: {0}", e.Message));
+            throw new BugzillaException(string.Format("Error updating bug keywords. Details: {0}", e.Message));
         }
       }
     }
@@ -715,7 +714,7 @@ namespace Bugzilla
             throw new BugEditAccessDeniedException(Id.ToString());
 
           default:
-            throw new ApplicationException(string.Format("Error saving changes to bug. Details: {0}", e.Message));
+            throw new BugzillaException(string.Format("Error updating bug CC list. Details: {0}", e.Message));
         }
       }
     }
@@ -807,7 +806,7 @@ namespace Bugzilla
             throw new InvalidBugStatusTransitionException(e.FaultString);
 
           default:
-            throw new ApplicationException(string.Format("Error saving changes to bug. Details: {0}", e.Message));
+            throw new BugzillaException(string.Format("Error updating bug. Details: {0}", e.Message));
         }
       }
     }
@@ -845,6 +844,9 @@ namespace Bugzilla
 
           case 118:
             throw new CyclicBugDuplicateException(e.FaultString);
+
+          default:
+            throw new BugzillaException(string.Format("Error marking bug as duplicate. Details: {0}", e.Message));
         }
       }
     }

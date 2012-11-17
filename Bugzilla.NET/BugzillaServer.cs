@@ -216,7 +216,7 @@ namespace Bugzilla
             throw new ExpiredPasswordException();
 
           default:
-            throw;
+            throw new BugzillaException(string.Format("Error logging in. Details: {0}", e.Message));
         }
       }
     }
@@ -297,7 +297,7 @@ namespace Bugzilla
             throw new PasswordTooShortException();
 
           default:
-            throw;
+            throw new BugzillaException(string.Format("Error creating new user. Details: {0}", e.Message));
         }
       }
     }
@@ -361,7 +361,7 @@ namespace Bugzilla
             throw new InvalidOperationException("Logged-out users cannot use the user matching functionality.");
 
           default:
-            throw;
+            throw new BugzillaException(string.Format("Error searching users. Details: {0}", e.Message));
         }
       }
     }
@@ -392,7 +392,7 @@ namespace Bugzilla
             throw new IllegalEmailAddressException();
 
           default:
-            throw;
+            throw new BugzillaException(string.Format("Error offering new user account by email. Details: {0}", e.Message));
         }
       }
     }
@@ -436,7 +436,7 @@ namespace Bugzilla
               throw new BugAccessDeniedException();
 
             default:
-              throw;
+              throw new BugzillaException(string.Format("Error getting bug. Details: {0}", e.Message));
           }
         }
       }
@@ -608,7 +608,7 @@ namespace Bugzilla
             throw new InvalidUserException(e.FaultString);
 
           default:
-            throw;
+            throw new BugzillaException(string.Format("Error creating new bug. Details: {0}", e.Message));
         }
       }
     }
@@ -710,8 +710,7 @@ namespace Bugzilla
             throw new InvalidMIMETypeException(mimeType);
 
           default:
-            throw;
-
+            throw new BugzillaException(string.Format("Error adding attachment to bug(s). Details: {0}", e.Message));
         }
       }
     }
@@ -788,7 +787,7 @@ namespace Bugzilla
             throw new InvalidCommentIDException();
 
           default:
-            throw;
+            throw new BugzillaException(string.Format("Error getting comments for bug. Details: {0}", e.Message));
         }
       }
     }
@@ -864,7 +863,7 @@ namespace Bugzilla
             throw new AttachmentAccessDeniedException();
 
           default:
-            throw;
+            throw new BugzillaException(string.Format("Error getting attachments. Details: {0}", e.Message));
         }
       }
     }
@@ -944,7 +943,7 @@ namespace Bugzilla
             throw new SeeAlsoEditAccessDenied();
 
           default:
-            throw;
+            throw new BugzillaException(string.Format("Error updating see/also field for bug(s). Details: {0}", e.Message));
         }
       }
     }

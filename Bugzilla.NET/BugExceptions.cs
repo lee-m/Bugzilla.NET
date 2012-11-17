@@ -25,7 +25,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an invalid bug ID or alias is specified.
   /// </summary>
-  public class InvalidBugIDOrAliasException : ApplicationException
+  public class InvalidBugIDOrAliasException : BugzillaException
   {
     /// <summary>
     /// Creates a new instance of this class with the specified id/alias in the exception message.
@@ -49,7 +49,7 @@ namespace Bugzilla
   /// Thrown when an attempt is made to perform an operation when the logged in user has insufficient security privilages
   /// for the operation attempted.
   /// </summary>
-  public class BugEditAccessDeniedException : ApplicationException
+  public class BugEditAccessDeniedException : BugzillaException
   {
     /// <summary>
     /// Creates a new instance of this class.
@@ -72,7 +72,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an attempt is made to attach a file whose size exceed the max allowed on the server.
   /// </summary>
-  public class AttachmentTooLargeException : ApplicationException
+  public class AttachmentTooLargeException : BugzillaException
   {
     /// <summary>
     /// Default constructor.
@@ -86,7 +86,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an invalid MIME type is specified when adding an attachment to a bug.
   /// </summary>
-  public class InvalidMIMETypeException : ApplicationException
+  public class InvalidMIMETypeException : BugzillaException
   {
     /// <summary>
     /// Creates a new instance of this class.
@@ -101,7 +101,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an attempt is made to attach a URL to a bug when the attachment data is invalid.
   /// </summary>
-  public class InvalidAttachmentURLException : ApplicationException
+  public class InvalidAttachmentURLException : BugzillaException
   {
     /// <summary>
     /// Creates a new instance of this class.
@@ -115,7 +115,7 @@ namespace Bugzilla
      /// <summary>
   /// Thrown when an attempt is made to attach a URL to a bug when URL attaching is disabled.
   /// </summary>
-  public class URLAttachmentsDisabledException : ApplicationException
+  public class URLAttachmentsDisabledException : BugzillaException
   {
     /// <summary>
     /// Creates a new instance of this class.
@@ -129,7 +129,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when the logged in user has insufficient security privilages for an operation.
   /// </summary>
-  public class InsufficientSecurityPrivilagesException : ApplicationException
+  public class InsufficientSecurityPrivilagesException : BugzillaException
   {
     /// <summary>
     /// Default constructor.
@@ -143,7 +143,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when attempting to get comments with an invalid comment ID.
   /// </summary>
-  public class InvalidCommentIDException : ApplicationException
+  public class InvalidCommentIDException : BugzillaException
   {
     /// <summary>
     /// Default constructor.
@@ -158,7 +158,7 @@ namespace Bugzilla
   /// Thrown when an attempt is made to get a private comment when the logged in user does not have
   /// the necessary privilages to see private comments.
   /// </summary>
-  public class CommentAccessDeniedException : ApplicationException
+  public class CommentAccessDeniedException : BugzillaException
   {
     /// <summary>
     /// Default constructor.
@@ -173,7 +173,7 @@ namespace Bugzilla
   /// Thrown when an attempt is made to get a private attachment when the logged in user does not have
   /// the necessary privilages to see private attachment.
   /// </summary>
-  public class AttachmentAccessDeniedException : ApplicationException
+  public class AttachmentAccessDeniedException : BugzillaException
   {
     /// <summary>
     /// Default constructor.
@@ -188,7 +188,7 @@ namespace Bugzilla
   /// Thrown when an attempt is made to get data for a bug when the logged in user does not have
   /// the necessary privilages to see that bug.
   /// </summary>
-  public class BugAccessDeniedException : ApplicationException
+  public class BugAccessDeniedException : BugzillaException
   {
     /// <summary>
     /// Default constructor.
@@ -202,7 +202,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an attempt is made to create/update a bug and set a field which must be set to a blank value.
   /// </summary>
-  public class FieldCannotBeBlankException : ApplicationException
+  public class FieldCannotBeBlankException : BugzillaException
   {
     /// <summary>
     /// Overloaded constructor to pass in the remote error message.
@@ -217,7 +217,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an attempt is made to set a field to an invalid value.
   /// </summary>
-  public class InvalidFieldValueException : ApplicationException
+  public class InvalidFieldValueException : BugzillaException
   {
     /// <summary>
     /// Overloaded constructor to pass in the remote error message.
@@ -232,7 +232,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an invalid custom field name is specified.
   /// </summary>
-  public class InvalidCustomFieldNameException : ApplicationException
+  public class InvalidCustomFieldNameException : BugzillaException
   {
     /// <summary>
     /// Overloaded constructor to pass in the remote error message.
@@ -247,7 +247,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when the alias specified when creating a new bug was invalid.
   /// </summary>
-  public class InvalidNewBugAliasException : ApplicationException
+  public class InvalidNewBugAliasException : BugzillaException
   {
     /// <summary>
     /// Overloaded constructor to pass in the remote error message.
@@ -262,7 +262,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an attempt is made to create a bug against a non-existent or inaccessible product.
   /// </summary>
-  public class InvalidProductException : ApplicationException
+  public class InvalidProductException : BugzillaException
   {
     /// <summary>
     /// Overloaded constructor to pass in the remote error message.
@@ -278,7 +278,7 @@ namespace Bugzilla
   /// Thrown when an atrempt is made to create a new bug with a blocks and/or depends on list which would
   /// result in a cyclic dependency.
   /// </summary>
-  public class CyclicBugDependenciesException : ApplicationException
+  public class CyclicBugDependenciesException : BugzillaException
   {
     /// <summary>
     /// Default constructor.
@@ -294,7 +294,7 @@ namespace Bugzilla
   /// Thrown when an atrempt is made to mark a bug as a duplicate of another bug which would result in a infinite
   /// loop of duplicates.
   /// </summary>
-  public class CyclicBugDuplicateException : ApplicationException
+  public class CyclicBugDuplicateException : BugzillaException
   {
     /// <summary>
     /// Default constructor.
@@ -310,7 +310,7 @@ namespace Bugzilla
   /// Thrown when an attempt is made to restrict a new bug to a group which doesn't exist or cannot
   /// be used with the specified product.
   /// </summary>
-  public class GroupRestrictionDeniedException : ApplicationException
+  public class GroupRestrictionDeniedException : BugzillaException
   {
     /// <summary>
     /// Default constructor.
@@ -324,7 +324,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an invalid user is specified for a bug's assignee, QA contact or CC list.
   /// </summary>
-  public class InvalidUserException : ApplicationException
+  public class InvalidUserException : BugzillaException
   {
     /// <summary>
     /// Overloaded constructor to pass in the remote error message.
@@ -339,7 +339,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an invalid URL is passed when updating the see also field.
   /// </summary>
-  public class InvalidSeeAlsoURLException : ApplicationException
+  public class InvalidSeeAlsoURLException : BugzillaException
   {
     /// <summary>
     /// Default constructor.
@@ -353,7 +353,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an invalid keyword is specified for a bug.
   /// </summary>
-  public class InvalidKeywordException : ApplicationException
+  public class InvalidKeywordException : BugzillaException
   {
     /// <summary>
     /// Default constructor.
@@ -368,7 +368,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when the currenltly logged in user does not have security access to edit the see also on a particular bug.
   /// </summary>
-  public class SeeAlsoEditAccessDenied : ApplicationException
+  public class SeeAlsoEditAccessDenied : BugzillaException
   {
     /// <summary>
     /// Default constructor.
@@ -382,7 +382,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an attempt is made to set a bug field to an invalid value.
   /// </summary>
-  public class InvalidBugFieldValueException : ApplicationException
+  public class InvalidBugFieldValueException : BugzillaException
   {
     /// <summary>
     /// Overloaded constructor to provide message text.
@@ -397,7 +397,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an invalid attempt is made to change a bug's resolution.
   /// </summary>
-  public class InvalidBugResolutionChangeException : ApplicationException
+  public class InvalidBugResolutionChangeException : BugzillaException
   {
     /// <summary>
     /// Overloaded constructor to provide message text.
@@ -412,7 +412,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an attempt is made to change a bug's status to a new status which is not allowed by the workflow rules.
   /// </summary>
-  public class InvalidBugStatusTransitionException : ApplicationException
+  public class InvalidBugStatusTransitionException : BugzillaException
   {
     /// <summary>
     /// Overloaded constructor to provide message text.
@@ -428,7 +428,7 @@ namespace Bugzilla
   /// Thrown when an attempt is made to change the groups on a bug when the logged in user does not have
   /// the required security access.
   /// </summary>
-  public class GroupEditAccessDeniedException : ApplicationException
+  public class GroupEditAccessDeniedException : BugzillaException
   {
     /// <summary>
     /// Overloaded constructor to provide message text.

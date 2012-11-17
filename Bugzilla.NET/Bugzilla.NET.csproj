@@ -54,6 +54,7 @@
     <Compile Include="AttachmentCollection.cs" />
     <Compile Include="Bug.cs" />
     <Compile Include="BugHistory.cs" />
+    <Compile Include="BugzillaException.cs" />
     <Compile Include="Comment.cs" />
     <Compile Include="CommentCollection.cs" />
     <Compile Include="BugExceptions.cs" />
