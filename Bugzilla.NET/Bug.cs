@@ -515,13 +515,18 @@ namespace Bugzilla
     /// Updates the number of hours worked on this bug.
     /// </summary>
     /// <param name="hoursWorked">Number of hours worked on the bug.</param>
+    /// <param name="remainingTime">The number of hours left to work on this bug.</param>
     /// <param name="commentText">If set, the text of a comment to add whilst updating the remaining work time.</param>
     /// <param name="privateComment">If adding a comment, whether the comment is private or not. If not set, defaults to public.</param>
-    public void UpdateNumberOfHoursWorked(double hoursWorked, string commentText, bool? privateComment)
+    /// <remarks>If <paramref name="remainingTime"/> is not set, the value of <paramref name="hoursWorked"/> will be deducted
+    /// from the bugs remaining time.</remarks>
+    public void UpdateNumberOfHoursWorked(double hoursWorked, double? remainingTime,
+                                          string commentText, bool? privateComment)
     {
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
       updateParams.TimeWorked = hoursWorked;
+      updateParams.WorkTimeRemaining = remainingTime;
 
       if (!string.IsNullOrEmpty(commentText))
       {
@@ -711,7 +716,99 @@ namespace Bugzilla
         }
       }
     }
-                             
+
+    /// <summary>
+    /// Updates this bug's fields to the values set on the various properties.
+    /// </summary>
+    /// <param name="changeComment">If set, the text of a comment to add at the same time as updating the CC list.</param>
+    /// <param name="changeCommentPrivate">If adding a change comment, indicates whether the comment is private or not.</param>
+    public void Update(string changeComment, bool? changeCommentPrivate)
+    {
+      try
+      {
+        UpdateBugParam updateParams = new UpdateBugParam();
+        updateParams.Ids = new int[] { Id };
+        updateParams.Product = Product;
+        updateParams.AssignedTo = AssignedTo;
+        updateParams.AccessibleToCCList = AccessibleToCCListMembers;
+        updateParams.Component = Component;
+        updateParams.Deadline = Deadline;
+        updateParams.DuplicateOf = DuplicateOf;
+        updateParams.EstimatedResolutionTime = EstimatedResolutionTimeHours;
+        updateParams.OperatingSystem = OperatingSystem;
+        updateParams.Platform = Platform;
+        updateParams.Priority = Priority;
+        updateParams.QAContact = QAContact;
+        updateParams.IsAccessibleByReporter = IsAccessibleByReporter;
+        updateParams.Resolution = Resolution;
+        updateParams.Severity = Severity;
+        updateParams.Status = Status;
+        updateParams.Summary = Summary;
+        updateParams.TargetMilestone = TargetMilestone;
+        updateParams.URL = URL;
+        updateParams.Version = Version;
+        updateParams.Whiteboard = StatusWhiteboard;
+
+        //Set the depends on field to the current list of dependencies
+        updateParams.DependsOnModifications = new XmlRpcStruct();
+        updateParams.DependsOnModifications.Add("set", DependsOn);
+
+        //Set the blocks list to
+        updateParams.BlocksModifications = new XmlRpcStruct();
+        updateParams.BlocksModifications.Add("set", Blocks);
+
+        //Set the list of keywords
+        updateParams.KeywordModifications = new XmlRpcStruct();
+        updateParams.KeywordModifications.Add("set", Keywords);
+        
+        //Add the change comment if specified
+        if (!string.IsNullOrEmpty(changeComment))
+        {
+          updateParams.Comment = new CommentParam();
+          updateParams.Comment.CommentText = changeComment;
+          updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
+        }
+
+        mProxy.UpdateBug(updateParams);
+      }
+      catch (XmlRpcFaultException e)
+      {
+        switch(e.FaultCode)
+        {
+          case 50:
+          case 52:
+          case 54:
+          case 55:
+          case 56:
+          case 112:
+            throw new InvalidBugFieldValueException(e.FaultString);
+
+          case 115:
+            throw new BugEditAccessDeniedException(Id.ToString());
+
+          case 116:
+            throw new CyclicBugDependenciesException(e.FaultString);
+
+          case 118:
+            throw new CyclicBugDuplicateException(e.FaultString);
+
+          case 121:
+          case 122:
+          case 119:
+            throw new InvalidBugResolutionChangeException(e.FaultString);
+
+          case 120:
+            throw new GroupEditAccessDeniedException(e.FaultString);
+
+          case 123:
+            throw new InvalidBugStatusTransitionException(e.FaultString);
+
+          default:
+            throw new ApplicationException(string.Format("Error saving changes to bug. Details: {0}", e.Message));
+        }
+      }
+    }
+
     #region Properties
     
     /// <summary>
@@ -742,7 +839,11 @@ namespace Bugzilla
     /// <summary>
     /// Accesor for the product name.
     /// </summary>
-    public string Product { get { return mBugInfo.Product; } }
+    public string Product 
+    { 
+      get { return mBugInfo.Product; }
+      set { mBugInfo.Product = value; }
+    }
 
     /// <summary>
     /// Accessor for the user name of the person who reported the bug.
@@ -788,22 +889,18 @@ namespace Bugzilla
     public int[] DependsOn
     {
       get { return mBugInfo.DependsOn; }
-      set { mBugInfo.Blocks = value; }
+      set { mBugInfo.DependsOn = value; }
     }
 
     /// <summary>
     /// Accessor for the CC list.
     /// </summary>
-    public string[] CCList
-    {
-      get { return mBugInfo.CCList; }
-      set { mBugInfo.CCList = value; }
-    }
+    public string[] CCList { get { return mBugInfo.CCList; } }
 
     /// <summary>
     /// Whether members of the CC list can access this bug, even if the groups they belong to don't have access.
     /// </summary>
-    public bool IsCCListAccessible
+    public bool AccessibleToCCListMembers
     {
       get { return mBugInfo.IsCCListAccessible; }
       set { mBugInfo.IsCCListAccessible = value; }
@@ -828,9 +925,9 @@ namespace Bugzilla
     }
 
     /// <summary>
-    /// ID of the bug this bug is a duplicate off.
+    /// ID of the bug this bug is a duplicate of.
     /// </summary>
-    public int DuplicateOff
+    public int DuplicateOf
     {
       get { return mBugInfo.DuplicateOf; }
       set { mBugInfo.DuplicateOf = value; }
@@ -839,7 +936,7 @@ namespace Bugzilla
     /// <summary>
     /// Number of hours estimated this bug will take to fix.
     /// </summary>
-    public double EstimatedTime
+    public double EstimatedResolutionTimeHours
     {
       get { return mBugInfo.EstimatedTime; }
       set { mBugInfo.EstimatedTime = value; }
@@ -848,11 +945,7 @@ namespace Bugzilla
     /// <summary>
     /// The names of all groups this bug is in.
     /// </summary>
-    public string[] Groups
-    {
-      get { return mBugInfo.Groups; }
-      set { mBugInfo.Groups = value; }
-    }
+    public string[] Groups { get { return mBugInfo.Groups; } }
 
     /// <summary>
     /// Keywords set on the bug.
@@ -910,15 +1003,6 @@ namespace Bugzilla
     }
 
     /// <summary>
-    /// The number of hours of work remaining until work on this bug is complete.
-    /// </summary>
-    public double RemainingTime
-    {
-      get { return mBugInfo.RemainingTime; }
-      set { mBugInfo.RemainingTime = value; }
-    }
-
-    /// <summary>
     /// The current resolution of the bug, or an empty string if the bug is open.
     /// </summary>
     public string Resolution
@@ -930,11 +1014,7 @@ namespace Bugzilla
     /// <summary>
     /// The URLs in the See Also field on the bug.
     /// </summary>
-    public string[] SeeAlso
-    {
-      get { return mBugInfo.SeeAlso; }
-      set { mBugInfo.SeeAlso = value; }
-    }
+    public string[] SeeAlso { get { return mBugInfo.SeeAlso; } }
 
     /// <summary>
     /// The current severity of the bug.
@@ -993,7 +1073,7 @@ namespace Bugzilla
     /// <summary>
     /// The value of the "status whiteboard" field on the bug.
     /// </summary>
-    public string Whiteboard
+    public string StatusWhiteboard
     {
       get { return mBugInfo.Whiteboard; }
       set { mBugInfo.Whiteboard = value; }

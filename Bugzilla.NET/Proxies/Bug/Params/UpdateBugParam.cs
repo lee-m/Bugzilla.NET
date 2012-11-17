@@ -102,5 +102,154 @@ namespace Bugzilla.Proxies.Bug.Params
     [XmlRpcMember("cc")]
     [XmlRpcMissingMapping(MappingAction.Ignore)]
     public XmlRpcStruct CCListModifications;
+
+    /// <summary>
+    /// The alias of the bug to update.
+    /// </summary>
+    [XmlRpcMember("alias")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public string Alias;
+
+    /// <summary>
+    /// The name of the product the bug is in.
+    /// </summary>
+    [XmlRpcMember("product")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public string Product;
+
+    /// <summary>
+    /// The full login name of the user this bug is assigned to.
+    /// </summary>
+    [XmlRpcMember("assigned_to")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public string AssignedTo;
+
+    /// <summary>
+    /// Set of bug IDs this bug depends on.
+    /// </summary>
+    [XmlRpcMember("depends_on")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public XmlRpcStruct DependsOnModifications;
+
+    /// <summary>
+    /// Set of bug IDs this bug blocks.
+    /// </summary>
+    [XmlRpcMember("blocks")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public XmlRpcStruct BlocksModifications;
+
+    /// <summary>
+    /// Whether or not users in the CC list are allowed to access the bug, even if 
+    /// they aren't in a group that can normally access the bug.
+    /// </summary>
+    [XmlRpcMember("is_cc_accessible")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public bool? AccessibleToCCList;
+
+    /// <summary>
+    /// The component the bug is in.
+    /// </summary>
+    [XmlRpcMember("component")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public string Component;
+
+    /// <summary>
+    /// A date specifying when the bug must be completed by in the format YYYY-MM-DD
+    /// </summary>
+    [XmlRpcMember("deadline")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public string Deadline;
+
+    /// <summary>
+    /// The bug that this bug is a duplicate of.
+    /// </summary>
+    [XmlRpcMember("dupe_of")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public int? DuplicateOf;
+
+    /// <summary>
+    /// The total estimate of time required to fix the bug, in hours
+    /// </summary>
+    [XmlRpcMember("estimated_time")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public double? EstimatedResolutionTime;
+
+    /// <summary>
+    /// The operating system field on the bug.
+    /// </summary>
+    [XmlRpcMember("op_sys")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public string OperatingSystem;
+
+    /// <summary>
+    /// The platform field on the bug.
+    /// </summary>
+    [XmlRpcMember("platform")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public string Platform;
+
+    /// <summary>
+    /// The priority field on the bug.
+    /// </summary>
+    [XmlRpcMember("priority")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public string Priority;
+
+    /// <summary>
+    /// The full login name of the bug's QA Contact.
+    /// </summary>
+    [XmlRpcMember("qa_contact")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public string QAContact;
+
+    /// <summary>
+    /// Whether or not the bug's reporter is allowed to access the bug, even if he or she isn't 
+    /// in a group that can normally access the bug.
+    /// </summary>
+    [XmlRpcMember("is_creator_accessible")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public bool? IsAccessibleByReporter;
+
+    /// <summary>
+    /// The severity field on the bug.
+    /// </summary>
+    [XmlRpcMember("severity")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public string Severity;
+
+    /// <summary>
+    /// The summary field on the bug.
+    /// </summary>
+    [XmlRpcMember("summary")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public string Summary;
+
+    /// <summary>
+    /// The target milestone for the bug.
+    /// </summary>
+    [XmlRpcMember("target_milestone")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public string TargetMilestone;
+
+    /// <summary>
+    /// The URL field on the bug.
+    /// </summary>
+    [XmlRpcMember("url")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public string URL;
+
+    /// <summary>
+    /// The version field on the bug.
+    /// </summary>
+    [XmlRpcMember("version")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public string Version;
+
+    /// <summary>
+    /// Status whiteboard field on the bug.
+    /// </summary>
+    [XmlRpcMember("whiteboard")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public string Whiteboard;
   }
 }

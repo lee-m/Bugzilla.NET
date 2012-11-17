@@ -599,7 +599,7 @@ namespace Bugzilla
             throw new InvalidProductException(e.FaultString);
 
           case 116:
-            throw new CyclicBugDependenciesException();
+            throw new CyclicBugDependenciesException(e.FaultString);
 
           case 120:
             throw new GroupRestrictionDeniedException();
