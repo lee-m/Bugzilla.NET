@@ -283,8 +283,23 @@ namespace Bugzilla
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CyclicBugDependenciesException()
-      : base("One or more of the bugs specied in the blocks or depends on list would create a cyclic dependency.")
+    public CyclicBugDependenciesException(string message) 
+      : base(message)
+    {
+    }
+  }
+
+  /// <summary>
+  /// Thrown when an atrempt is made to mark a bug as a duplicate of another bug which would result in a infinite
+  /// loop of duplicates.
+  /// </summary>
+  public class CyclicBugDuplicateException : ApplicationException
+  {
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    public CyclicBugDuplicateException(string message)
+      : base(message)
     {
     }
   }
@@ -358,6 +373,67 @@ namespace Bugzilla
     /// </summary>
     public SeeAlsoEditAccessDenied()
       : base("Currently logged in user has insufficient security rights to edit the see also field.")
+    {
+    }
+  }
+
+  /// <summary>
+  /// Thrown when an attempt is made to set a bug field to an invalid value.
+  /// </summary>
+  public class InvalidBugFieldValueException : ApplicationException
+  {
+    /// <summary>
+    /// Overloaded constructor to provide message text.
+    /// </summary>
+    /// <param name="message">Message text.</param>
+    public InvalidBugFieldValueException(string message)
+      : base(message)
+    {
+    }
+  }
+
+  /// <summary>
+  /// Thrown when an invalid attempt is made to change a bug's resolution.
+  /// </summary>
+  public class InvalidBugResolutionChangeException : ApplicationException
+  {
+    /// <summary>
+    /// Overloaded constructor to provide message text.
+    /// </summary>
+    /// <param name="message">Message text.</param>
+    public InvalidBugResolutionChangeException(string message)
+      : base(message)
+    {
+    }
+  }
+
+  /// <summary>
+  /// Thrown when an attempt is made to change a bug's status to a new status which is not allowed by the workflow rules.
+  /// </summary>
+  public class InvalidBugStatusTransitionException : ApplicationException
+  {
+    /// <summary>
+    /// Overloaded constructor to provide message text.
+    /// </summary>
+    /// <param name="message">Message text.</param>
+    public InvalidBugStatusTransitionException(string message)
+      : base(message)
+    {
+    }
+  }
+
+  /// <summary>
+  /// Thrown when an attempt is made to change the groups on a bug when the logged in user does not have
+  /// the required security access.
+  /// </summary>
+  public class GroupEditAccessDeniedException : ApplicationException
+  {
+    /// <summary>
+    /// Overloaded constructor to provide message text.
+    /// </summary>
+    /// <param name="message">Message text.</param>
+    public GroupEditAccessDeniedException(string message)
+      : base(message)
     {
     }
   }
