@@ -283,6 +283,7 @@ namespace Bugzilla
     /// <summary>
     /// Default constructor.
     /// </summary>
+    /// <param name="message">Error message from the server containing specific error details.</param>
     public CyclicBugDependenciesException(string message) 
       : base(message)
     {
@@ -298,6 +299,7 @@ namespace Bugzilla
     /// <summary>
     /// Default constructor.
     /// </summary>
+    /// <param name="message">Error message from the server containing specific error details.</param>
     public CyclicBugDuplicateException(string message)
       : base(message)
     {

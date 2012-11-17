@@ -403,22 +403,22 @@ namespace Bugzilla
 
     /// <summary>
     /// Resets the assignee for this bug back to the default for its component.
-    /// <param name="commentText">The text of any comment to add whilst making the changes. May be <code>null</code> or a blank string
-    /// to indicate no comment should be created.</param>
-    /// <param name="privateComment">If adding a comment along with the changes, whether the comment should be private or public.  Defaults
-    /// to a public comment if not set.</param>
     /// </summary>
-    public void ResetAssignedTo(string commentText, bool? privateComment)
+    /// <param name="changeComment">The text of any comment to add whilst making the changes. May be <code>null</code> or a blank string
+    /// to indicate no comment should be created.</param>
+    /// <param name="changeCommentPrivate">>If adding a comment along with the changes, whether the comment should be private or public.  
+    /// Defaults to a public comment if not set.</param>
+    public void ResetAssignedTo(string changeComment, bool? changeCommentPrivate)
     {
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
       updateParams.ResetAssignedTo = true;
 
-      if (!string.IsNullOrEmpty(commentText))
+      if (!string.IsNullOrEmpty(changeComment))
       {
         updateParams.Comment = new CommentParam();
-        updateParams.Comment.CommentText = commentText;
-        updateParams.Comment.IsPrivate = privateComment.GetValueOrDefault();
+        updateParams.Comment.CommentText = changeComment;
+        updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
       }
 
       try
@@ -437,25 +437,25 @@ namespace Bugzilla
         }
       }
     }
-
+ 
     /// <summary>
     /// Resets the QA contact for this bug back to the default for its component.
-    /// <param name="commentText">The text of any comment to add whilst making the changes. May be <code>null</code> or a blank string
-    /// to indicate no comment should be created.</param>
-    /// <param name="privateComment">If adding a comment along with the changes, whether the comment should be private or public. Defaults
-    /// to a public comment if not set.</param>
     /// </summary>
-    public void ResetQAContact(string commentText, bool? privateComment)
+    /// <param name="changeComment">The text of any comment to add whilst making the changes. May be <code>null</code> or a blank string
+    /// to indicate no comment should be created.</param>
+    /// <param name="changeCommentPrivate">>If adding a comment along with the changes, whether the comment should be private or public.  
+    /// Defaults to a public comment if not set.</param>
+    public void ResetQAContact(string changeComment, bool? changeCommentPrivate)
     {
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
       updateParams.ResetQAContact = true;
 
-      if (!string.IsNullOrEmpty(commentText))
+      if (!string.IsNullOrEmpty(changeComment))
       {
         updateParams.Comment = new CommentParam();
-        updateParams.Comment.CommentText = commentText;
-        updateParams.Comment.IsPrivate = privateComment.GetValueOrDefault();
+        updateParams.Comment.CommentText = changeComment;
+        updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
       }
 
       try
@@ -479,19 +479,21 @@ namespace Bugzilla
     /// Sets the number of hours work remaining on the bug.
     /// </summary>
     /// <param name="remainingWorkTime">The amount of work time remaining in hours.</param>
-    /// <param name="commentText">If set, the text of a comment to add at the same time as the remaining work time is updated.</param>
-    /// <param name="privateComment">If adding a comment, indicates whether the comment is private or not. Defaults to false if not set.</param>
-    public void SetNumberOfHoursWorkRemaining(double remainingWorkTime, string commentText, bool? privateComment)
+    /// <param name="changeComment">If set, the text of a comment to add at the same time as the remaining work time is updated.</param>
+    /// <param name="changeCommentPrivate">If adding a comment, indicates whether the comment is private or not. Defaults to false if not set.</param>
+    public void SetNumberOfHoursWorkRemaining(double remainingWorkTime, 
+                                              string changeComment,
+                                              bool? changeCommentPrivate)
     {
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
       updateParams.WorkTimeRemaining = remainingWorkTime;
 
-      if (!string.IsNullOrEmpty(commentText))
+      if (!string.IsNullOrEmpty(changeComment))
       {
         updateParams.Comment = new CommentParam();
-        updateParams.Comment.CommentText = commentText;
-        updateParams.Comment.IsPrivate = privateComment.GetValueOrDefault();
+        updateParams.Comment.CommentText = changeComment;
+        updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
       }
 
       try
@@ -516,23 +518,24 @@ namespace Bugzilla
     /// </summary>
     /// <param name="hoursWorked">Number of hours worked on the bug.</param>
     /// <param name="remainingTime">The number of hours left to work on this bug.</param>
-    /// <param name="commentText">If set, the text of a comment to add whilst updating the remaining work time.</param>
-    /// <param name="privateComment">If adding a comment, whether the comment is private or not. If not set, defaults to public.</param>
+    /// <param name="changeComment">If set, the text of a comment to add whilst updating the remaining work time.</param>
+    /// <param name="changeCommentPrivate">If adding a comment, whether the comment is private or not. If not set, defaults to public.</param>
     /// <remarks>If <paramref name="remainingTime"/> is not set, the value of <paramref name="hoursWorked"/> will be deducted
     /// from the bugs remaining time.</remarks>
     public void UpdateNumberOfHoursWorked(double hoursWorked, double? remainingTime,
-                                          string commentText, bool? privateComment)
+                                          string changeComment,
+                                          bool? changeCommentPrivate)
     {
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
       updateParams.TimeWorked = hoursWorked;
       updateParams.WorkTimeRemaining = remainingTime;
 
-      if (!string.IsNullOrEmpty(commentText))
+      if (!string.IsNullOrEmpty(changeComment))
       {
         updateParams.Comment = new CommentParam();
-        updateParams.Comment.CommentText = commentText;
-        updateParams.Comment.IsPrivate = privateComment.GetValueOrDefault();
+        updateParams.Comment.CommentText = changeComment;
+        updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
       }
 
       try
