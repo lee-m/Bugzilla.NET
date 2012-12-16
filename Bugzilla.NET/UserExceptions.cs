@@ -25,7 +25,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an invalid username or password was specified when attempting to login.
   /// </summary>
-  public class InvalidLoginDetailsException : BugzillaException
+  public sealed class InvalidLoginDetailsException : BugzillaException
   {
     /// <summary>
     /// Default constructor.
@@ -39,7 +39,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an attempt was made to log into a disabled account..
   /// </summary>
-  public class DisabledAccountException : BugzillaException
+  public sealed class DisabledAccountException : BugzillaException
   {
     /// <summary>
     /// Default constructor.
@@ -53,7 +53,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when attempting to login when the user has requested to change their password.
   /// </summary>
-  public class ExpiredPasswordException : BugzillaException
+  public sealed class ExpiredPasswordException : BugzillaException
   {
     /// <summary>
     /// Default constructor.
@@ -67,7 +67,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an attempt is made to create a new user account with an email address that is already used.
   /// </summary>
-  public class DuplicateAccountException : BugzillaException
+  public sealed class DuplicateAccountException : BugzillaException
   {
     /// <summary>
     /// Default constructor.
@@ -82,7 +82,7 @@ namespace Bugzilla
   /// Thrown when attempting to create a new user account when an illegal email address was specified or account
   /// creation has been disabled completely.
   /// </summary>
-  public class IllegalEmailAddressException : BugzillaException
+  public sealed class IllegalEmailAddressException : BugzillaException
   {
     /// <summary>
     /// Default constructor.
@@ -96,7 +96,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when attempting to create a new user account when the specified password was too short.
   /// </summary>
-  public class PasswordTooShortException : BugzillaException
+  public sealed class PasswordTooShortException : BugzillaException
   {
     /// <summary>
     /// Default constructor.
@@ -110,7 +110,7 @@ namespace Bugzilla
   /// <summary>
   /// An invalid login or email address was provided when searching for users.
   /// </summary>
-  public class InvalidLoginOrGroupNameException : BugzillaException
+  public sealed class InvalidLoginOrGroupNameException : BugzillaException
   {
     /// <summary>
     /// Default constructor.
@@ -124,7 +124,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when searching for users where one or more of the requested users is not accessible.
   /// </summary>
-  public class UserAccessDeniedException : BugzillaException
+  public sealed class UserAccessDeniedException : BugzillaException
   {
     /// <summary>
     /// Default constructor.
