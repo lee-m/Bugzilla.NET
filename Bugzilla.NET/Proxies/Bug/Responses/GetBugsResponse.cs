@@ -32,7 +32,7 @@ namespace Bugzilla.Proxies.Bug.Responses
     /// Details of each requested bug.
     /// </summary>
     [XmlRpcMember("bugs")]
-    public BugInfo[] Bugs;
+    public XmlRpcStruct[] Bugs;
 
     /// <summary>
     /// Error details about any requested bugs which could not be returned.

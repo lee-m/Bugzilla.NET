@@ -420,9 +420,9 @@ namespace Bugzilla
     {
       if (fetchOptions == BugFetchOptions.NoFetch)
       {
-        BugInfo info = new BugInfo();
-        info.Id = id;
-
+        XmlRpcStruct info = new XmlRpcStruct();
+        info["id"] = id;
+        
         return new Bug(info, mBugProxy);
       }
       else
@@ -433,7 +433,8 @@ namespace Bugzilla
 
         try
         {
-          return new Bug(mBugProxy.GetBugs(getParams).Bugs.First(), mBugProxy);
+          GetBugsResponse resp = mBugProxy.GetBugs(getParams);
+          return new Bug(resp.Bugs[0], mBugProxy);
         }
         catch (XmlRpcFaultException e)
         {

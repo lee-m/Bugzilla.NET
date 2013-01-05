@@ -41,22 +41,91 @@ namespace Bugzilla
     /// <summary>
     /// Details about this bug.
     /// </summary>
-    private readonly BugInfo mBugInfo;
+    private readonly XmlRpcStruct mBugInfo;
+
+    /// <summary>
+    /// Wrapper around the custom fields to allow accessing them by field name.
+    /// </summary>
+    private readonly BugCustomFields mCustomFields;
 
     /// <summary>
     /// Proxy for updating this bug on the server.
     /// </summary>
     private IBugProxy mProxy;
 
+    #region BugCustomFields
+
+    /// <summary>
+    /// Wrapper around the custom fields for a bug to provide access based on the field name.
+    /// </summary>
+    public class BugCustomFields : IEnumerable<KeyValuePair<string, object>>
+    {
+      /// <summary>
+      /// Field values returned by the remote server for the parent bug.
+      /// </summary>
+      private Dictionary<string, object> mFieldValues;
+
+      /// <summary>
+      /// Constructor to pass in the field values.
+      /// </summary>
+      /// <param name="fieldValues">Field values returned by the remote server.</param>
+      internal BugCustomFields(Dictionary<string, object> fieldValues)
+      {
+        mFieldValues = fieldValues;
+      }
+
+      /// <summary>
+      /// Provides an non-generic IEnumerator instance.
+      /// </summary>
+      /// <returns></returns>
+      IEnumerator IEnumerable.GetEnumerator()
+      {
+        return mFieldValues.GetEnumerator();
+      }
+
+      /// <summary>
+      /// Provides a generic IEnumerator instance.
+      /// </summary>
+      /// <returns></returns>
+      IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
+      {
+        return mFieldValues.GetEnumerator();
+      }
+      /// <summary>
+      /// Accessor for the value of a field based on its name.
+      /// </summary>
+      /// <param name="key">Name of the field to access. Must start with "cf_"</param>
+      /// <returns>The value of the specified field.</returns>
+      /// <exception cref="KeyNotFoundException">No custom field with the specified key was found.</exception>
+      public object this[string key]
+      {
+        get { return mFieldValues[key]; }
+        set { mFieldValues[key] = value; }
+      }
+    }
+
+    #endregion
+
     /// <summary>
     /// Creates a instance with the specified bug details.
     /// </summary>
     /// <param name="info">Bug details</param>
     /// <param name="proxy">Proxy for updating the bug.</param>
-    internal Bug(BugInfo info, IBugProxy proxy)
+    internal Bug(XmlRpcStruct info, IBugProxy proxy)
     {
       mBugInfo = info;
       mProxy = proxy;
+
+      //Strip out the custom fields
+      Dictionary<string, object> customFields = new Dictionary<string,object>();
+
+      foreach (string key in info.Keys)
+      {
+        if (key.StartsWith("cf_", StringComparison.InvariantCultureIgnoreCase))
+          customFields.Add(key, info[key]);
+      }
+
+      mCustomFields = new BugCustomFields(customFields);
     }
 
     /// <summary>
@@ -851,69 +920,89 @@ namespace Bugzilla
       }
     }
 
+    #region Private Methods
+
+    /// <summary>
+    /// Gets the value for a field as it's nullable type equivalent.
+    /// </summary>
+    /// <typeparam name="T">The data type of the field.</typeparam>
+    /// <param name="fieldKey">Key for the field.</param>
+    /// <returns><code>null</code> if the field does not have a value, otherwise the field value wrapped in a nullable type.</returns>
+    private T? GetValueTypeFieldValue<T>(string fieldKey) where T : struct
+    {
+      object val = mBugInfo[fieldKey];
+
+      if (val == null)
+        return null;
+
+      return new T?((T)mBugInfo[fieldKey]);
+    }
+
+    #endregion
+
     #region Properties
-    
+
     /// <summary>
     /// Accessor for the alias.
     /// </summary>
-    public string Alias { get { return mBugInfo.Alias; } }
+    public string Alias { get { return (string)mBugInfo["alias"]; } }
 
     /// <summary>
     /// Accessor for the classification.
     /// </summary>
-    public string Classification { get { return mBugInfo.Classification; } }
+    public string Classification { get { return (string)mBugInfo["classification"]; } }
 
     /// <summary>
     /// Accessor for the id.
     /// </summary>
-    public int Id { get { return mBugInfo.Id; } }
+    public int Id { get { return (int)mBugInfo["id"]; } }
 
     /// <summary>
     /// Accessor for the bug's creation date.
     /// </summary>
-    public DateTime CreationDate { get { return mBugInfo.CreationTime; } }
+    public DateTime CreationDate { get { return (DateTime)mBugInfo["creation_time"]; } }
 
     /// <summary>
     /// Accessor for the update token.
     /// </summary>
-    public string UpdateToken { get { return mBugInfo.UpdateToken; } }
+    public string UpdateToken { get { return (string)mBugInfo["update_token"]; } }
 
     /// <summary>
     /// Accesor for the product name.
     /// </summary>
     public string Product 
-    { 
-      get { return mBugInfo.Product; }
-      set { mBugInfo.Product = value; }
+    {
+      get { return (string)mBugInfo["product"]; }
+      set { mBugInfo["product"] = value; }
     }
 
     /// <summary>
     /// Accessor for the user name of the person who reported the bug.
     /// </summary>
-    public string ReportedBy { get { return mBugInfo.ReportedBy; } }
+    public string ReportedBy { get { return (string)mBugInfo["creator"]; } }
 
     /// <summary>
     /// Whether the bug is confirmed or not.
     /// </summary>
-    public bool IsConfirmed { get { return mBugInfo.IsConfirmed; } }
+    public bool IsConfirmed { get { return (bool)mBugInfo["is_confirmed"]; } }
 
     /// <summary>
     /// Whether the bug is open or not.
     /// </summary>
-    public bool IsOpen { get { return mBugInfo.IsOpen; } }
+    public bool IsOpen { get { return (bool)mBugInfo["is_open"]; } }
 
     /// <summary>
     /// Date/time of the last change to this bug.
     /// </summary>
-    public DateTime LastChangeTime { get { return mBugInfo.LastChangeTime; } }
+    public DateTime LastChangeTime { get { return (DateTime)mBugInfo["last_change_time"]; } }
 
     /// <summary>
     /// Gets/sets the full login name of the person this bug is assigned to.
     /// </summary>
     public string AssignedTo
     {
-      get { return mBugInfo.AssignedTo; }
-      set { mBugInfo.AssignedTo = value; }
+      get { return (string)mBugInfo["assigned_to"]; }
+      set { mBugInfo["assigned_to"] = value; }
     }
 
     /// <summary>
@@ -921,8 +1010,12 @@ namespace Bugzilla
     /// </summary>
     public int[] Blocks
     {
-      get { return mBugInfo.Blocks; }
-      set { mBugInfo.Blocks = value; }
+      get 
+      {
+        Array arr = (Array)mBugInfo["blocks"];
+        return arr.OfType<int>().ToArray();
+      }
+      set { mBugInfo["blocks"] = value; }
     }
 
     /// <summary>
@@ -930,22 +1023,37 @@ namespace Bugzilla
     /// </summary>
     public int[] DependsOn
     {
-      get { return mBugInfo.DependsOn; }
-      set { mBugInfo.DependsOn = value; }
+      get 
+      {
+        Array arr = (Array)mBugInfo["depends_on"];
+        return arr.OfType<int>().ToArray();
+      }
+      set { mBugInfo["depends_on"] = value; }
     }
 
     /// <summary>
     /// Accessor for the CC list.
     /// </summary>
-    public string[] CCList { get { return mBugInfo.CCList; } }
+    public string[] CCList 
+    { 
+      get 
+      {
+        Array arr = (Array)mBugInfo["cc"];
+        return arr.OfType<string>().ToArray();
+      } 
+    }
 
     /// <summary>
     /// Whether members of the CC list can access this bug, even if the groups they belong to don't have access.
     /// </summary>
     public bool AccessibleToCCListMembers
     {
-      get { return mBugInfo.IsCCListAccessible; }
-      set { mBugInfo.IsCCListAccessible = value; }
+      get 
+      {
+        object val = mBugInfo["is_cc_accessible"];
+        return val == null ? false : (bool)val;
+      }
+      set { mBugInfo["is_cc_accessible"] = value; }
     }
 
     /// <summary>
@@ -953,8 +1061,8 @@ namespace Bugzilla
     /// </summary>
     public string Component
     {
-      get { return mBugInfo.Component; }
-      set { mBugInfo.Component = value; }
+      get { return (string)mBugInfo["component"]; }
+      set { mBugInfo["component"] = value; }
     }
 
     /// <summary>
@@ -962,40 +1070,51 @@ namespace Bugzilla
     /// </summary>
     public string Deadline
     {
-      get { return mBugInfo.Deadline; }
-      set { mBugInfo.Deadline = value; }
+      get { return (string)mBugInfo["deadline"]; }
+      set { mBugInfo["deadline"] = value; }
     }
 
     /// <summary>
     /// ID of the bug this bug is a duplicate of.
     /// </summary>
-    public int DuplicateOf
+    public int? DuplicateOf
     {
-      get { return mBugInfo.DuplicateOf; }
-      set { mBugInfo.DuplicateOf = value; }
+      get { return GetValueTypeFieldValue<int>("dupe_of"); }
+      set { mBugInfo["dupe_of"] = value; }
     }
 
     /// <summary>
     /// Number of hours estimated this bug will take to fix.
     /// </summary>
-    public double EstimatedResolutionTimeHours
+    public double? EstimatedResolutionTimeHours
     {
-      get { return mBugInfo.EstimatedTime; }
-      set { mBugInfo.EstimatedTime = value; }
+      get { return GetValueTypeFieldValue<double>("estimated_time"); }
+      set { mBugInfo["estimated_time"] = value; }
     }
 
     /// <summary>
     /// The names of all groups this bug is in.
     /// </summary>
-    public string[] Groups { get { return mBugInfo.Groups; } }
+    public string[] Groups 
+    { 
+      get 
+      {
+        Array arr = (Array)mBugInfo["groups"];
+        return arr.OfType<string>().ToArray();
+      } 
+    }
 
     /// <summary>
     /// Keywords set on the bug.
     /// </summary>
     public string[] Keywords
     {
-      get { return mBugInfo.Keywords; }
-      set { mBugInfo.Keywords = value; }
+      get 
+      {
+        Array arr = (Array)mBugInfo["keywords"];
+        return arr.OfType<string>().ToArray();
+      }
+      set { mBugInfo["keywords"] = value; }
     }
 
     /// <summary>
@@ -1003,8 +1122,8 @@ namespace Bugzilla
     /// </summary>
     public string OperatingSystem
     {
-      get { return mBugInfo.OperatingSystem; }
-      set { mBugInfo.OperatingSystem = value; }
+      get { return (string)mBugInfo["op_sys"]; }
+      set { mBugInfo["op_sys"] = value; }
     }
 
     /// <summary>
@@ -1012,8 +1131,8 @@ namespace Bugzilla
     /// </summary>
     public string Platform
     {
-      get { return mBugInfo.Platform; }
-      set { mBugInfo.Platform = value; }
+      get { return (string)mBugInfo["platform"]; }
+      set { mBugInfo["platform"] = value; }
     }
 
     /// <summary>
@@ -1021,8 +1140,8 @@ namespace Bugzilla
     /// </summary>
     public string Priority
     {
-      get { return mBugInfo.Priority; }
-      set { mBugInfo.Priority = value; }
+      get { return (string)mBugInfo["priority"]; }
+      set { mBugInfo["priority"] = value; }
     }
 
     /// <summary>
@@ -1030,8 +1149,8 @@ namespace Bugzilla
     /// </summary>
     public string QAContact
     {
-      get { return mBugInfo.QAContact; }
-      set { mBugInfo.QAContact = value; }
+      get { return (string)mBugInfo["qa_contact"]; }
+      set { mBugInfo["qa_contact"] = value; }
     }
 
     /// <summary>
@@ -1040,8 +1159,12 @@ namespace Bugzilla
     /// </summary>
     public bool IsAccessibleByReporter
     {
-      get { return mBugInfo.IsAccessibleByReporter; }
-      set { mBugInfo.IsAccessibleByReporter = value; }
+      get 
+      {
+        object val = mBugInfo["is_creator_accessible"];
+        return val == null ? false : (bool)val;
+      }
+      set { mBugInfo["is_creator_accessible"] = value; }
     }
 
     /// <summary>
@@ -1049,22 +1172,29 @@ namespace Bugzilla
     /// </summary>
     public string Resolution
     {
-      get { return mBugInfo.Resolution; }
-      set { mBugInfo.Resolution = value; }
+      get { return (string)mBugInfo["resolution"]; }
+      set { mBugInfo["resolution"] = value; }
     }
 
     /// <summary>
     /// The URLs in the See Also field on the bug.
     /// </summary>
-    public string[] SeeAlso { get { return mBugInfo.SeeAlso; } }
+    public string[] SeeAlso 
+    { 
+      get 
+      {
+        Array arr = (Array)mBugInfo["see_also"];
+        return arr.OfType<string>().ToArray();
+      } 
+    }
 
     /// <summary>
     /// The current severity of the bug.
     /// </summary>
     public string Severity
     {
-      get { return mBugInfo.Severity; }
-      set { mBugInfo.Severity = value; }
+      get { return (string)mBugInfo["severity"]; }
+      set { mBugInfo["severity"] = value; }
     }
 
     /// <summary>
@@ -1072,8 +1202,8 @@ namespace Bugzilla
     /// </summary>
     public string Status
     {
-      get { return mBugInfo.Status; }
-      set { mBugInfo.Status = value; }
+      get { return (string)mBugInfo["status"]; }
+      set { mBugInfo["status"] = value; }
     }
 
     /// <summary>
@@ -1081,8 +1211,8 @@ namespace Bugzilla
     /// </summary>
     public string Summary
     {
-      get { return mBugInfo.Summary; }
-      set { mBugInfo.Summary = value; }
+      get { return (string)mBugInfo["summary"]; }
+      set { mBugInfo["summary"] = value; }
     }
 
     /// <summary>
@@ -1090,8 +1220,8 @@ namespace Bugzilla
     /// </summary>
     public string TargetMilestone
     {
-      get { return mBugInfo.TargetMilestone; }
-      set { mBugInfo.TargetMilestone = value; }
+      get { return (string)mBugInfo["target_milestone"]; }
+      set { mBugInfo["target_milestone"] = value; }
     }
 
     /// <summary>
@@ -1099,8 +1229,8 @@ namespace Bugzilla
     /// </summary>
     public string URL
     {
-      get { return mBugInfo.Url; }
-      set { mBugInfo.Url = value; }
+      get { return (string)mBugInfo["url"]; }
+      set { mBugInfo["url"] = value; }
     }
 
     /// <summary>
@@ -1108,8 +1238,8 @@ namespace Bugzilla
     /// </summary>
     public string Version
     {
-      get { return mBugInfo.Version; }
-      set { mBugInfo.Version = value; }
+      get { return (string)mBugInfo["version"]; }
+      set { mBugInfo["version"] = value; }
     }
 
     /// <summary>
@@ -1117,11 +1247,18 @@ namespace Bugzilla
     /// </summary>
     public string StatusWhiteboard
     {
-      get { return mBugInfo.Whiteboard; }
-      set { mBugInfo.Whiteboard = value; }
+      get { return (string)mBugInfo["whiteboard"]; }
+      set { mBugInfo["whiteboard"] = value; }
+    }
+
+    /// <summary>
+    /// Accessor for the custom fields for this bug.
+    /// </summary>
+    public BugCustomFields CustomFields
+    {
+      get { return mCustomFields; }
     }
 
     #endregion
-
   }
 }
