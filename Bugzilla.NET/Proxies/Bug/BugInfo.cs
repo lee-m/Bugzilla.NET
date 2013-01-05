@@ -93,13 +93,13 @@ namespace Bugzilla.Proxies.Bug.Params
     /// The bug ID of the bug that this bug is a duplicate of. If this bug isn't a duplicate of any bug, this will be null.
     /// </summary>
     [XmlRpcMember("dupe_of")]
-    public int DuplicateOf;
+    public int? DuplicateOf;
 
     /// <summary>
     /// The number of hours that it was estimated that this bug would take.
     /// </summary>
     [XmlRpcMember("estimated_time")]
-    public double EstimatedTime;
+    public double? EstimatedTime;
 
     /// <summary>
     /// The names of all the groups that this bug is in.
