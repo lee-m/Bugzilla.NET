@@ -5,43 +5,61 @@
   <MIMEType type="application/atomcat+xml" extension="atomcat" />
   <MIMEType type="application/atomsvc+xml" extension="atomsvc" />
   <MIMEType type="application/ccxml+xml" extension="ccxml" />
+  <MIMEType type="application/cdmi-capability" extension="cdmia" />
+  <MIMEType type="application/cdmi-container" extension="cdmic" />
+  <MIMEType type="application/cdmi-domain" extension="cdmid" />
+  <MIMEType type="application/cdmi-object" extension="cdmio" />
+  <MIMEType type="application/cdmi-queue" extension="cdmiq" />
   <MIMEType type="application/cu-seeme" extension="cu" />
   <MIMEType type="application/davmount+xml" extension="davmount" />
+  <MIMEType type="application/docbook+xml" extension="dbk" />
   <MIMEType type="application/dssc+der" extension="dssc" />
   <MIMEType type="application/dssc+xml" extension="xdssc" />
   <MIMEType type="application/ecmascript" extension="ecma" />
   <MIMEType type="application/emma+xml" extension="emma" />
   <MIMEType type="application/epub+zip" extension="epub" />
+  <MIMEType type="application/exi" extension="exi" />
   <MIMEType type="application/font-tdpfr" extension="pfr" />
+  <MIMEType type="application/gml+xml" extension="gml" />
+  <MIMEType type="application/gpx+xml" extension="gpx" />
+  <MIMEType type="application/gxf" extension="gxf" />
   <MIMEType type="application/hyperstudio" extension="stk" />
+  <MIMEType type="application/inkml+xml" extension="ink" />
+  <MIMEType type="application/inkml+xml" extension="inkml" />
   <MIMEType type="application/ipfix" extension="ipfix" />
   <MIMEType type="application/java-archive" extension="jar" />
   <MIMEType type="application/java-serialized-object" extension="ser" />
   <MIMEType type="application/java-vm" extension="class" />
   <MIMEType type="application/javascript" extension="js" />
   <MIMEType type="application/json" extension="json" />
+  <MIMEType type="application/jsonml+json" extension="jsonml" />
   <MIMEType type="application/lost+xml" extension="lostxml" />
   <MIMEType type="application/mac-binhex40" extension="hqx" />
   <MIMEType type="application/mac-compactpro" extension="cpt" />
+  <MIMEType type="application/mads+xml" extension="mads" />
   <MIMEType type="application/marc" extension="mrc" />
+  <MIMEType type="application/marcxml+xml" extension="mrcx" />
   <MIMEType type="application/mathematica" extension="ma" />
   <MIMEType type="application/mathematica" extension="nb" />
   <MIMEType type="application/mathematica" extension="mb" />
   <MIMEType type="application/mathml+xml" extension="mathml" />
   <MIMEType type="application/mbox" extension="mbox" />
   <MIMEType type="application/mediaservercontrol+xml" extension="mscml" />
+  <MIMEType type="application/metalink+xml" extension="metalink" />
+  <MIMEType type="application/metalink4+xml" extension="meta4" />
+  <MIMEType type="application/mets+xml" extension="mets" />
+  <MIMEType type="application/mods+xml" extension="mods" />
+  <MIMEType type="application/mp21" extension="m21" />
+  <MIMEType type="application/mp21" extension="mp21" />
   <MIMEType type="application/mp4" extension="mp4s" />
   <MIMEType type="application/msword" extension="doc" />
   <MIMEType type="application/msword" extension="dot" />
   <MIMEType type="application/mxf" extension="mxf" />
   <MIMEType type="application/octet-stream" extension="bin" />
   <MIMEType type="application/octet-stream" extension="dms" />
-  <MIMEType type="application/octet-stream" extension="lha" />
   <MIMEType type="application/octet-stream" extension="lrf" />
-  <MIMEType type="application/octet-stream" extension="lzh" />
+  <MIMEType type="application/octet-stream" extension="mar" />
   <MIMEType type="application/octet-stream" extension="so" />
-  <MIMEType type="application/octet-stream" extension="iso" />
-  <MIMEType type="application/octet-stream" extension="dmg" />
   <MIMEType type="application/octet-stream" extension="dist" />
   <MIMEType type="application/octet-stream" extension="distz" />
   <MIMEType type="application/octet-stream" extension="pkg" />
@@ -52,10 +70,12 @@
   <MIMEType type="application/oda" extension="oda" />
   <MIMEType type="application/oebps-package+xml" extension="opf" />
   <MIMEType type="application/ogg" extension="ogx" />
+  <MIMEType type="application/omdoc+xml" extension="omdoc" />
   <MIMEType type="application/onenote" extension="onetoc" />
   <MIMEType type="application/onenote" extension="onetoc2" />
   <MIMEType type="application/onenote" extension="onetmp" />
   <MIMEType type="application/onenote" extension="onepkg" />
+  <MIMEType type="application/oxps" extension="oxps" />
   <MIMEType type="application/patch-ops-error+xml" extension="xer" />
   <MIMEType type="application/pdf" extension="pdf" />
   <MIMEType type="application/pgp-encrypted" extension="pgp" />
@@ -66,6 +86,8 @@
   <MIMEType type="application/pkcs7-mime" extension="p7m" />
   <MIMEType type="application/pkcs7-mime" extension="p7c" />
   <MIMEType type="application/pkcs7-signature" extension="p7s" />
+  <MIMEType type="application/pkcs8" extension="p8" />
+  <MIMEType type="application/pkix-attr-cert" extension="ac" />
   <MIMEType type="application/pkix-cert" extension="cer" />
   <MIMEType type="application/pkix-crl" extension="crl" />
   <MIMEType type="application/pkix-pkipath" extension="pkipath" />
@@ -75,12 +97,16 @@
   <MIMEType type="application/postscript" extension="eps" />
   <MIMEType type="application/postscript" extension="ps" />
   <MIMEType type="application/prs.cww" extension="cww" />
+  <MIMEType type="application/pskc+xml" extension="pskcxml" />
   <MIMEType type="application/rdf+xml" extension="rdf" />
   <MIMEType type="application/reginfo+xml" extension="rif" />
   <MIMEType type="application/relax-ng-compact-syntax" extension="rnc" />
   <MIMEType type="application/resource-lists+xml" extension="rl" />
   <MIMEType type="application/resource-lists-diff+xml" extension="rld" />
   <MIMEType type="application/rls-services+xml" extension="rs" />
+  <MIMEType type="application/rpki-ghostbusters" extension="gbr" />
+  <MIMEType type="application/rpki-manifest" extension="mft" />
+  <MIMEType type="application/rpki-roa" extension="roa" />
   <MIMEType type="application/rsd+xml" extension="rsd" />
   <MIMEType type="application/rss+xml" extension="rss" />
   <MIMEType type="application/rtf" extension="rtf" />
@@ -99,7 +125,13 @@
   <MIMEType type="application/sparql-results+xml" extension="srx" />
   <MIMEType type="application/srgs" extension="gram" />
   <MIMEType type="application/srgs+xml" extension="grxml" />
+  <MIMEType type="application/sru+xml" extension="sru" />
+  <MIMEType type="application/ssdl+xml" extension="ssdl" />
   <MIMEType type="application/ssml+xml" extension="ssml" />
+  <MIMEType type="application/tei+xml" extension="tei" />
+  <MIMEType type="application/tei+xml" extension="teicorpus" />
+  <MIMEType type="application/thraud+xml" extension="tfi" />
+  <MIMEType type="application/timestamped-data" extension="tsd" />
   <MIMEType type="application/vnd.3gpp.pic-bw-large" extension="plb" />
   <MIMEType type="application/vnd.3gpp.pic-bw-small" extension="psb" />
   <MIMEType type="application/vnd.3gpp.pic-bw-var" extension="pvb" />
@@ -111,8 +143,12 @@
   <MIMEType type="application/vnd.acucorp" extension="atc" />
   <MIMEType type="application/vnd.acucorp" extension="acutc" />
   <MIMEType type="application/vnd.adobe.air-application-installer-package+zip" extension="air" />
+  <MIMEType type="application/vnd.adobe.formscentral.fcdt" extension="fcdt" />
+  <MIMEType type="application/vnd.adobe.fxp" extension="fxp" />
+  <MIMEType type="application/vnd.adobe.fxp" extension="fxpl" />
   <MIMEType type="application/vnd.adobe.xdp+xml" extension="xdp" />
   <MIMEType type="application/vnd.adobe.xfdf" extension="xfdf" />
+  <MIMEType type="application/vnd.ahead.space" extension="ahead" />
   <MIMEType type="application/vnd.airzip.filesecure.azf" extension="azf" />
   <MIMEType type="application/vnd.airzip.filesecure.azs" extension="azs" />
   <MIMEType type="application/vnd.amazon.ebook" extension="azw" />
@@ -125,6 +161,7 @@
   <MIMEType type="application/vnd.apple.installer+xml" extension="mpkg" />
   <MIMEType type="application/vnd.apple.mpegurl" extension="m3u8" />
   <MIMEType type="application/vnd.aristanetworks.swi" extension="swi" />
+  <MIMEType type="application/vnd.astraea-software.iota" extension="iota" />
   <MIMEType type="application/vnd.audiograph" extension="aep" />
   <MIMEType type="application/vnd.blueice.multipass" extension="mpm" />
   <MIMEType type="application/vnd.bmi" extension="bmi" />
@@ -139,6 +176,8 @@
   <MIMEType type="application/vnd.clonk.c4group" extension="c4f" />
   <MIMEType type="application/vnd.clonk.c4group" extension="c4p" />
   <MIMEType type="application/vnd.clonk.c4group" extension="c4u" />
+  <MIMEType type="application/vnd.cluetrust.cartomobile-config" extension="c11amc" />
+  <MIMEType type="application/vnd.cluetrust.cartomobile-config-pkg" extension="c11amz" />
   <MIMEType type="application/vnd.commonspace" extension="csp" />
   <MIMEType type="application/vnd.contact.cmsg" extension="cdbcmsg" />
   <MIMEType type="application/vnd.cosmocaller" extension="cmc" />
@@ -152,12 +191,26 @@
   <MIMEType type="application/vnd.cups-ppd" extension="ppd" />
   <MIMEType type="application/vnd.curl.car" extension="car" />
   <MIMEType type="application/vnd.curl.pcurl" extension="pcurl" />
+  <MIMEType type="application/vnd.dart" extension="dart" />
   <MIMEType type="application/vnd.data-vision.rdz" extension="rdz" />
+  <MIMEType type="application/vnd.dece.data" extension="uvf" />
+  <MIMEType type="application/vnd.dece.data" extension="uvvf" />
+  <MIMEType type="application/vnd.dece.data" extension="uvd" />
+  <MIMEType type="application/vnd.dece.data" extension="uvvd" />
+  <MIMEType type="application/vnd.dece.ttml+xml" extension="uvt" />
+  <MIMEType type="application/vnd.dece.ttml+xml" extension="uvvt" />
+  <MIMEType type="application/vnd.dece.unspecified" extension="uvx" />
+  <MIMEType type="application/vnd.dece.unspecified" extension="uvvx" />
+  <MIMEType type="application/vnd.dece.zip" extension="uvz" />
+  <MIMEType type="application/vnd.dece.zip" extension="uvvz" />
   <MIMEType type="application/vnd.denovo.fcselayout-link" extension="fe_launch" />
   <MIMEType type="application/vnd.dna" extension="dna" />
   <MIMEType type="application/vnd.dolby.mlp" extension="mlp" />
   <MIMEType type="application/vnd.dpgraph" extension="dpg" />
   <MIMEType type="application/vnd.dreamfactory" extension="dfac" />
+  <MIMEType type="application/vnd.ds-keypoint" extension="kpxx" />
+  <MIMEType type="application/vnd.dvb.ait" extension="ait" />
+  <MIMEType type="application/vnd.dvb.service" extension="svc" />
   <MIMEType type="application/vnd.dynageo" extension="geo" />
   <MIMEType type="application/vnd.ecowin.chart" extension="mag" />
   <MIMEType type="application/vnd.enliven" extension="nml" />
@@ -212,6 +265,7 @@
   <MIMEType type="application/vnd.groove-tool-message" extension="gtm" />
   <MIMEType type="application/vnd.groove-tool-template" extension="tpl" />
   <MIMEType type="application/vnd.groove-vcard" extension="vcg" />
+  <MIMEType type="application/vnd.hal+xml" extension="hal" />
   <MIMEType type="application/vnd.handheld-entertainment+xml" extension="zmm" />
   <MIMEType type="application/vnd.hbci" extension="hbci" />
   <MIMEType type="application/vnd.hhe.lesson-player" extension="les" />
@@ -222,7 +276,6 @@
   <MIMEType type="application/vnd.hp-pcl" extension="pcl" />
   <MIMEType type="application/vnd.hp-pclxl" extension="pclxl" />
   <MIMEType type="application/vnd.hydrostatix.sof-data" extension="sfd-hdstx" />
-  <MIMEType type="application/vnd.hzn-3d-crossword" extension="x3d" />
   <MIMEType type="application/vnd.ibm.minipay" extension="mpy" />
   <MIMEType type="application/vnd.ibm.modcap" extension="afp" />
   <MIMEType type="application/vnd.ibm.modcap" extension="listafp" />
@@ -234,13 +287,16 @@
   <MIMEType type="application/vnd.igloader" extension="igl" />
   <MIMEType type="application/vnd.immervision-ivp" extension="ivp" />
   <MIMEType type="application/vnd.immervision-ivu" extension="ivu" />
+  <MIMEType type="application/vnd.insors.igm" extension="igm" />
   <MIMEType type="application/vnd.intercon.formnet" extension="xpw" />
   <MIMEType type="application/vnd.intercon.formnet" extension="xpx" />
+  <MIMEType type="application/vnd.intergeo" extension="i2g" />
   <MIMEType type="application/vnd.intu.qbo" extension="qbo" />
   <MIMEType type="application/vnd.intu.qfx" extension="qfx" />
   <MIMEType type="application/vnd.ipunplugged.rcprofile" extension="rcprofile" />
   <MIMEType type="application/vnd.irepository.package+xml" extension="irp" />
   <MIMEType type="application/vnd.is-xpr" extension="xpr" />
+  <MIMEType type="application/vnd.isac.fcs" extension="fcs" />
   <MIMEType type="application/vnd.jam" extension="jam" />
   <MIMEType type="application/vnd.jcp.javame.midlet-rms" extension="rms" />
   <MIMEType type="application/vnd.jisp" extension="jisp" />
@@ -266,6 +322,7 @@
   <MIMEType type="application/vnd.koan" extension="skt" />
   <MIMEType type="application/vnd.koan" extension="skm" />
   <MIMEType type="application/vnd.kodak-descriptor" extension="sse" />
+  <MIMEType type="application/vnd.las.las+xml" extension="lasxml" />
   <MIMEType type="application/vnd.llamagraphics.life-balance.desktop" extension="lbd" />
   <MIMEType type="application/vnd.llamagraphics.life-balance.exchange+xml" extension="lbe" />
   <MIMEType type="application/vnd.lotus-1-2-3" extension="123" />
@@ -310,6 +367,7 @@
   <MIMEType type="application/vnd.ms-htmlhelp" extension="chm" />
   <MIMEType type="application/vnd.ms-ims" extension="ims" />
   <MIMEType type="application/vnd.ms-lrm" extension="lrm" />
+  <MIMEType type="application/vnd.ms-officetheme" extension="thmx" />
   <MIMEType type="application/vnd.ms-pki.seccat" extension="cat" />
   <MIMEType type="application/vnd.ms-pki.stl" extension="stl" />
   <MIMEType type="application/vnd.ms-powerpoint" extension="ppt" />
@@ -333,7 +391,10 @@
   <MIMEType type="application/vnd.mseq" extension="mseq" />
   <MIMEType type="application/vnd.musician" extension="mus" />
   <MIMEType type="application/vnd.muvee.style" extension="msty" />
+  <MIMEType type="application/vnd.mynfc" extension="taglet" />
   <MIMEType type="application/vnd.neurolanguage.nlu" extension="nlu" />
+  <MIMEType type="application/vnd.nitf" extension="ntf" />
+  <MIMEType type="application/vnd.nitf" extension="nitf" />
   <MIMEType type="application/vnd.noblenet-directory" extension="nnd" />
   <MIMEType type="application/vnd.noblenet-sealer" extension="nns" />
   <MIMEType type="application/vnd.noblenet-web" extension="nnw" />
@@ -358,7 +419,7 @@
   <MIMEType type="application/vnd.oasis.opendocument.spreadsheet" extension="ods" />
   <MIMEType type="application/vnd.oasis.opendocument.spreadsheet-template" extension="ots" />
   <MIMEType type="application/vnd.oasis.opendocument.text" extension="odt" />
-  <MIMEType type="application/vnd.oasis.opendocument.text-master" extension="otm" />
+  <MIMEType type="application/vnd.oasis.opendocument.text-master" extension="odm" />
   <MIMEType type="application/vnd.oasis.opendocument.text-template" extension="ott" />
   <MIMEType type="application/vnd.oasis.opendocument.text-web" extension="oth" />
   <MIMEType type="application/vnd.olpc-sugar" extension="xo" />
@@ -372,7 +433,9 @@
   <MIMEType type="application/vnd.openxmlformats-officedocument.spreadsheetml.template" extension="xltx" />
   <MIMEType type="application/vnd.openxmlformats-officedocument.wordprocessingml.document" extension="docx" />
   <MIMEType type="application/vnd.openxmlformats-officedocument.wordprocessingml.template" extension="dotx" />
+  <MIMEType type="application/vnd.osgeo.mapguide.package" extension="mgp" />
   <MIMEType type="application/vnd.osgi.dp" extension="dp" />
+  <MIMEType type="application/vnd.osgi.subsystem" extension="esa" />
   <MIMEType type="application/vnd.palm" extension="pdb" />
   <MIMEType type="application/vnd.palm" extension="pqa" />
   <MIMEType type="application/vnd.palm" extension="oprc" />
@@ -396,8 +459,10 @@
   <MIMEType type="application/vnd.realvnc.bed" extension="bed" />
   <MIMEType type="application/vnd.recordare.musicxml" extension="mxl" />
   <MIMEType type="application/vnd.recordare.musicxml+xml" extension="musicxml" />
+  <MIMEType type="application/vnd.rig.cryptonote" extension="cryptonote" />
   <MIMEType type="application/vnd.rim.cod" extension="cod" />
   <MIMEType type="application/vnd.rn-realmedia" extension="rm" />
+  <MIMEType type="application/vnd.rn-realmedia-vbr" extension="rmvb" />
   <MIMEType type="application/vnd.route66.link66+xml" extension="link66" />
   <MIMEType type="application/vnd.sailingtracker.track" extension="st" />
   <MIMEType type="application/vnd.seemail" extension="see" />
@@ -423,6 +488,8 @@
   <MIMEType type="application/vnd.stardivision.writer" extension="sdw" />
   <MIMEType type="application/vnd.stardivision.writer" extension="vor" />
   <MIMEType type="application/vnd.stardivision.writer-global" extension="sgl" />
+  <MIMEType type="application/vnd.stepmania.package" extension="smzip" />
+  <MIMEType type="application/vnd.stepmania.stepchart" extension="sm" />
   <MIMEType type="application/vnd.sun.xml.calc" extension="sxc" />
   <MIMEType type="application/vnd.sun.xml.calc.template" extension="stc" />
   <MIMEType type="application/vnd.sun.xml.draw" extension="sxd" />
@@ -442,6 +509,9 @@
   <MIMEType type="application/vnd.syncml.dm+wbxml" extension="bdm" />
   <MIMEType type="application/vnd.syncml.dm+xml" extension="xdm" />
   <MIMEType type="application/vnd.tao.intent-module-archive" extension="tao" />
+  <MIMEType type="application/vnd.tcpdump.pcap" extension="pcap" />
+  <MIMEType type="application/vnd.tcpdump.pcap" extension="cap" />
+  <MIMEType type="application/vnd.tcpdump.pcap" extension="dmp" />
   <MIMEType type="application/vnd.tmobile-livetv" extension="tmo" />
   <MIMEType type="application/vnd.trid.tpt" extension="tpt" />
   <MIMEType type="application/vnd.triscape.mxs" extension="mxs" />
@@ -481,11 +551,14 @@
   <MIMEType type="application/vnd.zul" extension="zirz" />
   <MIMEType type="application/vnd.zzazz.deck+xml" extension="zaz" />
   <MIMEType type="application/voicexml+xml" extension="vxml" />
+  <MIMEType type="application/widget" extension="wgt" />
   <MIMEType type="application/winhlp" extension="hlp" />
   <MIMEType type="application/wsdl+xml" extension="wsdl" />
   <MIMEType type="application/wspolicy+xml" extension="wspolicy" />
+  <MIMEType type="application/x-7z-compressed" extension="7z" />
   <MIMEType type="application/x-abiword" extension="abw" />
   <MIMEType type="application/x-ace-compressed" extension="ace" />
+  <MIMEType type="application/x-apple-diskimage" extension="dmg" />
   <MIMEType type="application/x-authorware-bin" extension="aab" />
   <MIMEType type="application/x-authorware-bin" extension="x32" />
   <MIMEType type="application/x-authorware-bin" extension="u32" />
@@ -494,16 +567,26 @@
   <MIMEType type="application/x-authorware-seg" extension="aas" />
   <MIMEType type="application/x-bcpio" extension="bcpio" />
   <MIMEType type="application/x-bittorrent" extension="torrent" />
+  <MIMEType type="application/x-blorb" extension="blb" />
+  <MIMEType type="application/x-blorb" extension="blorb" />
   <MIMEType type="application/x-bzip" extension="bz" />
   <MIMEType type="application/x-bzip2" extension="bz2" />
   <MIMEType type="application/x-bzip2" extension="boz" />
+  <MIMEType type="application/x-cbr" extension="cbr" />
+  <MIMEType type="application/x-cbr" extension="cba" />
+  <MIMEType type="application/x-cbr" extension="cbt" />
+  <MIMEType type="application/x-cbr" extension="cbz" />
+  <MIMEType type="application/x-cbr" extension="cb7" />
   <MIMEType type="application/x-cdlink" extension="vcd" />
+  <MIMEType type="application/x-cfs-compressed" extension="cfs" />
   <MIMEType type="application/x-chat" extension="chat" />
   <MIMEType type="application/x-chess-pgn" extension="pgn" />
+  <MIMEType type="application/x-conference" extension="nsc" />
   <MIMEType type="application/x-cpio" extension="cpio" />
   <MIMEType type="application/x-csh" extension="csh" />
   <MIMEType type="application/x-debian-package" extension="deb" />
   <MIMEType type="application/x-debian-package" extension="udeb" />
+  <MIMEType type="application/x-dgc-compressed" extension="dgc" />
   <MIMEType type="application/x-director" extension="dir" />
   <MIMEType type="application/x-director" extension="dcr" />
   <MIMEType type="application/x-director" extension="dxr" />
@@ -518,6 +601,8 @@
   <MIMEType type="application/x-dtbook+xml" extension="dtb" />
   <MIMEType type="application/x-dtbresource+xml" extension="res" />
   <MIMEType type="application/x-dvi" extension="dvi" />
+  <MIMEType type="application/x-envoy" extension="evy" />
+  <MIMEType type="application/x-eva" extension="eva" />
   <MIMEType type="application/x-font-bdf" extension="bdf" />
   <MIMEType type="application/x-font-ghostscript" extension="gsf" />
   <MIMEType type="application/x-font-linux-psf" extension="psf" />
@@ -530,15 +615,26 @@
   <MIMEType type="application/x-font-type1" extension="pfb" />
   <MIMEType type="application/x-font-type1" extension="pfm" />
   <MIMEType type="application/x-font-type1" extension="afm" />
+  <MIMEType type="application/x-font-woff" extension="woff" />
+  <MIMEType type="application/x-freearc" extension="arc" />
   <MIMEType type="application/x-futuresplash" extension="spl" />
+  <MIMEType type="application/x-gca-compressed" extension="gca" />
+  <MIMEType type="application/x-glulx" extension="ulx" />
   <MIMEType type="application/x-gnumeric" extension="gnumeric" />
+  <MIMEType type="application/x-gramps-xml" extension="gramps" />
   <MIMEType type="application/x-gtar" extension="gtar" />
   <MIMEType type="application/x-hdf" extension="hdf" />
+  <MIMEType type="application/x-install-instructions" extension="install" />
+  <MIMEType type="application/x-iso9660-image" extension="iso" />
   <MIMEType type="application/x-java-jnlp-file" extension="jnlp" />
   <MIMEType type="application/x-latex" extension="latex" />
+  <MIMEType type="application/x-lzh-compressed" extension="lzh" />
+  <MIMEType type="application/x-lzh-compressed" extension="lha" />
+  <MIMEType type="application/x-mie" extension="mie" />
   <MIMEType type="application/x-mobipocket-ebook" extension="prc" />
   <MIMEType type="application/x-mobipocket-ebook" extension="mobi" />
   <MIMEType type="application/x-ms-application" extension="application" />
+  <MIMEType type="application/x-ms-shortcut" extension="lnk" />
   <MIMEType type="application/x-ms-wmd" extension="wmd" />
   <MIMEType type="application/x-ms-wmz" extension="wmz" />
   <MIMEType type="application/x-ms-xbap" extension="xbap" />
@@ -555,6 +651,9 @@
   <MIMEType type="application/x-msmediaview" extension="m13" />
   <MIMEType type="application/x-msmediaview" extension="m14" />
   <MIMEType type="application/x-msmetafile" extension="wmf" />
+  <MIMEType type="application/x-msmetafile" extension="wmz" />
+  <MIMEType type="application/x-msmetafile" extension="emf" />
+  <MIMEType type="application/x-msmetafile" extension="emz" />
   <MIMEType type="application/x-msmoney" extension="mny" />
   <MIMEType type="application/x-mspublisher" extension="pub" />
   <MIMEType type="application/x-msschedule" extension="scd" />
@@ -562,32 +661,51 @@
   <MIMEType type="application/x-mswrite" extension="wri" />
   <MIMEType type="application/x-netcdf" extension="nc" />
   <MIMEType type="application/x-netcdf" extension="cdf" />
+  <MIMEType type="application/x-nzb" extension="nzb" />
   <MIMEType type="application/x-pkcs12" extension="p12" />
   <MIMEType type="application/x-pkcs12" extension="pfx" />
   <MIMEType type="application/x-pkcs7-certificates" extension="p7b" />
   <MIMEType type="application/x-pkcs7-certificates" extension="spc" />
   <MIMEType type="application/x-pkcs7-certreqresp" extension="p7r" />
   <MIMEType type="application/x-rar-compressed" extension="rar" />
+  <MIMEType type="application/x-research-info-systems" extension="ris" />
   <MIMEType type="application/x-sh" extension="sh" />
   <MIMEType type="application/x-shar" extension="shar" />
   <MIMEType type="application/x-shockwave-flash" extension="swf" />
   <MIMEType type="application/x-silverlight-app" extension="xap" />
+  <MIMEType type="application/x-sql" extension="sql" />
   <MIMEType type="application/x-stuffit" extension="sit" />
   <MIMEType type="application/x-stuffitx" extension="sitx" />
+  <MIMEType type="application/x-subrip" extension="srt" />
   <MIMEType type="application/x-sv4cpio" extension="sv4cpio" />
   <MIMEType type="application/x-sv4crc" extension="sv4crc" />
+  <MIMEType type="application/x-t3vm-image" extension="t3" />
+  <MIMEType type="application/x-tads" extension="gam" />
   <MIMEType type="application/x-tar" extension="tar" />
   <MIMEType type="application/x-tcl" extension="tcl" />
   <MIMEType type="application/x-tex" extension="tex" />
   <MIMEType type="application/x-tex-tfm" extension="tfm" />
   <MIMEType type="application/x-texinfo" extension="texinfo" />
   <MIMEType type="application/x-texinfo" extension="texi" />
+  <MIMEType type="application/x-tgif" extension="obj" />
   <MIMEType type="application/x-ustar" extension="ustar" />
   <MIMEType type="application/x-wais-source" extension="src" />
   <MIMEType type="application/x-x509-ca-cert" extension="der" />
   <MIMEType type="application/x-x509-ca-cert" extension="crt" />
   <MIMEType type="application/x-xfig" extension="fig" />
+  <MIMEType type="application/x-xliff+xml" extension="xlf" />
   <MIMEType type="application/x-xpinstall" extension="xpi" />
+  <MIMEType type="application/x-xz" extension="xz" />
+  <MIMEType type="application/x-zmachine" extension="z1" />
+  <MIMEType type="application/x-zmachine" extension="z2" />
+  <MIMEType type="application/x-zmachine" extension="z3" />
+  <MIMEType type="application/x-zmachine" extension="z4" />
+  <MIMEType type="application/x-zmachine" extension="z5" />
+  <MIMEType type="application/x-zmachine" extension="z6" />
+  <MIMEType type="application/x-zmachine" extension="z7" />
+  <MIMEType type="application/x-zmachine" extension="z8" />
+  <MIMEType type="application/xaml+xml" extension="xaml" />
+  <MIMEType type="application/xcap-diff+xml" extension="xdf" />
   <MIMEType type="application/xenc+xml" extension="xenc" />
   <MIMEType type="application/xhtml+xml" extension="xhtml" />
   <MIMEType type="application/xhtml+xml" extension="xht" />
@@ -595,12 +713,15 @@
   <MIMEType type="application/xml" extension="xsl" />
   <MIMEType type="application/xml-dtd" extension="dtd" />
   <MIMEType type="application/xop+xml" extension="xop" />
+  <MIMEType type="application/xproc+xml" extension="xpl" />
   <MIMEType type="application/xslt+xml" extension="xslt" />
   <MIMEType type="application/xspf+xml" extension="xspf" />
   <MIMEType type="application/xv+xml" extension="mxml" />
   <MIMEType type="application/xv+xml" extension="xhvml" />
   <MIMEType type="application/xv+xml" extension="xvml" />
   <MIMEType type="application/xv+xml" extension="xvm" />
+  <MIMEType type="application/yang" extension="yang" />
+  <MIMEType type="application/yin+xml" extension="yin" />
   <MIMEType type="application/zip" extension="zip" />
   <MIMEType type="audio/adpcm" extension="adp" />
   <MIMEType type="audio/basic" extension="au" />
@@ -619,6 +740,10 @@
   <MIMEType type="audio/ogg" extension="oga" />
   <MIMEType type="audio/ogg" extension="ogg" />
   <MIMEType type="audio/ogg" extension="spx" />
+  <MIMEType type="audio/s3m" extension="s3m" />
+  <MIMEType type="audio/silk" extension="sil" />
+  <MIMEType type="audio/vnd.dece.audio" extension="uva" />
+  <MIMEType type="audio/vnd.dece.audio" extension="uvva" />
   <MIMEType type="audio/vnd.digital-winds" extension="eol" />
   <MIMEType type="audio/vnd.dra" extension="dra" />
   <MIMEType type="audio/vnd.dts" extension="dts" />
@@ -628,10 +753,15 @@
   <MIMEType type="audio/vnd.nuera.ecelp4800" extension="ecelp4800" />
   <MIMEType type="audio/vnd.nuera.ecelp7470" extension="ecelp7470" />
   <MIMEType type="audio/vnd.nuera.ecelp9600" extension="ecelp9600" />
+  <MIMEType type="audio/vnd.rip" extension="rip" />
+  <MIMEType type="audio/webm" extension="weba" />
   <MIMEType type="audio/x-aac" extension="aac" />
   <MIMEType type="audio/x-aiff" extension="aif" />
   <MIMEType type="audio/x-aiff" extension="aiff" />
   <MIMEType type="audio/x-aiff" extension="aifc" />
+  <MIMEType type="audio/x-caf" extension="caf" />
+  <MIMEType type="audio/x-flac" extension="flac" />
+  <MIMEType type="audio/x-matroska" extension="mka" />
   <MIMEType type="audio/x-mpegurl" extension="m3u" />
   <MIMEType type="audio/x-ms-wax" extension="wax" />
   <MIMEType type="audio/x-ms-wma" extension="wma" />
@@ -639,6 +769,7 @@
   <MIMEType type="audio/x-pn-realaudio" extension="ra" />
   <MIMEType type="audio/x-pn-realaudio-plugin" extension="rmp" />
   <MIMEType type="audio/x-wav" extension="wav" />
+  <MIMEType type="audio/xm" extension="xm" />
   <MIMEType type="chemical/x-cdx" extension="cdx" />
   <MIMEType type="chemical/x-cif" extension="cif" />
   <MIMEType type="chemical/x-cmdf" extension="cmdf" />
@@ -653,13 +784,20 @@
   <MIMEType type="image/jpeg" extension="jpeg" />
   <MIMEType type="image/jpeg" extension="jpg" />
   <MIMEType type="image/jpeg" extension="jpe" />
+  <MIMEType type="image/ktx" extension="ktx" />
   <MIMEType type="image/png" extension="png" />
   <MIMEType type="image/prs.btif" extension="btif" />
+  <MIMEType type="image/sgi" extension="sgi" />
   <MIMEType type="image/svg+xml" extension="svg" />
   <MIMEType type="image/svg+xml" extension="svgz" />
   <MIMEType type="image/tiff" extension="tiff" />
   <MIMEType type="image/tiff" extension="tif" />
   <MIMEType type="image/vnd.adobe.photoshop" extension="psd" />
+  <MIMEType type="image/vnd.dece.graphic" extension="uvi" />
+  <MIMEType type="image/vnd.dece.graphic" extension="uvvi" />
+  <MIMEType type="image/vnd.dece.graphic" extension="uvg" />
+  <MIMEType type="image/vnd.dece.graphic" extension="uvvg" />
+  <MIMEType type="image/vnd.dvb.subtitle" extension="sub" />
   <MIMEType type="image/vnd.djvu" extension="djvu" />
   <MIMEType type="image/vnd.djvu" extension="djv" />
   <MIMEType type="image/vnd.dwg" extension="dwg" />
@@ -670,9 +808,12 @@
   <MIMEType type="image/vnd.fujixerox.edmics-mmr" extension="mmr" />
   <MIMEType type="image/vnd.fujixerox.edmics-rlc" extension="rlc" />
   <MIMEType type="image/vnd.ms-modi" extension="mdi" />
+  <MIMEType type="image/vnd.ms-photo" extension="wdp" />
   <MIMEType type="image/vnd.net-fpx" extension="npx" />
   <MIMEType type="image/vnd.wap.wbmp" extension="wbmp" />
   <MIMEType type="image/vnd.xiff" extension="xif" />
+  <MIMEType type="image/webp" extension="webp" />
+  <MIMEType type="image/x-3ds" extension="3ds" />
   <MIMEType type="image/x-cmu-raster" extension="ras" />
   <MIMEType type="image/x-cmx" extension="cmx" />
   <MIMEType type="image/x-freehand" extension="fh" />
@@ -681,6 +822,7 @@
   <MIMEType type="image/x-freehand" extension="fh5" />
   <MIMEType type="image/x-freehand" extension="fh7" />
   <MIMEType type="image/x-icon" extension="ico" />
+  <MIMEType type="image/x-mrsid-image" extension="sid" />
   <MIMEType type="image/x-pcx" extension="pcx" />
   <MIMEType type="image/x-pict" extension="pic" />
   <MIMEType type="image/x-pict" extension="pct" />
@@ -689,6 +831,7 @@
   <MIMEType type="image/x-portable-graymap" extension="pgm" />
   <MIMEType type="image/x-portable-pixmap" extension="ppm" />
   <MIMEType type="image/x-rgb" extension="rgb" />
+  <MIMEType type="image/x-tga" extension="tga" />
   <MIMEType type="image/x-xbitmap" extension="xbm" />
   <MIMEType type="image/x-xpixmap" extension="xpm" />
   <MIMEType type="image/x-xwindowdump" extension="xwd" />
@@ -699,6 +842,7 @@
   <MIMEType type="model/mesh" extension="msh" />
   <MIMEType type="model/mesh" extension="mesh" />
   <MIMEType type="model/mesh" extension="silo" />
+  <MIMEType type="model/vnd.collada+xml" extension="dae" />
   <MIMEType type="model/vnd.dwf" extension="dwf" />
   <MIMEType type="model/vnd.gdl" extension="gdl" />
   <MIMEType type="model/vnd.gtw" extension="gtw" />
@@ -706,12 +850,20 @@
   <MIMEType type="model/vnd.vtu" extension="vtu" />
   <MIMEType type="model/vrml" extension="wrl" />
   <MIMEType type="model/vrml" extension="vrml" />
+  <MIMEType type="model/x3d+binary" extension="x3db" />
+  <MIMEType type="model/x3d+binary" extension="x3dbz" />
+  <MIMEType type="model/x3d+vrml" extension="x3dv" />
+  <MIMEType type="model/x3d+vrml" extension="x3dvz" />
+  <MIMEType type="model/x3d+xml" extension="x3d" />
+  <MIMEType type="model/x3d+xml" extension="x3dz" />
+  <MIMEType type="text/cache-manifest" extension="appcache" />
   <MIMEType type="text/calendar" extension="ics" />
   <MIMEType type="text/calendar" extension="ifb" />
   <MIMEType type="text/css" extension="css" />
   <MIMEType type="text/csv" extension="csv" />
   <MIMEType type="text/html" extension="html" />
   <MIMEType type="text/html" extension="htm" />
+  <MIMEType type="text/n3" extension="n3" />
   <MIMEType type="text/plain" extension="txt" />
   <MIMEType type="text/plain" extension="text" />
   <MIMEType type="text/plain" extension="conf" />
@@ -730,13 +882,16 @@
   <MIMEType type="text/troff" extension="man" />
   <MIMEType type="text/troff" extension="me" />
   <MIMEType type="text/troff" extension="ms" />
+  <MIMEType type="text/turtle" extension="ttl" />
   <MIMEType type="text/uri-list" extension="uri" />
   <MIMEType type="text/uri-list" extension="uris" />
   <MIMEType type="text/uri-list" extension="urls" />
+  <MIMEType type="text/vcard" extension="vcard" />
   <MIMEType type="text/vnd.curl" extension="curl" />
   <MIMEType type="text/vnd.curl.dcurl" extension="dcurl" />
   <MIMEType type="text/vnd.curl.scurl" extension="scurl" />
   <MIMEType type="text/vnd.curl.mcurl" extension="mcurl" />
+  <MIMEType type="text/vnd.dvb.subtitle" extension="sub" />
   <MIMEType type="text/vnd.fly" extension="fly" />
   <MIMEType type="text/vnd.fmi.flexstor" extension="flx" />
   <MIMEType type="text/vnd.graphviz" extension="gv" />
@@ -758,10 +913,13 @@
   <MIMEType type="text/x-fortran" extension="for" />
   <MIMEType type="text/x-fortran" extension="f77" />
   <MIMEType type="text/x-fortran" extension="f90" />
+  <MIMEType type="text/x-java-source" extension="java" />
+  <MIMEType type="text/x-opml" extension="opml" />
   <MIMEType type="text/x-pascal" extension="p" />
   <MIMEType type="text/x-pascal" extension="pas" />
-  <MIMEType type="text/x-java-source" extension="java" />
+  <MIMEType type="text/x-nfo" extension="nfo" />
   <MIMEType type="text/x-setext" extension="etx" />
+  <MIMEType type="text/x-sfv" extension="sfv" />
   <MIMEType type="text/x-uuencode" extension="uu" />
   <MIMEType type="text/x-vcalendar" extension="vcs" />
   <MIMEType type="text/x-vcard" extension="vcf" />
@@ -786,22 +944,42 @@
   <MIMEType type="video/ogg" extension="ogv" />
   <MIMEType type="video/quicktime" extension="qt" />
   <MIMEType type="video/quicktime" extension="mov" />
+  <MIMEType type="video/vnd.dece.hd" extension="uvh" />
+  <MIMEType type="video/vnd.dece.hd" extension="uvvh" />
+  <MIMEType type="video/vnd.dece.mobile" extension="uvm" />
+  <MIMEType type="video/vnd.dece.mobile" extension="uvvm" />
+  <MIMEType type="video/vnd.dece.pd" extension="uvp" />
+  <MIMEType type="video/vnd.dece.pd" extension="uvvp" />
+  <MIMEType type="video/vnd.dece.sd" extension="uvs" />
+  <MIMEType type="video/vnd.dece.sd" extension="uvvs" />
+  <MIMEType type="video/vnd.dece.video" extension="uvv" />
+  <MIMEType type="video/vnd.dece.video" extension="uvvv" />
+  <MIMEType type="video/vnd.dvb.file" extension="dvb" />
   <MIMEType type="video/vnd.fvt" extension="fvt" />
   <MIMEType type="video/vnd.mpegurl" extension="mxu" />
   <MIMEType type="video/vnd.mpegurl" extension="m4u" />
   <MIMEType type="video/vnd.ms-playready.media.pyv" extension="pyv" />
+  <MIMEType type="video/vnd.uvvu.mp4" extension="uvu" />
+  <MIMEType type="video/vnd.uvvu.mp4" extension="uvvu" />
   <MIMEType type="video/vnd.vivo" extension="viv" />
+  <MIMEType type="video/webm" extension="webm" />
   <MIMEType type="video/x-f4v" extension="f4v" />
   <MIMEType type="video/x-fli" extension="fli" />
   <MIMEType type="video/x-flv" extension="flv" />
   <MIMEType type="video/x-m4v" extension="m4v" />
+  <MIMEType type="video/x-matroska" extension="mkv" />
+  <MIMEType type="video/x-matroska" extension="mk3d" />
+  <MIMEType type="video/x-matroska" extension="mks" />
+  <MIMEType type="video/x-mng" extension="mng" />
   <MIMEType type="video/x-ms-asf" extension="asf" />
   <MIMEType type="video/x-ms-asf" extension="asx" />
+  <MIMEType type="video/x-ms-vob" extension="vob" />
   <MIMEType type="video/x-ms-wm" extension="wm" />
   <MIMEType type="video/x-ms-wmv" extension="wmv" />
   <MIMEType type="video/x-ms-wmx" extension="wmx" />
   <MIMEType type="video/x-ms-wvx" extension="wvx" />
   <MIMEType type="video/x-msvideo" extension="avi" />
   <MIMEType type="video/x-sgi-movie" extension="movie" />
+  <MIMEType type="video/x-smv" extension="smv" />
   <MIMEType type="x-conference/x-cooltalk" extension="ice" />
 </MIMETypes>
