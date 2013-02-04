@@ -110,5 +110,12 @@ namespace Bugzilla.Proxies.Bug
     /// dynamically generated to handle the set of custom fields being set on the new bug.</remarks>
     [XmlRpcMethod("Bug.create")]
     CreateBugResponse CreateNewBug(object createParams);
+
+    /// <summary>
+    /// Gets details of all fields which can be set on a bug.
+    /// </summary>
+    /// <returns></returns>
+    [XmlRpcMethod("Bug.fields")]
+    GetFieldsResponse GetValidFields(GetFieldsParam fieldParam);
   }
 }
