@@ -103,6 +103,11 @@ namespace Bugzilla
     private Dictionary<int, Type> mCreateBugTypes;
 
     /// <summary>
+    /// The type of each custom field which can be set on a bug keyed off the field name.
+    /// </summary>
+    private Dictionary<string, BugField.BugFieldType> mCustomFieldTypes;
+
+    /// <summary>
     /// Options to be passed to <see cref="GetBug">GetBug</see>/>.
     /// </summary>
     public enum BugFetchOptions
@@ -132,6 +137,7 @@ namespace Bugzilla
     public BugzillaServer(string hostName, string path, string userName, string password, bool remember) : this(hostName, path, null)
     {
       Login(userName, password, remember);
+      FetchCustomFieldDetails();
     }
 
     /// <summary>
@@ -175,8 +181,12 @@ namespace Bugzilla
       mBugzillaProxy.Url = mURL;
       mProductProxy.Url = mURL;
 
-      if(loginCookies != null)
+      if (loginCookies != null)
+      {
+        mLoggedIn = true;
         SetProxyCookies(loginCookies);
+        FetchCustomFieldDetails();
+      }
     }
 
     /// <summary>
@@ -414,6 +424,7 @@ namespace Bugzilla
     /// <param name="id">ID of the bug instance.</param>
     /// <param name="fetchOptions">Whether the fetch the bug's data from the remote server or not.</param>
     /// <returns>A bug instance for the specified ID.</returns>
+    /// <exception cref="InvalidOperationException">Attempted to fetch details of the bug from the remote server when a user isn't logged in.</exception>
     /// <exception cref="InvalidBugIDOrAliasException">No bug exists with the specified ID.</exception>
     /// <exception cref="BugAccessDeniedException">Requested bug is inaccessible to the current user.</exception>
     public Bug GetBug(int id, BugFetchOptions fetchOptions)
@@ -423,10 +434,14 @@ namespace Bugzilla
         XmlRpcStruct info = new XmlRpcStruct();
         info["id"] = id;
         
-        return new Bug(info, mBugProxy);
+        return new Bug(info, mBugProxy, mCustomFieldTypes);
       }
       else
       {
+        //Someone must be logged in to fetch bug details from the server
+        if (!mLoggedIn)
+          throw new InvalidOperationException("A user must be logged in before getting bug details from remote server.");
+
         GetBugParams getParams = new GetBugParams();
         getParams.IDsOrAliases = new string[] { id.ToString() };
         getParams.Permissive = false;
@@ -434,7 +449,7 @@ namespace Bugzilla
         try
         {
           GetBugsResponse resp = mBugProxy.GetBugs(getParams);
-          return new Bug(resp.Bugs[0], mBugProxy);
+          return new Bug(resp.Bugs[0], mBugProxy, mCustomFieldTypes);
         }
         catch (XmlRpcFaultException e)
         {
@@ -446,7 +461,7 @@ namespace Bugzilla
 
             case 102:
               throw new BugAccessDeniedException();
-
+            
             default:
               throw new BugzillaException(string.Format("Error getting bug. Details: {0}", e.Message));
           }
@@ -963,6 +978,25 @@ namespace Bugzilla
     #endregion
 
     #region Private Methods
+
+    /// <summary>
+    /// Fetches details of allowable custom fields from the remote server.
+    /// </summary>
+    private void FetchCustomFieldDetails()
+    {
+      //Only interested in the name, whether the field is custom or not and the type.
+      GetFieldsParam getFieldsParam = new GetFieldsParam();
+      getFieldsParam.IncludeFields = new string[] { "type", "is_custom", "name" };
+
+      GetFieldsResponse getFieldsResp = mBugProxy.GetValidFields(getFieldsParam);
+      mCustomFieldTypes = new Dictionary<string, BugField.BugFieldType>();
+
+      foreach (var field in getFieldsResp.Fields)
+      {
+        if(field.IsCustomField)
+          mCustomFieldTypes.Add(field.InternalName, (BugField.BugFieldType)field.Type);
+      }
+    }
 
     /// <summary>
     /// Creates a new type derived from <see cref="CreateBugParams"/> with additional fields added to the derived

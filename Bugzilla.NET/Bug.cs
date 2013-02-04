@@ -58,7 +58,7 @@ namespace Bugzilla
     /// <summary>
     /// Wrapper around the custom fields for a bug to provide access based on the field name.
     /// </summary>
-    public class BugCustomFields : IEnumerable<KeyValuePair<string, object>>
+    public class BugCustomFields : IEnumerable<string>
     {
       /// <summary>
       /// Field values returned by the remote server for the parent bug.
@@ -66,41 +66,56 @@ namespace Bugzilla
       private Dictionary<string, object> mFieldValues;
 
       /// <summary>
+      /// The types of each field.
+      /// </summary>
+      private Dictionary<string, BugField.BugFieldType> mFieldTypes;
+
+      /// <summary>
       /// Constructor to pass in the field values.
       /// </summary>
       /// <param name="fieldValues">Field values returned by the remote server.</param>
-      internal BugCustomFields(Dictionary<string, object> fieldValues)
+      /// <param name="fieldTypes">Field types returned by the remote server.</param>
+      internal BugCustomFields(Dictionary<string,object> fieldValues,
+                               Dictionary<string, BugField.BugFieldType> fieldTypes)
       {
         mFieldValues = fieldValues;
+        mFieldTypes = fieldTypes;
       }
 
       /// <summary>
-      /// Provides an non-generic IEnumerator instance.
+      /// Provides an enumerator for iterating over each custom field's name.
       /// </summary>
-      /// <returns></returns>
+      /// <returns>A typed enumerator over each custom field name.</returns>
+      public IEnumerator<string> GetEnumerator()
+      {
+        return mFieldTypes.Keys.GetEnumerator();
+      }
+
+      /// <summary>
+      /// Provides an untyped enumerator for iterating over each custom field's name.
+      /// </summary>
+      /// <returns>An untyped enumerator over each custom field name.</returns>
       IEnumerator IEnumerable.GetEnumerator()
       {
-        return mFieldValues.GetEnumerator();
+        return mFieldTypes.Keys.GetEnumerator();
       }
 
-      /// <summary>
-      /// Provides a generic IEnumerator instance.
-      /// </summary>
-      /// <returns></returns>
-      IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
-      {
-        return mFieldValues.GetEnumerator();
-      }
       /// <summary>
       /// Accessor for the value of a field based on its name.
       /// </summary>
-      /// <param name="key">Name of the field to access. Must start with "cf_"</param>
+      /// <param name="fieldName">Name of the field to access. Must start with "cf_"</param>
       /// <returns>The value of the specified field.</returns>
       /// <exception cref="KeyNotFoundException">No custom field with the specified key was found.</exception>
-      public object this[string key]
+      public object this[string fieldName]
       {
-        get { return mFieldValues[key]; }
-        set { mFieldValues[key] = value; }
+        get { return mFieldValues[fieldName]; }
+        set 
+        {
+          if (!mFieldValues.ContainsKey(fieldName))
+            throw new KeyNotFoundException(string.Format("No custom field exists with the name '{0}'", fieldName));
+
+          mFieldValues[fieldName] = value; 
+        }
       }
     }
 
@@ -111,21 +126,21 @@ namespace Bugzilla
     /// </summary>
     /// <param name="info">Bug details</param>
     /// <param name="proxy">Proxy for updating the bug.</param>
-    internal Bug(XmlRpcStruct info, IBugProxy proxy)
+    /// <param name="customFieldTypes">The type of each custom field, keyed off the field name.</param>
+    internal Bug(XmlRpcStruct info, 
+                 IBugProxy proxy, 
+                 Dictionary<string, BugField.BugFieldType> customFieldTypes)
     {
       mBugInfo = info;
       mProxy = proxy;
 
-      //Strip out the custom fields
-      Dictionary<string, object> customFields = new Dictionary<string,object>();
+      //Dig out the field values
+      Dictionary<string, object> customFieldValues = new Dictionary<string, object>();
 
-      foreach (string key in info.Keys)
-      {
-        if (key.StartsWith("cf_", StringComparison.InvariantCultureIgnoreCase))
-          customFields.Add(key, info[key]);
-      }
+      foreach (string customFieldName in customFieldTypes.Keys)
+        customFieldValues.Add(customFieldName, info[customFieldName]);
 
-      mCustomFields = new BugCustomFields(customFields);
+      mCustomFields = new BugCustomFields(customFieldValues, customFieldTypes);
     }
 
     /// <summary>
