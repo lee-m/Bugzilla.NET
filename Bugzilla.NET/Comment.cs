@@ -59,9 +59,25 @@ namespace Bugzilla
     private DateTime mCreatedDate;
 
     /// <summary>
-    /// True if this comment is private (only visible to a certain group called the "insidergroup"), False otherwise.
+    /// Whether this comment is private or publicly visible.
     /// </summary>
-    private bool mIsPrivate;
+    private CommentVisibility mVisibilityStatus;
+
+    /// <summary>
+    /// Public/private visibility of a comment.
+    /// </summary>
+    public enum CommentVisibility
+    {
+      /// <summary>
+      /// The comment is public.
+      /// </summary>
+      Public = 0,
+
+      /// <summary>
+      /// The comment is private.
+      /// </summary>
+      Private
+    }
 
     /// <summary>
     /// Creates a new instance based on XML-RPC response data.
@@ -74,7 +90,11 @@ namespace Bugzilla
       mCommentText = responseCommentDets["text"].ToString();
       mAuthor = responseCommentDets["author"].ToString();
       mCreatedDate = DateTime.Parse(responseCommentDets["time"].ToString());
-      mIsPrivate = Boolean.Parse(responseCommentDets["is_private"].ToString());
+
+      if (Boolean.Parse(responseCommentDets["is_private"].ToString()))
+        mVisibilityStatus = CommentVisibility.Private;
+      else
+        mVisibilityStatus = CommentVisibility.Public;
 
       //Attachment ID may or may not be present
       if (responseCommentDets.ContainsKey("attachment_id"))
@@ -114,6 +134,6 @@ namespace Bugzilla
     /// <summary>
     /// Accessor for whether the comment is private or not.
     /// </summary>
-    public bool IsPrivate { get { return mIsPrivate; } }
+    public CommentVisibility Visibility { get { return mVisibilityStatus; } }
   }
 }

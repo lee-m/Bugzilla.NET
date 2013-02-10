@@ -69,9 +69,9 @@ namespace Bugzilla
     private string mMIMEType;
 
     /// <summary>
-    /// True if the attachment is private (only visible to a certain group called the "insidergroup"), False otherwise.
+    /// Whether the attachment is publicly visible or only visible to users in the insider group.
     /// </summary>
-    private bool mIsPrivate;
+    private AttachmentVisibility mVisibility;
 
     /// <summary>
     /// True if the attachment is obsolete, False otherwise.
@@ -94,6 +94,22 @@ namespace Bugzilla
     private string mCreator;
 
     /// <summary>
+    /// Visibility of an attachment.
+    /// </summary>
+    public enum AttachmentVisibility
+    {
+      /// <summary>
+      /// Attachment is public.
+      /// </summary>
+      Public = 0,
+
+      /// <summary>
+      /// Attachment is private.
+      /// </summary>
+      Private
+    }
+
+    /// <summary>
     /// Creates a new instance based on XML-RPC response data.
     /// </summary>
     /// <param name="responseAttachmentDets">XML-RPC response data.</param>
@@ -107,7 +123,7 @@ namespace Bugzilla
       mFileName = responseAttachmentDets["file_name"].ToString();
       mSummary = responseAttachmentDets["summary"].ToString();
       mMIMEType = responseAttachmentDets["content_type"].ToString();
-      mIsPrivate = int.Parse(responseAttachmentDets["is_private"].ToString()) ==  1 ? true : false;
+      mVisibility = int.Parse(responseAttachmentDets["is_private"].ToString()) ==  1 ? AttachmentVisibility.Private : AttachmentVisibility.Public;
       mIsObsolete = int.Parse(responseAttachmentDets["is_obsolete"].ToString()) ==  1 ? true : false;
       mIsURL = int.Parse(responseAttachmentDets["is_url"].ToString())==  1 ? true : false;
       mIsPatch = int.Parse(responseAttachmentDets["is_patch"].ToString())==  1 ? true : false;
@@ -158,7 +174,7 @@ namespace Bugzilla
     /// <summary>
     /// Accessor for whether the attachment is private or not.
     /// </summary>
-    public bool IsPrivate { get { return mIsPrivate; } }
+    public AttachmentVisibility Visibility { get { return mVisibility; } }
 
     /// <summary>
     /// Accessor for whether this attachment is obsolete or not.

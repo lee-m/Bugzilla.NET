@@ -146,8 +146,8 @@ namespace Bugzilla
     /// <summary>
     /// Adds a comment to this bug.
     /// </summary>
-    /// <param name="comment">The comment text. Mandatory. Max allowed length of 65556 characters.</param>
-    /// <param name="isPrivate">Whether the comment is private or not.</param>
+    /// <param name="commentText">The comment text. Mandatory. Max allowed length of 65556 characters.</param>
+    /// <param name="changeCommentVisibility">Whether the comment is private or not.</param>
     /// <param name="workTime">Amount to add to the "Hours Worked". Ignored if logged in user is not in the 
     /// time tracking group. Cannot be larger than 99999.99.</param>
     /// <returns>The ID of the new comment.</returns>
@@ -156,22 +156,22 @@ namespace Bugzilla
     /// <exception cref="InvalidBugIDOrAliasException">Invalid bug ID or alias specified.</exception>
     /// <exception cref="BugEditAccessDeniedException">Currently logged in user does not have security rights to edit the bug.</exception>
     /// <exception cref="InsufficientSecurityPrivilagesException">Attempted to add a private comment but current user has insufficient security rights.</exception>
-    public int AddComment(string comment, bool isPrivate, double? workTime)
+    public int AddComment(string commentText, Comment.CommentVisibility changeCommentVisibility, double? workTime)
     {
-      if (string.IsNullOrEmpty(comment))
+      if (string.IsNullOrEmpty(commentText))
         throw new ArgumentNullException("comment");
 
       //Check parameter limits
-      if (comment.Length > ushort.MaxValue)
+      if (commentText.Length > ushort.MaxValue)
         throw new ArgumentException("Comment text must be less than 65535 characters.");
 
       if (workTime.HasValue && workTime > 99999.99)
         throw new ArgumentException("Work time must be less than 99999.99.");
 
       AddCommentParam commentParams = new AddCommentParam();
-      commentParams.CommentText = comment;
+      commentParams.CommentText = commentText;
       commentParams.IdOrAlias = Id.ToString();
-      commentParams.IsPrivate = isPrivate;
+      commentParams.IsPrivate = changeCommentVisibility == Comment.CommentVisibility.Private;
       commentParams.WorkTime = workTime;
 
       try
@@ -247,18 +247,27 @@ namespace Bugzilla
     /// </summary>
     /// <param name="fileName">Name of the file to attach.</param>
     /// <param name="summary">Short summary text of the attachment. Mandatory</param>
-    /// <param name="comment">Comment text to add along with the attachment.</param>
+    /// <param name="changeComment">Comment text to add along with the attachment.</param>
     /// <param name="isPatch">Whether the attachment is a patch file or not.</param>
-    /// <param name="isPrivate">Whether the attachment should be private or not.</param>
+    /// <param name="attachmentVisibility">Whether the attachment should be public or private.</param>
     /// <remarks>The MIME type will be automatically determined from either the extension of the file, or it's data..</remarks>
     /// <exception cref="ArgumentNullException"><paramref name="fileName">fileName</paramref> is null or blank.</exception>
-    public void AddAttachment(string fileName, string summary, string comment, bool isPatch, bool isPrivate)
+    public void AddAttachment(string fileName, 
+                              string summary, 
+                              string changeComment, 
+                              bool isPatch, 
+                              Attachment.AttachmentVisibility attachmentVisibility)
     {
       if (string.IsNullOrEmpty(fileName))
         throw new ArgumentNullException("fileName");
 
-      AddAttachment(File.ReadAllBytes(fileName), Path.GetFileName(fileName), summary, 
-                    MIMETypes.GetMIMEType(fileName), comment, isPatch, isPrivate);
+      AddAttachment(File.ReadAllBytes(fileName), 
+                    Path.GetFileName(fileName), 
+                    summary, 
+                    MIMETypes.GetMIMEType(fileName), 
+                    changeComment, 
+                    isPatch, 
+                    attachmentVisibility);
     }
 
     /// <summary>
@@ -268,9 +277,9 @@ namespace Bugzilla
     /// <param name="fileName">Name of the file to show in the UI.</param>
     /// <param name="summary">Short summary text of the attachment. Mandatory</param>
     /// <param name="mimeType">MIME type of the attachment. Mandatory</param>
-    /// <param name="comment">Comment text to add along with the attachment.</param>
+    /// <param name="changeComment">Comment text to add along with the attachment.</param>
     /// <param name="isPatch">Whether the attachment is a patch file or not.</param>
-    /// <param name="isPrivate">Whether the attachment should be private or not.</param>
+    /// <param name="attachmentVisibility">Whether the attachment should be private or not.</param>
     /// <returns>Details of the newly created attachment.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="attachmentData">Attachment data</paramref> not specified.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="summary">summary</paramref> is null or blank.</exception>
@@ -282,9 +291,9 @@ namespace Bugzilla
                                     string fileName, 
                                     string summary, 
                                     string mimeType, 
-                                    string comment, 
+                                    string changeComment, 
                                     bool isPatch, 
-                                    bool isPrivate)
+                                    Attachment.AttachmentVisibility attachmentVisibility)
     {
       //Check that the required parameters are set
       if (attachmentData == null)
@@ -300,12 +309,12 @@ namespace Bugzilla
         throw new ArgumentException("Attachment data not specified.");
 
       AddAttachmentParams attachmentParams = new AddAttachmentParams();
-      attachmentParams.Comment = comment;
+      attachmentParams.Comment = changeComment;
       attachmentParams.Data = attachmentData;
       attachmentParams.FileName = fileName;
       attachmentParams.IdsOrAliases = new string[] { Id.ToString() };
       attachmentParams.IsPatch = isPatch;
-      attachmentParams.IsPrivate = isPrivate;
+      attachmentParams.IsPrivate = attachmentVisibility == Attachment.AttachmentVisibility.Private;
       attachmentParams.MIMEType = mimeType;
       attachmentParams.Summary = summary;
 
@@ -489,20 +498,16 @@ namespace Bugzilla
     /// </summary>
     /// <param name="changeComment">The text of any comment to add whilst making the changes. May be <code>null</code> or a blank string
     /// to indicate no comment should be created.</param>
-    /// <param name="changeCommentPrivate">>If adding a comment along with the changes, whether the comment should be private or public.  
+    /// <param name="changeCommentVisibility">>If adding a comment along with the changes, whether the comment should be private or public.  
     /// Defaults to a public comment if not set.</param>
-    public void ResetAssignedTo(string changeComment, bool? changeCommentPrivate)
+    public void ResetAssignedTo(string changeComment, Comment.CommentVisibility? changeCommentVisibility)
     {
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
       updateParams.ResetAssignedTo = true;
 
       if (!string.IsNullOrEmpty(changeComment))
-      {
-        updateParams.Comment = new CommentParam();
-        updateParams.Comment.CommentText = changeComment;
-        updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
-      }
+        updateParams.Comment = GetChangeCommentParameter(changeComment, changeCommentVisibility);
 
       try
       {
@@ -526,20 +531,16 @@ namespace Bugzilla
     /// </summary>
     /// <param name="changeComment">The text of any comment to add whilst making the changes. May be <code>null</code> or a blank string
     /// to indicate no comment should be created.</param>
-    /// <param name="changeCommentPrivate">>If adding a comment along with the changes, whether the comment should be private or public.  
+    /// <param name="changeCommentVisibility">>If adding a comment along with the changes, whether the comment should be private or public.  
     /// Defaults to a public comment if not set.</param>
-    public void ResetQAContact(string changeComment, bool? changeCommentPrivate)
+    public void ResetQAContact(string changeComment, Comment.CommentVisibility? changeCommentVisibility)
     {
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
       updateParams.ResetQAContact = true;
 
       if (!string.IsNullOrEmpty(changeComment))
-      {
-        updateParams.Comment = new CommentParam();
-        updateParams.Comment.CommentText = changeComment;
-        updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
-      }
+        updateParams.Comment = GetChangeCommentParameter(changeComment, changeCommentVisibility);
 
       try
       {
@@ -563,21 +564,17 @@ namespace Bugzilla
     /// </summary>
     /// <param name="remainingWorkTime">The amount of work time remaining in hours.</param>
     /// <param name="changeComment">If set, the text of a comment to add at the same time as the remaining work time is updated.</param>
-    /// <param name="changeCommentPrivate">If adding a comment, indicates whether the comment is private or not. Defaults to false if not set.</param>
+    /// <param name="changeCommentVisibility">If adding a comment, indicates whether the comment is private or not. Defaults to a public comment if a change comment is provided but this parameter is <code>null</code>.</param>
     public void SetNumberOfHoursWorkRemaining(double remainingWorkTime, 
                                               string changeComment,
-                                              bool? changeCommentPrivate)
+                                              Comment.CommentVisibility? changeCommentVisibility)
     {
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
       updateParams.WorkTimeRemaining = remainingWorkTime;
 
       if (!string.IsNullOrEmpty(changeComment))
-      {
-        updateParams.Comment = new CommentParam();
-        updateParams.Comment.CommentText = changeComment;
-        updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
-      }
+        updateParams.Comment = GetChangeCommentParameter(changeComment, changeCommentVisibility);
 
       try
       {
@@ -602,12 +599,13 @@ namespace Bugzilla
     /// <param name="hoursWorked">Number of hours worked on the bug.</param>
     /// <param name="remainingTime">The number of hours left to work on this bug.</param>
     /// <param name="changeComment">If set, the text of a comment to add whilst updating the remaining work time.</param>
-    /// <param name="changeCommentPrivate">If adding a comment, whether the comment is private or not. If not set, defaults to public.</param>
+    /// <param name="changeCommentVisibility">If adding a comment, whether the comment is private or not. If not set, defaults to public if a change comment text was specified.</param>
     /// <remarks>If <paramref name="remainingTime"/> is not set, the value of <paramref name="hoursWorked"/> will be deducted
     /// from the bugs remaining time.</remarks>
-    public void UpdateNumberOfHoursWorked(double hoursWorked, double? remainingTime,
+    public void UpdateNumberOfHoursWorked(double hoursWorked, 
+                                          double? remainingTime,
                                           string changeComment,
-                                          bool? changeCommentPrivate)
+                                          Comment.CommentVisibility? changeCommentVisibility)
     {
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
@@ -615,11 +613,7 @@ namespace Bugzilla
       updateParams.WorkTimeRemaining = remainingTime;
 
       if (!string.IsNullOrEmpty(changeComment))
-      {
-        updateParams.Comment = new CommentParam();
-        updateParams.Comment.CommentText = changeComment;
-        updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
-      }
+        updateParams.Comment = GetChangeCommentParameter(changeComment, changeCommentVisibility);
 
       try
       {
@@ -643,11 +637,11 @@ namespace Bugzilla
     /// </summary>
     /// <param name="commentStatusChanges">A set of comment ID/private status pairs.</param>
     /// <param name="changeComment">If non-null, the text of a comment to add alongside the changes.</param>
-    /// <param name="changeCommentPrivate">If non-null, indicates whether the change comment should be private. If not set, defaults to a public comment.</param>
+    /// <param name="changeCommentVisibility">If non-null, indicates whether the change comment should be private. If a change comment text is provided, but this parameter is <code>null</code>, defaults to a public comment.</param>
     /// <exception cref="ArgumentNullException"><paramref name="commentStatusChanges"/> is <code>null</code>.</exception>
     public void ToggleCommentsPublicPrivateStatus(IEnumerable<Tuple<int, bool>> commentStatusChanges,
                                                   string changeComment, 
-                                                  bool? changeCommentPrivate)
+                                                  Comment.CommentVisibility? changeCommentVisibility)
     {
       if (commentStatusChanges == null)
         throw new ArgumentNullException("commentStatusChanges");
@@ -657,11 +651,7 @@ namespace Bugzilla
       updateParams.CommentVisibilityChanges = new XmlRpcStruct();
 
       if (!string.IsNullOrEmpty(changeComment))
-      {
-        updateParams.Comment = new CommentParam();
-        updateParams.Comment.CommentText = changeComment;
-        updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
-      }
+        updateParams.Comment = GetChangeCommentParameter(changeComment, changeCommentVisibility);
 
       foreach (Tuple<int, bool> commentStatus in commentStatusChanges)
         updateParams.CommentVisibilityChanges.Add(commentStatus.Item1.ToString(), commentStatus.Item2);
@@ -690,7 +680,7 @@ namespace Bugzilla
     /// <param name="deletedKeywords">If non-null, the keywords to remove from the bug.</param>
     /// <param name="resetKeywords">If non-null, the new set of keywords to set on the bug.</param>
     /// <param name="changeComment">If non-null, the text of a comment to add at the same time as resetting the keywords.</param>
-    /// <param name="changeCommentPrivate">If adding a change comment, whether the comment should be private or not.</param>
+    /// <param name="changeCommentVisibility">If adding a change comment, whether the comment should be private or not.</param>
     /// <remarks>
     /// Specifying <paramref name="resetKeywords"/> will override any values passed in via <paramref name="newKeywords"/>
     /// or <paramref name="deletedKeywords"/>.
@@ -701,7 +691,7 @@ namespace Bugzilla
                                IEnumerable<string> deletedKeywords,
                                IEnumerable<string> resetKeywords,
                                string changeComment, 
-                               bool? changeCommentPrivate)
+                               Comment.CommentVisibility? changeCommentVisibility)
     {
       //At least one of the new, deleted or reset parameters need to be specified otherwise there's nothing to do.
       if (newKeywords == null
@@ -713,6 +703,9 @@ namespace Bugzilla
       updateParams.Ids = new int[] { Id };
       updateParams.KeywordModifications = new XmlRpcStruct();
 
+      if (!string.IsNullOrEmpty(changeComment))
+        updateParams.Comment = GetChangeCommentParameter(changeComment, changeCommentVisibility);
+
       if(newKeywords != null)
         updateParams.KeywordModifications.Add("add", newKeywords.ToArray());
 
@@ -721,13 +714,6 @@ namespace Bugzilla
 
       if(resetKeywords != null)
         updateParams.KeywordModifications.Add("set", newKeywords.ToArray());
-
-      if (!string.IsNullOrEmpty(changeComment))
-      {
-        updateParams.Comment = new CommentParam();
-        updateParams.Comment.CommentText = changeComment;
-        updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
-      }
 
       try
       {
@@ -755,12 +741,12 @@ namespace Bugzilla
     /// <param name="usersToAdd">Set of <b>full</b> usernames to add to the CC list.</param>
     /// <param name="usersToRemove">Set of <b>full</b> usernames to remove from the CC list.</param>
     /// <param name="changeComment">If set, the text of a comment to add at the same time as updating the CC list.</param>
-    /// <param name="changeCommentPrivate">If adding a change comment, indicates whether the comment is private or not.</param>
+    /// <param name="changeCommentVisibility">If adding a change comment, indicates whether the comment is private or not.</param>
     /// <exception cref="ArgumentException">Both <paramref name="usersToAdd"/> and <paramref name="usersToRemove"/> are null/Nothing.</exception>
     public void UpdateCCList(IEnumerable<string> usersToAdd, 
                              IEnumerable<string> usersToRemove,
                              string changeComment,
-                             bool? changeCommentPrivate)
+                             Comment.CommentVisibility? changeCommentVisibility)
     {
       if (usersToAdd == null
          && usersToRemove == null)
@@ -770,18 +756,14 @@ namespace Bugzilla
       updateParams.Ids = new int[] { Id };
       updateParams.CCListModifications = new XmlRpcStruct();
 
+      if (!string.IsNullOrEmpty(changeComment))
+        updateParams.Comment = GetChangeCommentParameter(changeComment, changeCommentVisibility);
+
       if (usersToAdd != null)
         updateParams.CCListModifications.Add("add", usersToAdd.ToArray());
 
       if (usersToRemove != null)
         updateParams.CCListModifications.Add("remove", usersToRemove.ToArray());
-
-      if (!string.IsNullOrEmpty(changeComment))
-      {
-        updateParams.Comment = new CommentParam();
-        updateParams.Comment.CommentText = changeComment;
-        updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
-      }
 
       try
       {
@@ -807,8 +789,8 @@ namespace Bugzilla
     /// Updates this bug's fields to the values set on the various properties.
     /// </summary>
     /// <param name="changeComment">If set, the text of a comment to add at the same time as updating the CC list.</param>
-    /// <param name="changeCommentPrivate">If adding a change comment, indicates whether the comment is private or not.</param>
-    public void Update(string changeComment, bool? changeCommentPrivate)
+    /// <param name="changeCommentVisibility">If adding a change comment, indicates whether the comment is private or not.</param>
+    public void Update(string changeComment, Comment.CommentVisibility? changeCommentVisibility)
     {
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
@@ -833,6 +815,10 @@ namespace Bugzilla
       updateParams.Version = Version;
       updateParams.Whiteboard = StatusWhiteboard;
 
+      //Set any change comment
+      if (!string.IsNullOrEmpty(changeComment))
+        updateParams.Comment = GetChangeCommentParameter(changeComment, changeCommentVisibility);
+
       //Set the depends on field to the current list of dependencies
       updateParams.DependsOnModifications = new XmlRpcStruct();
       updateParams.DependsOnModifications.Add("set", DependsOn);
@@ -844,14 +830,6 @@ namespace Bugzilla
       //Set the list of keywords
       updateParams.KeywordModifications = new XmlRpcStruct();
       updateParams.KeywordModifications.Add("set", Keywords);
-        
-      //Add the change comment if specified
-      if (!string.IsNullOrEmpty(changeComment))
-      {
-        updateParams.Comment = new CommentParam();
-        updateParams.Comment.CommentText = changeComment;
-        updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
-      }
 
       try
       {
@@ -900,20 +878,17 @@ namespace Bugzilla
     /// </summary>
     /// <param name="duplicateBugID">ID of the bug to mark this bug as a duplicate of.</param>
     /// <param name="changeComment">If set, the text of a comment to add at the same time as updating the CC list.</param>
-    /// <param name="changeCommentPrivate">If adding a change comment, indicates whether the comment is private or not.</param>
-    public void MarkAsDuplicate(int duplicateBugID, string changeComment, bool? changeCommentPrivate)
+    /// <param name="changeCommentVisibility">If adding a change comment, indicates whether the comment is private or not.</param>
+    public void MarkAsDuplicate(int duplicateBugID, 
+                                string changeComment, 
+                                Comment.CommentVisibility? changeCommentVisibility)
     {
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
       updateParams.DuplicateOf = duplicateBugID;
 
-      //Add the change comment if specified
       if (!string.IsNullOrEmpty(changeComment))
-      {
-        updateParams.Comment = new CommentParam();
-        updateParams.Comment.CommentText = changeComment;
-        updateParams.Comment.IsPrivate = changeCommentPrivate.GetValueOrDefault();
-      }
+        updateParams.Comment = GetChangeCommentParameter(changeComment, changeCommentVisibility);
 
       try
       {
@@ -936,6 +911,25 @@ namespace Bugzilla
     }
 
     #region Private Methods
+
+    /// <summary>
+    /// Creates a new <see cref="CommentParam"/> instance to hold a change reason when making changes to a bug.
+    /// </summary>
+    /// <param name="commentText">The comment text.</param>
+    /// <param name="commentVisibility">If adding a comment, whether the comment is public or private.</param>
+    /// <returns>The comment parameters instance to use when updating the bug.</returns>
+    private CommentParam GetChangeCommentParameter(string commentText, Comment.CommentVisibility? commentVisibility)
+    {
+      CommentParam comment = new CommentParam();
+      comment.CommentText = commentText;
+
+      if (commentVisibility.HasValue)
+        comment.IsPrivate = commentVisibility.Value == Comment.CommentVisibility.Private;
+      else
+        comment.IsPrivate = false;
+
+      return comment;
+    }
 
     /// <summary>
     /// Gets the value for a field as it's nullable type equivalent.
