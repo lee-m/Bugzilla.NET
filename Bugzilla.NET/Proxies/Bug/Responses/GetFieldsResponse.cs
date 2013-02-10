@@ -22,6 +22,9 @@ using CookComputing.XmlRpc;
 
 namespace Bugzilla.Proxies.Bug.Responses
 {
+  /// <summary>
+  /// Response structure returned from the remote server when querying for available bug fields.
+  /// </summary>
   internal struct GetFieldsResponse
   {
     /// <summary>

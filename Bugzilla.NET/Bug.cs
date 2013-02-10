@@ -910,6 +910,32 @@ namespace Bugzilla
       }
     }
 
+    /// <summary>
+    /// Get the details of all the fields which can be set on a bug.
+    /// </summary>
+    /// <returns></returns>
+    public List<BugField> GetFields()
+    {
+      //Only interested in the name, whether the field is custom or not and the type.
+      GetFieldsParam getFieldsParam = new GetFieldsParam();
+
+      try
+      {
+        GetFieldsResponse getFieldsResp = mProxy.GetValidFields(getFieldsParam);
+
+        List<BugField> fields = new List<BugField>();
+
+        foreach (Proxies.Bug.Responses.BugField field in getFieldsResp.Fields)
+          fields.Add(new BugField(field));
+
+        return fields;
+      }
+      catch (XmlRpcFaultException)
+      {
+        throw new BugzillaException("Error attempting to get fields for bug.");
+      }
+    }
+
     #region Private Methods
 
     /// <summary>
