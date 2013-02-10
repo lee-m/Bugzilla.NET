@@ -636,7 +636,6 @@
   <MIMEType type="application/x-ms-application" extension="application" />
   <MIMEType type="application/x-ms-shortcut" extension="lnk" />
   <MIMEType type="application/x-ms-wmd" extension="wmd" />
-  <MIMEType type="application/x-ms-wmz" extension="wmz" />
   <MIMEType type="application/x-ms-xbap" extension="xbap" />
   <MIMEType type="application/x-msaccess" extension="mdb" />
   <MIMEType type="application/x-msbinder" extension="obd" />
@@ -891,7 +890,6 @@
   <MIMEType type="text/vnd.curl.dcurl" extension="dcurl" />
   <MIMEType type="text/vnd.curl.scurl" extension="scurl" />
   <MIMEType type="text/vnd.curl.mcurl" extension="mcurl" />
-  <MIMEType type="text/vnd.dvb.subtitle" extension="sub" />
   <MIMEType type="text/vnd.fly" extension="fly" />
   <MIMEType type="text/vnd.fmi.flexstor" extension="flx" />
   <MIMEType type="text/vnd.graphviz" extension="gv" />
