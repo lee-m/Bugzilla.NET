@@ -53,12 +53,13 @@
     <Compile Include="Attachment.cs" />
     <Compile Include="AttachmentCollection.cs" />
     <Compile Include="Bug.cs" />
+    <Compile Include="BugCustomFields.cs" />
     <Compile Include="BugHistory.cs" />
     <Compile Include="BugzillaException.cs" />
     <Compile Include="Comment.cs" />
     <Compile Include="CommentCollection.cs" />
     <Compile Include="BugExceptions.cs" />
-    <Compile Include="BugField.cs" />
+    <Compile Include="BugFieldDetails.cs" />
     <Compile Include="Extension.cs" />
     <Compile Include="Proxies\Bug\Params\CreateBugParams.cs" />
     <Compile Include="Proxies\Bug\Params\GetAttachmentsParam.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Proxies\Bug\Responses\UpdateSeeAlsoResponse.cs" />
     <Compile Include="SeeAlsoModifications.cs" />
     <Compile Include="UserExceptions.cs" />
+    <Compile Include="BugCreateUpdateParamsFactory.cs" />
     <Compile Include="Utils\MIMETypes.cs" />
     <Compile Include="Product.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

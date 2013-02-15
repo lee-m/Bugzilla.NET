@@ -53,94 +53,19 @@ namespace Bugzilla
     /// </summary>
     private IBugProxy mProxy;
 
-    #region BugCustomFields
-
-    /// <summary>
-    /// Wrapper around the custom fields for a bug to provide access based on the field name.
-    /// </summary>
-    public class BugCustomFields : IEnumerable<string>
-    {
-      /// <summary>
-      /// Field values returned by the remote server for the parent bug.
-      /// </summary>
-      private Dictionary<string, object> mFieldValues;
-
-      /// <summary>
-      /// The types of each field.
-      /// </summary>
-      private Dictionary<string, BugField.BugFieldType> mFieldTypes;
-
-      /// <summary>
-      /// Constructor to pass in the field values.
-      /// </summary>
-      /// <param name="fieldValues">Field values returned by the remote server.</param>
-      /// <param name="fieldTypes">Field types returned by the remote server.</param>
-      internal BugCustomFields(Dictionary<string,object> fieldValues,
-                               Dictionary<string, BugField.BugFieldType> fieldTypes)
-      {
-        mFieldValues = fieldValues;
-        mFieldTypes = fieldTypes;
-      }
-
-      /// <summary>
-      /// Provides an enumerator for iterating over each custom field's name.
-      /// </summary>
-      /// <returns>A typed enumerator over each custom field name.</returns>
-      public IEnumerator<string> GetEnumerator()
-      {
-        return mFieldTypes.Keys.GetEnumerator();
-      }
-
-      /// <summary>
-      /// Provides an untyped enumerator for iterating over each custom field's name.
-      /// </summary>
-      /// <returns>An untyped enumerator over each custom field name.</returns>
-      IEnumerator IEnumerable.GetEnumerator()
-      {
-        return mFieldTypes.Keys.GetEnumerator();
-      }
-
-      /// <summary>
-      /// Accessor for the value of a field based on its name.
-      /// </summary>
-      /// <param name="fieldName">Name of the field to access. Must start with "cf_"</param>
-      /// <returns>The value of the specified field.</returns>
-      /// <exception cref="KeyNotFoundException">No custom field with the specified key was found.</exception>
-      public object this[string fieldName]
-      {
-        get { return mFieldValues[fieldName]; }
-        set 
-        {
-          if (!mFieldValues.ContainsKey(fieldName))
-            throw new KeyNotFoundException(string.Format("No custom field exists with the name '{0}'", fieldName));
-
-          mFieldValues[fieldName] = value; 
-        }
-      }
-    }
-
-    #endregion
-
     /// <summary>
     /// Creates a instance with the specified bug details.
     /// </summary>
     /// <param name="info">Bug details</param>
     /// <param name="proxy">Proxy for updating the bug.</param>
-    /// <param name="customFieldTypes">The type of each custom field, keyed off the field name.</param>
+    /// <param name="customFields">The type of each custom field, keyed off the field name.</param>
     internal Bug(XmlRpcStruct info, 
-                 IBugProxy proxy, 
-                 Dictionary<string, BugField.BugFieldType> customFieldTypes)
+                 IBugProxy proxy,
+                 BugCustomFields customFields)
     {
       mBugInfo = info;
       mProxy = proxy;
-
-      //Dig out the field values
-      Dictionary<string, object> customFieldValues = new Dictionary<string, object>();
-
-      foreach (string customFieldName in customFieldTypes.Keys)
-        customFieldValues.Add(customFieldName, info[customFieldName]);
-
-      mCustomFields = new BugCustomFields(customFieldValues, customFieldTypes);
+      mCustomFields = customFields;
     }
 
     /// <summary>
@@ -792,7 +717,7 @@ namespace Bugzilla
     /// <param name="changeCommentVisibility">If adding a change comment, indicates whether the comment is private or not.</param>
     public void Update(string changeComment, Comment.CommentVisibility? changeCommentVisibility)
     {
-      UpdateBugParam updateParams = new UpdateBugParam();
+      UpdateBugParam updateParams = BugCreateUpdateParamsFactory.Instance.GetUpdateBugParamInstance(mCustomFields);
       updateParams.Ids = new int[] { Id };
       updateParams.Product = Product;
       updateParams.AssignedTo = AssignedTo;
@@ -830,6 +755,15 @@ namespace Bugzilla
       //Set the list of keywords
       updateParams.KeywordModifications = new XmlRpcStruct();
       updateParams.KeywordModifications.Add("set", Keywords);
+
+      //Set any custom field values
+      if (mCustomFields.Any())
+      {
+        Type updateParamsType = updateParams.GetType();
+
+        foreach (BugCustomField customField in mCustomFields)
+          updateParamsType.GetField(customField.FieldName).SetValue(updateParams, mCustomFields[customField.FieldName].FieldValue);
+      }
 
       try
       {
@@ -914,7 +848,7 @@ namespace Bugzilla
     /// Get the details of all the fields which can be set on a bug.
     /// </summary>
     /// <returns></returns>
-    public List<BugField> GetFields()
+    public List<BugFieldDetails> GetFields()
     {
       //Only interested in the name, whether the field is custom or not and the type.
       GetFieldsParam getFieldsParam = new GetFieldsParam();
@@ -923,10 +857,10 @@ namespace Bugzilla
       {
         GetFieldsResponse getFieldsResp = mProxy.GetValidFields(getFieldsParam);
 
-        List<BugField> fields = new List<BugField>();
+        List<BugFieldDetails> fields = new List<BugFieldDetails>();
 
         foreach (Proxies.Bug.Responses.BugField field in getFieldsResp.Fields)
-          fields.Add(new BugField(field));
+          fields.Add(new BugFieldDetails(field));
 
         return fields;
       }
