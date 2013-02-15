@@ -30,7 +30,7 @@ namespace Bugzilla
   /// <summary>
   /// Represents a single field that can be set on a bug.
   /// </summary>
-  public class BugField
+  public class BugFieldDetails
   {
     /// <summary>
     /// Field details returned from the remote server.
@@ -179,7 +179,7 @@ namespace Bugzilla
     /// Initialises this instance with the details from <paramref name="fieldDetails"/>
     /// </summary>
     /// <param name="fieldDetails"></param>
-    internal BugField(Proxies.Bug.Responses.BugField fieldDetails)
+    internal BugFieldDetails(Proxies.Bug.Responses.BugField fieldDetails)
     {
       mFieldDetails = fieldDetails;
     }

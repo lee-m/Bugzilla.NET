@@ -105,7 +105,7 @@ namespace Bugzilla
     /// <summary>
     /// The type of each custom field which can be set on a bug keyed off the field name.
     /// </summary>
-    private Dictionary<string, BugField.BugFieldType> mCustomFieldTypes;
+    private List<BugCustomField> mCustomFieldTemplate;
 
     /// <summary>
     /// Options to be passed to <see cref="GetBug">GetBug</see>/>.
@@ -434,7 +434,7 @@ namespace Bugzilla
         XmlRpcStruct info = new XmlRpcStruct();
         info["id"] = id;
         
-        return new Bug(info, mBugProxy, mCustomFieldTypes);
+        return new Bug(info, mBugProxy, GetCustomFieldValuesForBug(info));
       }
       else
       {
@@ -449,7 +449,7 @@ namespace Bugzilla
         try
         {
           GetBugsResponse resp = mBugProxy.GetBugs(getParams);
-          return new Bug(resp.Bugs[0], mBugProxy, mCustomFieldTypes);
+          return new Bug(resp.Bugs[0], mBugProxy, GetCustomFieldValuesForBug(resp.Bugs[0]));
         }
         catch (XmlRpcFaultException e)
         {
@@ -494,7 +494,7 @@ namespace Bugzilla
     /// <param name="estimate">Estimate of how long the bug will take to fix in hours.</param>
     /// <param name="deadline">Deadline date for fixing the bug.</param>
     /// <param name="url">URL for the bug.</param>
-    /// <param name="customFieldValues">Set of custom fields to set on the new bug. The key is the field name and the value 
+    /// <param name="customFields">Set of custom fields to set on the new bug. The key is the field name and the value 
     /// the field's value.</param>
     /// <exception cref="ArgumentNullException"><paramref name="product"/>, <paramref name="component"/>, 
     /// <paramref name="summary"/> or <paramref name="version"/> is null or a blank string.</exception>
@@ -512,7 +512,7 @@ namespace Bugzilla
     /// does not exist or is inaccessible.</exception>
     /// <exception cref="InvalidUserException">The user name for the assignee, QA contact or a user in the CC list is invalid. 
     /// Additional details of which will be in the exception message.</exception>
-    /// <exception cref="InvalidCustomFieldNameException">One of the field names in <paramref name="customFieldValues"/> is invalid. 
+    /// <exception cref="InvalidCustomFieldNameException">One of the field names in <paramref name="customFields"/> is invalid. 
     /// Additional details will be in the exception message</exception>
     /// <returns>The ID of the newly created bug.</returns>
     public int CreateBug(string product, 
@@ -537,7 +537,7 @@ namespace Bugzilla
                          double? estimate,
                          DateTime? deadline,
                          string url,
-                         IEnumerable<KeyValuePair<string, string>> customFieldValues)
+                         BugCustomFields customFields)
     {
       //Check that required parameters have a value
       if (string.IsNullOrEmpty(product))
@@ -557,7 +557,7 @@ namespace Bugzilla
         throw new ArgumentException("Description must be less than 65535 characters.");
 
       //Create a type to pass to the proxy based on any custom fields we have and set the common fields.
-      CreateBugParams createParams = GetCreateBugParamsTypeInstance(customFieldValues);
+      CreateBugParams createParams = BugCreateUpdateParamsFactory.Instance.GetCreateBugParamsTypeInstance(customFields);
       createParams.Product = product;
       createParams.Component = component;
       createParams.Summary = summary;
@@ -592,12 +592,12 @@ namespace Bugzilla
         createParams.Blocks = blockedBugIDs.ToArray();
 
       //Set any custom field values
-      if (customFieldValues != null)
+      if (customFields != null)
       {
         Type createParamsType = createParams.GetType();
 
-        foreach (KeyValuePair<string, string> customField in customFieldValues)
-          createParamsType.GetField(customField.Key).SetValue(createParams, customField.Value);
+        foreach (BugCustomField customField in customFields)
+          createParamsType.GetField(customField.FieldName).SetValue(createParams, customField.FieldValue);
       }
 
       try
@@ -975,6 +975,21 @@ namespace Bugzilla
       }
     }
 
+    /// <summary>
+    /// Gets a custom fields "template" ready for each field's value to be set for creating new bugs.
+    /// </summary>
+    /// <remarks>Each call to this method will return back a new <see cref="BugCustomFields"/> instance.</remarks>
+    /// <returns>A new <see cref="BugCustomFields"/> template without any field values set.</returns>
+    public BugCustomFields GetNewBugCustomFieldsTemplate()
+    {
+      List<BugCustomField> copiedCustomFields = new List<BugCustomField>();
+
+      foreach (BugCustomField customField in mCustomFieldTemplate)
+        copiedCustomFields.Add(new BugCustomField(customField.FieldName, customField.FieldType));
+
+      return new BugCustomFields(copiedCustomFields);
+    }
+
     #endregion
 
     #region Private Methods
@@ -989,61 +1004,31 @@ namespace Bugzilla
       getFieldsParam.IncludeFields = new string[] { "type", "is_custom", "name" };
 
       GetFieldsResponse getFieldsResp = mBugProxy.GetValidFields(getFieldsParam);
-      mCustomFieldTypes = new Dictionary<string, BugField.BugFieldType>();
+      mCustomFieldTemplate = new List<BugCustomField>();
 
       foreach (var field in getFieldsResp.Fields)
       {
-        if(field.IsCustomField)
-          mCustomFieldTypes.Add(field.InternalName, (BugField.BugFieldType)field.Type);
+        if (field.IsCustomField)
+          mCustomFieldTemplate.Add(new BugCustomField(field.InternalName, (BugFieldDetails.BugFieldType)field.Type));
       }
     }
 
     /// <summary>
-    /// Creates a new type derived from <see cref="CreateBugParams"/> with additional fields added to the derived
-    /// type for each custom field.
+    /// Gets a set of bug custom field instances initialised to each field's value.
     /// </summary>
-    /// <param name="customFields">Custom fields the type should contain.</param>
-    /// <returns>An instance of the derived type that has the required fields set.</returns>
-    /// <remarks>Each type is cached based on the set of custom fields it contains and are re-used where
-    /// possible instead of creating types with the same set of fields over and over again.</remarks>
-    private CreateBugParams GetCreateBugParamsTypeInstance(IEnumerable<KeyValuePair<string, string>> customFields)
+    /// <param name="bugFieldInfo">Bug field values to extract the custom field values from.</param>
+    /// <returns>A <see cref="BugCustomFields"/> instance populated with each custom field's details.</returns>
+    private BugCustomFields GetCustomFieldValuesForBug(XmlRpcStruct bugFieldInfo)
     {
-      //If there aren't any custom fields, we can use the type we already have
-      if (customFields == null || customFields.Count() == 0)
-        return new CreateBugParams();
+      List<BugCustomField> customFields = new List<BugCustomField>();
 
-      //The same set of fields may be specified multiple times but in a different order so sort
-      //the field list before we calculate the hash code
-      string[] customFieldNames = customFields.Select((f) => f.Key).ToArray();
-      Array.Sort<string>(customFieldNames, StringComparer.InvariantCultureIgnoreCase);
+      foreach (BugCustomField customField in mCustomFieldTemplate)
+        customFields.Add(new BugCustomField(customField.FieldName, 
+                                            customField.FieldType, 
+                                            bugFieldInfo[customField.FieldName]));
 
-      //Calculate the hash code for each custom field to see if we already have a type defined
-      //that can handle it
-      int fieldNamesHashCode = string.Join("", customFieldNames).GetHashCode();
-
-      //If we won't have a type capable of handling this set of custom fields, define one.
-      if (!mCreateBugTypes.ContainsKey(fieldNamesHashCode))
-      {
-        AppDomain currDomain = AppDomain.CurrentDomain;
-        AssemblyBuilder asmBuilder = currDomain.DefineDynamicAssembly(new AssemblyName("BugUpdateParamTypes"), AssemblyBuilderAccess.Run);
-        ModuleBuilder modBuilder = asmBuilder.DefineDynamicModule("BugUpdateParamTypes");
-
-        Guid typeGuid = Guid.NewGuid();
-        string typeName = string.Format("Bugzilla.Proxies.Bug.CreateNewBugParams{0}", typeGuid.ToString());
-        TypeBuilder createParamsType = modBuilder.DefineType(typeName, TypeAttributes.Public | TypeAttributes.Class, typeof(CreateBugParams));
-
-        //Add fields for each custom field specified
-        foreach (KeyValuePair<string, string> bzCustomField in customFields)
-          createParamsType.DefineField(bzCustomField.Key, typeof(string), FieldAttributes.Public);
-
-        //Finalise the type and store it away for use
-        mCreateBugTypes.Add(fieldNamesHashCode, createParamsType.CreateType());
-      }
-
-      //Create an instance of the required type
-      return (CreateBugParams)Activator.CreateInstance(mCreateBugTypes[fieldNamesHashCode]);
+      return new BugCustomFields(customFields);
     }
-
     /// <summary>
     /// Adds each cookie in the collection to each proxy's cookie container.
     /// </summary>

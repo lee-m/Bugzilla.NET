@@ -24,8 +24,8 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("IBugzillaProxy")]
 
 //This is the name given to the in-memory assembly used to hold dynamically generated types used when creating
-//new bugs to store the custom field values
-[assembly: InternalsVisibleTo("BugUpdateParamTypes")]
+//new or updating existing bugs to store the custom field values
+[assembly: InternalsVisibleTo("BugDynamicCreateUpdateParams")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 

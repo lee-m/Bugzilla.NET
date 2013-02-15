@@ -25,7 +25,8 @@ namespace Bugzilla.Proxies.Bug.Params
   /// <summary>
   /// Parameters passed when updating details of a bug.
   /// </summary>
-  internal struct UpdateBugParam
+  [XmlRpcMissingMapping(MappingAction.Ignore)]
+  internal class UpdateBugParam
   {
     /// <summary>
     /// IDs of the bugs to update.
