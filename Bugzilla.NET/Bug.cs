@@ -425,7 +425,7 @@ namespace Bugzilla
     /// to indicate no comment should be created.</param>
     /// <param name="changeCommentVisibility">>If adding a comment along with the changes, whether the comment should be private or public.  
     /// Defaults to a public comment if not set.</param>
-    public void ResetAssignedTo(string changeComment, Comment.CommentVisibility? changeCommentVisibility)
+    public UpdateBugModifications ResetAssignedTo(string changeComment, Comment.CommentVisibility? changeCommentVisibility)
     {
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
@@ -436,7 +436,7 @@ namespace Bugzilla
 
       try
       {
-        mProxy.UpdateBug(updateParams);
+        return new UpdateBugModifications(mProxy.UpdateBug(updateParams).Changes.First());
       }
       catch(XmlRpcFaultException e)
       {
@@ -458,7 +458,7 @@ namespace Bugzilla
     /// to indicate no comment should be created.</param>
     /// <param name="changeCommentVisibility">>If adding a comment along with the changes, whether the comment should be private or public.  
     /// Defaults to a public comment if not set.</param>
-    public void ResetQAContact(string changeComment, Comment.CommentVisibility? changeCommentVisibility)
+    public UpdateBugModifications ResetQAContact(string changeComment, Comment.CommentVisibility? changeCommentVisibility)
     {
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
@@ -469,7 +469,7 @@ namespace Bugzilla
 
       try
       {
-        mProxy.UpdateBug(updateParams);
+        return new UpdateBugModifications(mProxy.UpdateBug(updateParams).Changes.First());
       }
       catch (XmlRpcFaultException e)
       {
@@ -490,9 +490,9 @@ namespace Bugzilla
     /// <param name="remainingWorkTime">The amount of work time remaining in hours.</param>
     /// <param name="changeComment">If set, the text of a comment to add at the same time as the remaining work time is updated.</param>
     /// <param name="changeCommentVisibility">If adding a comment, indicates whether the comment is private or not. Defaults to a public comment if a change comment is provided but this parameter is <code>null</code>.</param>
-    public void SetNumberOfHoursWorkRemaining(double remainingWorkTime, 
-                                              string changeComment,
-                                              Comment.CommentVisibility? changeCommentVisibility)
+    public UpdateBugModifications SetNumberOfHoursWorkRemaining(double remainingWorkTime, 
+                                                                string changeComment,
+                                                                Comment.CommentVisibility? changeCommentVisibility)
     {
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
@@ -503,7 +503,7 @@ namespace Bugzilla
 
       try
       {
-        mProxy.UpdateBug(updateParams);
+        return new UpdateBugModifications(mProxy.UpdateBug(updateParams).Changes.First());
       }
       catch (XmlRpcFaultException e)
       {
@@ -527,10 +527,10 @@ namespace Bugzilla
     /// <param name="changeCommentVisibility">If adding a comment, whether the comment is private or not. If not set, defaults to public if a change comment text was specified.</param>
     /// <remarks>If <paramref name="remainingTime"/> is not set, the value of <paramref name="hoursWorked"/> will be deducted
     /// from the bugs remaining time.</remarks>
-    public void UpdateNumberOfHoursWorked(double hoursWorked, 
-                                          double? remainingTime,
-                                          string changeComment,
-                                          Comment.CommentVisibility? changeCommentVisibility)
+    public UpdateBugModifications UpdateNumberOfHoursWorked(double hoursWorked, 
+                                                            double? remainingTime,
+                                                            string changeComment,
+                                                            Comment.CommentVisibility? changeCommentVisibility)
     {
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
@@ -542,7 +542,7 @@ namespace Bugzilla
 
       try
       {
-        mProxy.UpdateBug(updateParams);
+        return new UpdateBugModifications(mProxy.UpdateBug(updateParams).Changes.First());
       }
       catch (XmlRpcFaultException e)
       {
@@ -564,9 +564,9 @@ namespace Bugzilla
     /// <param name="changeComment">If non-null, the text of a comment to add alongside the changes.</param>
     /// <param name="changeCommentVisibility">If non-null, indicates whether the change comment should be private. If a change comment text is provided, but this parameter is <code>null</code>, defaults to a public comment.</param>
     /// <exception cref="ArgumentNullException"><paramref name="commentStatusChanges"/> is <code>null</code>.</exception>
-    public void ToggleCommentsPublicPrivateStatus(IEnumerable<Tuple<int, bool>> commentStatusChanges,
-                                                  string changeComment, 
-                                                  Comment.CommentVisibility? changeCommentVisibility)
+    public UpdateBugModifications ToggleCommentsPublicPrivateStatus(IEnumerable<Tuple<int, bool>> commentStatusChanges,
+                                                                    string changeComment, 
+                                                                    Comment.CommentVisibility? changeCommentVisibility)
     {
       if (commentStatusChanges == null)
         throw new ArgumentNullException("commentStatusChanges");
@@ -583,7 +583,7 @@ namespace Bugzilla
 
       try
       {
-        mProxy.UpdateBug(updateParams);
+        return new UpdateBugModifications(mProxy.UpdateBug(updateParams).Changes.First());
       }
       catch (XmlRpcFaultException e)
       {
@@ -612,11 +612,11 @@ namespace Bugzilla
     /// </remarks>
     /// <exception cref="InvalidKeywordException">One or more invalid keywords were specified.</exception>
     /// <exception cref="BugEditAccessDeniedException">Currently logged in user does not have the required security rights to modify this bug.</exception>
-    public void UpdateKeywords(IEnumerable<string> newKeywords, 
-                               IEnumerable<string> deletedKeywords,
-                               IEnumerable<string> resetKeywords,
-                               string changeComment, 
-                               Comment.CommentVisibility? changeCommentVisibility)
+    public UpdateBugModifications UpdateKeywords(IEnumerable<string> newKeywords, 
+                                                 IEnumerable<string> deletedKeywords,
+                                                 IEnumerable<string> resetKeywords,
+                                                 string changeComment, 
+                                                 Comment.CommentVisibility? changeCommentVisibility)
     {
       //At least one of the new, deleted or reset parameters need to be specified otherwise there's nothing to do.
       if (newKeywords == null
@@ -642,7 +642,7 @@ namespace Bugzilla
 
       try
       {
-        mProxy.UpdateBug(updateParams);
+        return new UpdateBugModifications(mProxy.UpdateBug(updateParams).Changes.First());
       }
       catch (XmlRpcFaultException e)
       {
@@ -668,10 +668,10 @@ namespace Bugzilla
     /// <param name="changeComment">If set, the text of a comment to add at the same time as updating the CC list.</param>
     /// <param name="changeCommentVisibility">If adding a change comment, indicates whether the comment is private or not.</param>
     /// <exception cref="ArgumentException">Both <paramref name="usersToAdd"/> and <paramref name="usersToRemove"/> are null/Nothing.</exception>
-    public void UpdateCCList(IEnumerable<string> usersToAdd, 
-                             IEnumerable<string> usersToRemove,
-                             string changeComment,
-                             Comment.CommentVisibility? changeCommentVisibility)
+    public UpdateBugModifications UpdateCCList(IEnumerable<string> usersToAdd, 
+                                               IEnumerable<string> usersToRemove,
+                                               string changeComment,
+                                               Comment.CommentVisibility? changeCommentVisibility)
     {
       if (usersToAdd == null
          && usersToRemove == null)
@@ -692,7 +692,7 @@ namespace Bugzilla
 
       try
       {
-        mProxy.UpdateBug(updateParams);
+        return new UpdateBugModifications(mProxy.UpdateBug(updateParams).Changes.First());
       }
       catch (XmlRpcFaultException e)
       {
@@ -715,7 +715,7 @@ namespace Bugzilla
     /// </summary>
     /// <param name="changeComment">If set, the text of a comment to add at the same time as updating the CC list.</param>
     /// <param name="changeCommentVisibility">If adding a change comment, indicates whether the comment is private or not.</param>
-    public void Update(string changeComment, Comment.CommentVisibility? changeCommentVisibility)
+    public UpdateBugModifications Update(string changeComment, Comment.CommentVisibility? changeCommentVisibility)
     {
       UpdateBugParam updateParams = BugCreateUpdateParamsFactory.Instance.GetUpdateBugParamInstance(mCustomFields);
       updateParams.Ids = new int[] { Id };
@@ -767,7 +767,7 @@ namespace Bugzilla
 
       try
       {
-        mProxy.UpdateBug(updateParams);
+        return new UpdateBugModifications(mProxy.UpdateBug(updateParams).Changes.First());
       }
       catch (XmlRpcFaultException e)
       {
@@ -813,9 +813,9 @@ namespace Bugzilla
     /// <param name="duplicateBugID">ID of the bug to mark this bug as a duplicate of.</param>
     /// <param name="changeComment">If set, the text of a comment to add at the same time as updating the CC list.</param>
     /// <param name="changeCommentVisibility">If adding a change comment, indicates whether the comment is private or not.</param>
-    public void MarkAsDuplicate(int duplicateBugID, 
-                                string changeComment, 
-                                Comment.CommentVisibility? changeCommentVisibility)
+    public UpdateBugModifications MarkAsDuplicate(int duplicateBugID, 
+                                                  string changeComment, 
+                                                  Comment.CommentVisibility? changeCommentVisibility)
     {
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
@@ -826,7 +826,7 @@ namespace Bugzilla
 
       try
       {
-        mProxy.UpdateBug(updateParams);
+        return new UpdateBugModifications(mProxy.UpdateBug(updateParams).Changes.First());
       }
       catch (XmlRpcFaultException e)
       {
