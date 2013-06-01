@@ -38,7 +38,7 @@ namespace Bugzilla.Proxies.Bug
     /// </summary>
     /// <param name="updateInfo">New field values for the bug to set.</param>
     [XmlRpcMethod("Bug.update")]
-    void UpdateBug(UpdateBugParam updateInfo);
+    UpdateBugResponse UpdateBug(UpdateBugParam updateInfo);
 
     /// <summary>
     /// Adds a new comment to the specified bug.
