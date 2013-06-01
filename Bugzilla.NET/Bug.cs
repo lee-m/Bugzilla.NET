@@ -175,9 +175,10 @@ namespace Bugzilla
     /// <param name="changeComment">Comment text to add along with the attachment.</param>
     /// <param name="isPatch">Whether the attachment is a patch file or not.</param>
     /// <param name="attachmentVisibility">Whether the attachment should be public or private.</param>
+    /// <returns>Details of the newly created attachment.</returns>
     /// <remarks>The MIME type will be automatically determined from either the extension of the file, or it's data..</remarks>
     /// <exception cref="ArgumentNullException"><paramref name="fileName">fileName</paramref> is null or blank.</exception>
-    public void AddAttachment(string fileName, 
+    public Attachment AddAttachment(string fileName, 
                               string summary, 
                               string changeComment, 
                               bool isPatch, 
@@ -186,13 +187,13 @@ namespace Bugzilla
       if (string.IsNullOrEmpty(fileName))
         throw new ArgumentNullException("fileName");
 
-      AddAttachment(File.ReadAllBytes(fileName), 
-                    Path.GetFileName(fileName), 
-                    summary, 
-                    MIMETypes.GetMIMEType(fileName), 
-                    changeComment, 
-                    isPatch, 
-                    attachmentVisibility);
+      return AddAttachment(File.ReadAllBytes(fileName), 
+                           Path.GetFileName(fileName), 
+                           summary, 
+                           MIMETypes.GetMIMEType(fileName), 
+                           changeComment, 
+                           isPatch, 
+                           attachmentVisibility);
     }
 
     /// <summary>
