@@ -635,10 +635,10 @@ namespace Bugzilla
         updateParams.KeywordModifications.Add("add", newKeywords.ToArray());
 
       if(deletedKeywords != null)
-        updateParams.KeywordModifications.Add("remove", newKeywords.ToArray());
+        updateParams.KeywordModifications.Add("remove", deletedKeywords.ToArray());
 
       if(resetKeywords != null)
-        updateParams.KeywordModifications.Add("set", newKeywords.ToArray());
+        updateParams.KeywordModifications.Add("set", resetKeywords.ToArray());
 
       try
       {
