@@ -108,7 +108,7 @@ namespace Bugzilla
     private List<BugCustomField> mCustomFieldTemplate;
 
     /// <summary>
-    /// Options to be passed to <see cref="GetBug">GetBug</see>/>.
+    /// Options to be passed to <see cref="GetBugs">GetBugs</see>/>.
     /// </summary>
     public enum BugFetchOptions
     {
@@ -419,22 +419,29 @@ namespace Bugzilla
     }
 
     /// <summary>
-    /// Creates a bug instance with the specified id without fetching any details from the remote server/
+    /// Creates one or bug instance with the specified ids.
     /// </summary>
-    /// <param name="id">ID of the bug instance.</param>
+    /// <param name="ids">IDs of the bug instances to fetch/create.</param>
     /// <param name="fetchOptions">Whether the fetch the bug's data from the remote server or not.</param>
     /// <returns>A bug instance for the specified ID.</returns>
     /// <exception cref="InvalidOperationException">Attempted to fetch details of the bug from the remote server when a user isn't logged in.</exception>
     /// <exception cref="InvalidBugIDOrAliasException">No bug exists with the specified ID.</exception>
     /// <exception cref="BugAccessDeniedException">Requested bug is inaccessible to the current user.</exception>
-    public Bug GetBug(int id, BugFetchOptions fetchOptions)
+    public IEnumerable<Bug> GetBugs(IEnumerable<int> ids, BugFetchOptions fetchOptions)
     {
       if (fetchOptions == BugFetchOptions.NoFetch)
       {
-        XmlRpcStruct info = new XmlRpcStruct();
-        info["id"] = id;
-        
-        return new Bug(info, mBugProxy, GetCustomFieldValuesForBug(info));
+        List<Bug> bugs = new List<Bug>();
+
+        foreach (int id in ids)
+        {
+          XmlRpcStruct info = new XmlRpcStruct();
+          info["id"] = id;
+
+          bugs.Add(new Bug(info, mBugProxy, GetCustomFieldValuesForBug(info)));
+        }
+
+        return bugs;
       }
       else
       {
@@ -443,28 +450,22 @@ namespace Bugzilla
           throw new InvalidOperationException("A user must be logged in before getting bug details from remote server.");
 
         GetBugParams getParams = new GetBugParams();
-        getParams.IDsOrAliases = new string[] { id.ToString() };
+        getParams.IDsOrAliases = ids.Select(id => id.ToString()).ToArray();
         getParams.Permissive = false;
 
         try
         {
           GetBugsResponse resp = mBugProxy.GetBugs(getParams);
-          return new Bug(resp.Bugs[0], mBugProxy, GetCustomFieldValuesForBug(resp.Bugs[0]));
+          List<Bug> bugs = new List<Bug>();
+
+          foreach (var info in resp.Bugs)
+            bugs.Add(new Bug(info, mBugProxy, GetCustomFieldValuesForBug(info)));
+
+          return bugs;
         }
         catch (XmlRpcFaultException e)
         {
-          switch (e.FaultCode)
-          {
-            case 100:
-            case 101:
-              throw new InvalidBugIDOrAliasException(id.ToString());
-
-            case 102:
-              throw new BugAccessDeniedException();
-            
-            default:
-              throw new BugzillaException(string.Format("Error getting bug. Details: {0}", e.Message));
-          }
+          throw new BugzillaException(string.Format("Error getting bug(s) details. Details: {0}", e.Message));
         }
       }
     }
