@@ -978,6 +978,8 @@ namespace Bugzilla
     /// <summary>
     /// Accessor for the bug ids this bug blocks.
     /// </summary>
+    /// <remarks>Updating the blocks list this way will overwrite any existing blocks list with the
+    /// new value.</remarks>
     public int[] Blocks
     {
       get 
@@ -991,6 +993,8 @@ namespace Bugzilla
     /// <summary>
     /// Accessor for the bug ids this bug depends on.
     /// </summary>
+    /// <remarks>Updating the depends on list this way will overwrite any existing depends on list with the
+    /// new value.</remarks>
     public int[] DependsOn
     {
       get 
@@ -1077,6 +1081,7 @@ namespace Bugzilla
     /// <summary>
     /// Keywords set on the bug.
     /// </summary>
+    /// <remarks>Updating the keywords list this way will overwrite any existing keywords.</remarks>
     public string[] Keywords
     {
       get 
