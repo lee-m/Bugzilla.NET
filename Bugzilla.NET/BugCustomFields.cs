@@ -47,7 +47,9 @@ namespace Bugzilla
     private object mFieldValue;
 
     /// <summary>
-    /// Default constructor.
+    /// Initialises this instance with the specified field name and type.
+    /// <param name="fieldName">Name of the custom field.</param>
+    /// <param name="fieldType">Type of the custom field.</param>
     /// </summary>
     public BugCustomField(string fieldName, BugFieldDetails.BugFieldType fieldType) : this(fieldName, fieldType, null)
     {
@@ -108,7 +110,7 @@ namespace Bugzilla
     /// <summary>
     /// Accessor for a typed enumerator.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>An enumerator instance.</returns>
     public IEnumerator<BugCustomField> GetEnumerator()
     {
       return mFields.Values.GetEnumerator();
