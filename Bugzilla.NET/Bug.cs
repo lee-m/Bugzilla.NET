@@ -130,7 +130,7 @@ namespace Bugzilla
     /// <param name="startDate">If set, only comments entered after this date will be returned.</param>
     /// <returns>Details of each comment against the bug.</returns>
     /// <exception cref="CommentAccessDeniedException">Attempted to access a private comment when the current user is not in the "insiders" group.</exception>
-    public List<Comment> GetComments(DateTime? startDate)
+    public IEnumerable<Comment> GetComments(DateTime? startDate)
     {
       //Fill in the request params
       GetCommentParams commentParams = new GetCommentParams();
@@ -278,7 +278,7 @@ namespace Bugzilla
     /// <exception cref="InvalidBugIDOrAliasException">An invalid bug ID or alias was specified.</exception>
     /// <exception cref="BugAccessDeniedException">Access to the specified bug was denied.</exception>
     /// <exception cref="AttachmentAccessDeniedException">Attempted to get access to a private attachment when current user is not in "insiders" group..</exception>
-    public List<Attachment> GetAttachments()
+    public IEnumerable<Attachment> GetAttachments()
     {
       GetAttachmentsParam attachmentParams = new GetAttachmentsParam();
       attachmentParams.BugIDsOrAliases = new string[] { Id.ToString() };
@@ -849,7 +849,7 @@ namespace Bugzilla
     /// Get the details of all the fields which can be set on a bug.
     /// </summary>
     /// <returns></returns>
-    public List<BugFieldDetails> GetFields()
+    public IEnumerable<BugFieldDetails> GetFields()
     {
       //Only interested in the name, whether the field is custom or not and the type.
       GetFieldsParam getFieldsParam = new GetFieldsParam();

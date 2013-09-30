@@ -18,6 +18,8 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //THE SOFTWARE.
 
+using System.Collections.Generic;
+
 using CookComputing.XmlRpc;
 
 namespace Bugzilla
@@ -63,11 +65,11 @@ namespace Bugzilla
     /// <summary>
     /// Accessor for the set of added URLs.
     /// </summary>
-    public string[] AddedURLs { get { return mAddedURLs; } }
+    public IEnumerable<string> AddedURLs { get { return mAddedURLs; } }
 
     /// <summary>
     /// Accessor for the set of removed URLs.
     /// </summary>
-    public string[] RemovedURLs { get { return mRemovedURLs; } }
+    public IEnumerable<string> RemovedURLs { get { return mRemovedURLs; } }
   }
 }
