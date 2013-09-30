@@ -58,7 +58,7 @@ namespace Bugzilla
     /// <summary>
     /// Accessor for the set of modifications made to this bug.
     /// </summary>
-    public List<BugModification> Modifications { get { return mInfo.Changes.Select(m => new BugModification(m)).ToList(); } }
+    public IEnumerable<BugModification> Modifications { get { return mInfo.Changes.Select(m => new BugModification(m)).ToList(); } }
   }
 
   /// <summary>
@@ -93,7 +93,7 @@ namespace Bugzilla
     /// <summary>
     /// Accessor for the set of field/attachment modifications 
     /// </summary>
-    public List<BugFieldOrAttachmentModification> FieldAttachmentModifications { get { return mInfo.FieldModifications.Select(m => new BugFieldOrAttachmentModification(m)).ToList(); ; } }
+    public IEnumerable<BugFieldOrAttachmentModification> FieldAttachmentModifications { get { return mInfo.FieldModifications.Select(m => new BugFieldOrAttachmentModification(m)).ToList(); ; } }
   }
 
   /// <summary>

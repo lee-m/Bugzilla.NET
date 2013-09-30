@@ -127,7 +127,7 @@ namespace Bugzilla
       /// <summary>
       /// The set of valid status transitions form this bug status. Only valid for bug status field.
       /// </summary>
-      public List<BugStatusTransition> ValidStatusTransitions 
+      public IEnumerable<BugStatusTransition> ValidStatusTransitions 
       {
         get 
         {
@@ -237,7 +237,7 @@ namespace Bugzilla
     /// <summary>
     /// Accessor for the set of valid values for this field.
     /// </summary>
-    public List<BugFieldValidValue> ValidValues 
+    public IEnumerable<BugFieldValidValue> ValidValues 
     { 
       get 
       {
