@@ -834,65 +834,36 @@ namespace Bugzilla
     }
 
     /// <summary>
-    /// Gets comments for each bug ID/aliases and specific comment IDs.
+    /// Gets comments based on specific comment IDs.
     /// </summary>
-    /// <param name="bugIDsOrAliases">IDs or aliases of the bugs to get the comments for.</param>
     /// <param name="commentIDs">IDs of specific comments to get.</param>
-    /// <param name="startDate">If set, the date/time to get comments which were posted on or after that date.</param>
     /// <returns>Comment details for the requested comments.</returns>
-    /// <exception cref="InvalidOperationException"><paramref name="bugIDsOrAliases"/> and <paramref name="commentIDs"/> are null.</exception>
+    /// <exception cref="ArgumentNullException"><paramref name="commentIDs"/> is null.</exception>
     /// <exception cref="CommentAccessDeniedException">One or more of the requested comments are inaccessible to the current user.</exception>
     /// <exception cref="InvalidCommentIDException">One or more invalid comment IDs specified.</exception>
-    public CommentCollection GetComments(IEnumerable<string> bugIDsOrAliases, 
-                                         IEnumerable<int> commentIDs,
-                                         DateTime? startDate)
+    public IEnumerable<Comment> GetCommentsByID(IEnumerable<int> commentIDs)
     {
-      //Either bug IDs/aliases or comment IDs must be set
-      if (bugIDsOrAliases == null && commentIDs == null)
-        throw new InvalidOperationException("At least one of bug IDs/aliases or comment IDs must be provided.");
+      if (commentIDs == null)
+        throw new ArgumentNullException("commentIDs");
 
       //Fill in the request params
       GetCommentParams commentParams = new GetCommentParams();
-
-      if(bugIDsOrAliases != null)
-        commentParams.IdsOrAliases = bugIDsOrAliases.ToArray();
-
-      if(commentIDs != null)
-        commentParams.CommentIDs = commentIDs.ToArray();
-
-      commentParams.NewSince = startDate;
+      commentParams.CommentIDs = ConvertIEnumerableToArray(commentIDs);
 
       //Run the command on the server
       try
       {
         GetCommentsResponse resp = mBugProxy.GetComments(commentParams);
-
-        //Parse the bug comments
-        CommentCollection retColl = new CommentCollection();
-
-        foreach (var bugID in resp.BugComments.Keys)
-        {
-          XmlRpcStruct commentsHash = (XmlRpcStruct)resp.BugComments[bugID];
-
-          foreach (var comment in (object[])commentsHash["comments"])
-          {
-            Comment comm = new Comment((XmlRpcStruct)comment);
-          
-            if(!retColl.BugComments.ContainsKey(comm.BugID))
-              retColl.BugComments.Add(comm.BugID, new List<Comment>());
-
-            retColl.BugComments[comm.BugID].Add(comm);
-          }
-        }
-
+        List<Comment> comments = new List<Comment>();
+        
         //Parse the comments collection
         foreach (var commentID in resp.Comments.Keys)
         {
           Comment comm = new Comment((XmlRpcStruct)resp.Comments[commentID]);
-          retColl.Comments.Add(comm);
+          comments.Add(comm);
         }
 
-        return retColl;
+        return comments;
       }
       catch(XmlRpcFaultException e)
       {
@@ -905,78 +876,47 @@ namespace Bugzilla
             throw new InvalidCommentIDException();
 
           default:
-            throw new BugzillaException(string.Format("Error getting comments for bug. Details: {0}", e.Message));
+            throw new BugzillaException(string.Format("Error getting comments. Details: {0}", e.Message));
         }
       }
     }
 
     /// <summary>
-    /// Gets attachment for each bug ID/aliases and specific attachment IDs.
+    /// Gets attachment based on the IDs of those attachments.
     /// </summary>
-    /// <param name="bugIDsOrAliases">IDs or aliases of the bugs to get the attachments for.</param>
     /// <param name="attachmentIDs">IDs of particular attachment to fetch.</param>
     /// <returns>Details for the requested attachments.</returns>
-    /// <exception cref="InvalidOperationException"><paramref name="bugIDsOrAliases"/> and <paramref name="attachmentIDs"/> are null.</exception>
+    /// <exception cref="ArgumentNullException"><paramref name="attachmentIDs"/> is null.</exception>
     /// <exception cref="InvalidBugIDOrAliasException">One or more invalid bug IDs/aliases specified.</exception>
     /// <exception cref="BugAccessDeniedException">Current user does not have access one or more of the specified bugs.</exception>
     /// <exception cref="AttachmentAccessDeniedException">One or more of the specified attachments are private but the current user is not in the "insiders" group.</exception>
-    public AttachmentCollection GetAttachments(IEnumerable<string> bugIDsOrAliases, IEnumerable<int> attachmentIDs)
+    public IEnumerable<Attachment> GetAttachmentsByID(IEnumerable<int> attachmentIDs)
     {
-      //Either bug IDs/aliases or comment IDs must be set
-      if (bugIDsOrAliases == null && attachmentIDs == null)
-        throw new InvalidOperationException("At least one of bug IDs/aliases or comment IDs must be provided.");
+      if (attachmentIDs == null)
+        throw new ArgumentNullException("attachmentIDs");
 
       //Fill in the request parameters
       GetAttachmentsParam attachentParams = new GetAttachmentsParam();
-
-      if (bugIDsOrAliases != null)
-        attachentParams.BugIDsOrAliases = bugIDsOrAliases.ToArray();
-
-      if (attachmentIDs != null)
-        attachentParams.AttachmentIDs = attachmentIDs.ToArray();
+      attachentParams.AttachmentIDs = ConvertIEnumerableToArray(attachmentIDs);
 
       try
       {
         GetAttachmentsResponse resp = mBugProxy.GetAttachments(attachentParams);
-
-        //Parse the attachments
-        AttachmentCollection retColl = new AttachmentCollection();
-
-        foreach (var bugID in resp.BugAttachments.Keys)
-        {
-          XmlRpcStruct commentsHash = (XmlRpcStruct)resp.BugAttachments[bugID];
-
-          foreach (var attachDets in (object[])commentsHash["comments"])
-          {
-            Attachment attachment = new Attachment((XmlRpcStruct)attachDets);
-
-            if (!retColl.BugAttachments.ContainsKey(attachment.BugID))
-              retColl.BugAttachments.Add(attachment.BugID, new List<Attachment>());
-
-            retColl.BugAttachments[attachment.BugID].Add(attachment);
-          }
-        }
+        List<Attachment> attachments = new List<Attachment>();
 
         //Parse the attachments collection
         foreach (var attachmentID in resp.Attachments.Keys)
         {
           Attachment attachment = new Attachment((XmlRpcStruct)resp.Attachments[attachmentID]);
-          retColl.Attachments.Add(attachment);
+          attachments.Add(attachment);
         }
 
-        return retColl;
+        return attachments;
       }
       catch (XmlRpcFaultException e)
       {
         switch (e.FaultCode)
         {
-          case 100:
-          case 101:
-            throw new InvalidBugIDOrAliasException();
-
-          case 102:
-            throw new BugAccessDeniedException();
-
           case 304:
             throw new AttachmentAccessDeniedException();
 

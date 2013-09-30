@@ -51,13 +51,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attachment.cs" />
-    <Compile Include="AttachmentCollection.cs" />
     <Compile Include="Bug.cs" />
     <Compile Include="BugCustomFields.cs" />
     <Compile Include="BugHistory.cs" />
     <Compile Include="BugzillaException.cs" />
     <Compile Include="Comment.cs" />
-    <Compile Include="CommentCollection.cs" />
     <Compile Include="BugExceptions.cs" />
     <Compile Include="BugFieldDetails.cs" />
     <Compile Include="Extension.cs" />
