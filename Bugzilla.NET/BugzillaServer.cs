@@ -269,8 +269,8 @@ namespace Bugzilla
     /// Queries for a set of products based on their IDs.
     /// </summary>
     /// <param name="productIds">roduct IDs to query for.</param>
-    /// <returns>A list of product details for each requested product.</returns>
-    public List<Product> GetProducts(IEnumerable<int> productIds)
+    /// <returns>A sequence of product details for each requested product.</returns>
+    public IEnumerable<Product> GetProducts(IEnumerable<int> productIds)
     {
       GetProductsParams prodParams = new GetProductsParams();
       prodParams.Ids = productIds.ToArray();
@@ -332,7 +332,7 @@ namespace Bugzilla
     /// <param name="loginNames">Login names of the users to find.</param>
     /// <param name="userMatches">User match strings - login or real names to match on.</param>
     /// <param name="includeDisabled">Whether to include disabled users in the search results.</param>
-    /// <returns>A list of user details which matches any of the specified search parameters.</returns>
+    /// <returns>A sequence of user details which matches any of the specified search parameters.</returns>
     /// <remarks>At least one of <paramref name="ids"/>, <paramref name="loginNames"/> or <paramref name="userMatches"/>
     /// must be non-null and have at least one value.</remarks>
     /// <exception cref="ArgumentException"><paramref name="ids"/>, <paramref name="loginNames"/> 
@@ -340,29 +340,29 @@ namespace Bugzilla
     /// <exception cref="InvalidLoginOrGroupNameException">One or more user IDs or group names specified is invalid.</exception>
     /// <exception cref="UserAccessDeniedException">One or more of the requested users are not accessible to the currently logged in user.</exception>
     /// <exception cref="InvalidOperationException">Logged out users cannot use the <paramref name="userMatches"/> functionality.</exception>
-    public List<User> SearchUsers(int[] groupIds, 
-                                  string[] groupNames, 
-                                  int[] ids, 
-                                  string[] loginNames, 
-                                  string[] userMatches, 
-                                  bool includeDisabled)
+    public IEnumerable<User> SearchUsers(IEnumerable<int> groupIds, 
+                                         IEnumerable<string> groupNames, 
+                                         IEnumerable<int> ids, 
+                                         IEnumerable<string> loginNames, 
+                                         IEnumerable<string> userMatches, 
+                                         bool includeDisabled)
     {
       //Bugzilla requires that at least one of these be set.
       if ((ids == null 
-           || ids.Length == 0)
+           || ids.Count() == 0)
           && (loginNames == null 
-             || loginNames.Length == 0)
+             || loginNames.Count() == 0)
           && (userMatches == null 
-             || userMatches.Length == 0))
+             || userMatches.Count() == 0))
         throw new ArgumentException("At least one user ID, login name or user match must be specified.");
 
       GetUserParams searchParams = new GetUserParams();
-      searchParams.GroupIds = groupIds;
-      searchParams.Groups = groupNames;
-      searchParams.Ids = ids;
+      searchParams.GroupIds = ConvertIEnumerableToArray(groupIds);
+      searchParams.Groups = ConvertIEnumerableToArray(groupNames);
+      searchParams.Ids = ConvertIEnumerableToArray(ids);
       searchParams.IncludeDisabled = includeDisabled;
-      searchParams.Names = loginNames;
-      searchParams.UserMatches = userMatches;
+      searchParams.Names = ConvertIEnumerableToArray(loginNames);
+      searchParams.UserMatches = ConvertIEnumerableToArray(userMatches);
 
       try
       {
@@ -670,21 +670,13 @@ namespace Bugzilla
       createParams.TargetMilestone = targetMilestone;
       createParams.EstimatedTime = estimate;
       createParams.URL = url;
+      createParams.CCList = ConvertIEnumerableToArray(ccList);
+      createParams.Groups = ConvertIEnumerableToArray(groups);
+      createParams.DependsOn = ConvertIEnumerableToArray(dependsOnBugIDs);
+      createParams.Blocks = ConvertIEnumerableToArray(blockedBugIDs);
 
       if(deadline != null)
         createParams.Deadline = deadline.Value.ToString("yyyy-MM-dd");
-
-      if (ccList != null)
-        createParams.CCList = ccList.ToArray();
-
-      if (groups != null)
-        createParams.Groups = groups.ToArray();
-
-      if (dependsOnBugIDs != null)
-        createParams.DependsOn = dependsOnBugIDs.ToArray();
-
-      if (blockedBugIDs != null)
-        createParams.Blocks = blockedBugIDs.ToArray();
 
       //Set any custom field values
       if (customFields != null)
@@ -747,12 +739,12 @@ namespace Bugzilla
     /// <returns>Details of the newly created attachments.</returns>
     /// <remarks>The MIME type will be automatically determined from either the extension of the file, or it's data..</remarks>
     /// <exception cref="ArgumentNullException"><paramref name="fileName"/> is null or blank.</exception>
-    public List<Attachment> AddAttachmentToBugs(IEnumerable<string> idsOrAliases,
-                                                string fileName, 
-                                                string summary, 
-                                                string comment, 
-                                                bool isPatch, 
-                                                bool isPrivate)
+    public IEnumerable<Attachment> AddAttachmentToBugs(IEnumerable<string> idsOrAliases,
+                                                       string fileName, 
+                                                       string summary, 
+                                                       string comment, 
+                                                       bool isPatch, 
+                                                       bool isPrivate)
     {
       if (string.IsNullOrEmpty(fileName))
         throw new ArgumentNullException("fileName");
@@ -780,20 +772,24 @@ namespace Bugzilla
     /// <exception cref="ArgumentNullException"><paramref name="attachmentData"/> not specified.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="summary"/> is null or blank.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="mimeType"/> is null or blank.</exception>
+    /// <exception cref="ArgumentNullException"><paramref name="idsOrAliases"/> is null.</exception>
     /// <exception cref="AttachmentTooLargeException">Size of the attachment is too large.</exception>
     /// <exception cref="InvalidMIMETypeException"><paramref name="mimeType"/> is invalid.</exception>
-    public List<Attachment> AddAttachmentToBugs(IEnumerable<string> idsOrAliases,
-                                                byte[] attachmentData, 
-                                                string fileName, 
-                                                string summary, 
-                                                string mimeType,
-                                                string comment, 
-                                                bool isPatch, 
-                                                bool isPrivate)
+    public IEnumerable<Attachment> AddAttachmentToBugs(IEnumerable<string> idsOrAliases,
+                                                       byte[] attachmentData, 
+                                                       string fileName, 
+                                                       string summary, 
+                                                       string mimeType,
+                                                       string comment, 
+                                                       bool isPatch, 
+                                                       bool isPrivate)
     {
       //Check that the required parameters are set
       if (attachmentData == null)
         throw new ArgumentNullException("attachmentData");
+
+      if (idsOrAliases == null)
+        throw new ArgumentNullException("idsOrAliases");
 
       if (string.IsNullOrEmpty(summary))
         throw new ArgumentNullException("summary");
@@ -1010,22 +1006,18 @@ namespace Bugzilla
     /// <para>
     /// </para>
     /// </remarks>
-    public List<SeeAlsoModifications> UpdateSeeAlsoURLs(IEnumerable<string> bugIDsOrAliases,
-                                                        IEnumerable<string> urlsToAdd,
-                                                        IEnumerable<string> urlsToRemove)
+    public IEnumerable<SeeAlsoModifications> UpdateSeeAlsoURLs(IEnumerable<string> bugIDsOrAliases,
+                                                               IEnumerable<string> urlsToAdd,
+                                                               IEnumerable<string> urlsToRemove)
     {
       if (bugIDsOrAliases == null)
         throw new ArgumentNullException("bugIDsOrAliases");
 
       UpdateSeeAlsoParams updateParams = new UpdateSeeAlsoParams();
       updateParams.IdsOrAliases = bugIDsOrAliases.ToArray();
-
-      if (urlsToAdd != null)
-        updateParams.URLsToAdd = urlsToAdd.ToArray();
-
-      if (urlsToRemove != null)
-        updateParams.URLsToRemove = urlsToRemove.ToArray();
-
+      updateParams.URLsToAdd = ConvertIEnumerableToArray(urlsToAdd);
+      updateParams.URLsToRemove = ConvertIEnumerableToArray(urlsToRemove);
+      
       try
       {
         UpdateSeeAlsoResponse resp = mBugProxy.UpdateSeeAlso(updateParams);
@@ -1166,7 +1158,7 @@ namespace Bugzilla
     /// <summary>
     /// Accessor for the set of installed extensions.
     /// </summary>
-    public List<Extension> InstalledExtensions
+    public IEnumerable<Extension> InstalledExtensions
     {
       get
       {
@@ -1188,7 +1180,7 @@ namespace Bugzilla
     /// <summary>
     /// Accessor for the set of selectable product details.
     /// </summary>
-    public List<Product> SelectableProducts
+    public IEnumerable<Product> SelectableProducts
     {
       get
       {
@@ -1200,7 +1192,7 @@ namespace Bugzilla
     /// <summary>
     /// Accessor for the set of enterable product details.
     /// </summary>
-    public List<Product> EnterableProducts
+    public IEnumerable<Product> EnterableProducts
     {
       get
       {
@@ -1212,7 +1204,7 @@ namespace Bugzilla
     /// <summary>
     /// Accessor for the set of accessible product details for the currently logged in user.
     /// </summary>
-    public List<Product> AccessibleProducts
+    public IEnumerable<Product> AccessibleProducts
     {
       get
       {
