@@ -388,6 +388,100 @@ namespace Bugzilla
     }
 
     /// <summary>
+    /// Searches for bugs which matches a set of search criteria.
+    /// </summary>
+    /// <param name="aliases">Aliases to match on.</param>
+    /// <param name="assignedTo">Username of the person assigned to the bugs.</param>
+    /// <param name="components">Components to search on.</param>
+    /// <param name="reporters">Login names of the people who reported the bugs.</param>
+    /// <param name="ids">Bug IDs to search on.</param>
+    /// <param name="operatingSystems">Operating systems to search on.</param>
+    /// <param name="platforms">Platforms to search on.</param>
+    /// <param name="priorities">Bug priorities to search on.</param>
+    /// <param name="products">Products to search on.</param>
+    /// <param name="resolutions">Resolutions to search on.</param>
+    /// <param name="severities">Severities to search on.</param>
+    /// <param name="statuses">Statuses to search on.</param>
+    /// <param name="summaries">Summary text to search for - full matches only, not partial matching.</param>
+    /// <param name="targetMilestones">Target milestones to search on.</param>
+    /// <param name="qaContacts">QA contact usernames to search on.</param>
+    /// <param name="urls">See also URLs to search on.</param>
+    /// <param name="versions">Versions to search on.</param>
+    /// <param name="statusWhiteboard">Status whiteboard text to match on.</param>
+    /// <param name="creationTime">Search for bugs created after this date.</param>
+    /// <param name="lastChangeTime">Search for bugs modified after this date.</param>
+    /// <param name="limit">Restricts the search results to this number of results. </param>
+    /// <param name="offset">Starting position .</param>
+    /// <returns>
+    /// <para>A set of bugs which matches <b>any</b> of the specified criteria.</para>
+    /// <para>For the <paramref name="summaries"/> and <paramref name="statusWhiteboard"/> parameters, strings are not
+    /// split on spaces.</para>
+    /// </returns>
+    /// <remarks>Only bugs visible to the currently logged in user (if any) will be included in the search results.</remarks>
+    public IEnumerable<Bug> SearchBugs(IEnumerable<string> aliases,
+                                       IEnumerable<string> assignedTo,
+                                       IEnumerable<string> components,
+                                       IEnumerable<string> reporters,
+                                       IEnumerable<int> ids,
+                                       IEnumerable<string> operatingSystems,
+                                       IEnumerable<string> platforms,
+                                       IEnumerable<string> priorities,
+                                       IEnumerable<string> products,
+                                       IEnumerable<string> resolutions,
+                                       IEnumerable<string> severities,
+                                       IEnumerable<string> statuses,
+                                       IEnumerable<string> summaries,
+                                       IEnumerable<string> targetMilestones,
+                                       IEnumerable<string> qaContacts,
+                                       IEnumerable<string> urls,
+                                       IEnumerable<string> versions,
+                                       IEnumerable<string> statusWhiteboard,
+                                       DateTime? creationTime,
+                                       DateTime? lastChangeTime,
+                                       int limit,
+                                       int offset)
+    {
+      try
+      {
+        BugSearchParam searchParams = new BugSearchParam();
+        searchParams.Alias = ConvertIEnumerableToArray(aliases);
+        searchParams.AssignedTo = ConvertIEnumerableToArray(assignedTo);
+        searchParams.Component = ConvertIEnumerableToArray(components);
+        searchParams.Creator = ConvertIEnumerableToArray(reporters);
+        searchParams.Id = ConvertIEnumerableToArray(ids);
+        searchParams.OperatingSystem = ConvertIEnumerableToArray(operatingSystems);
+        searchParams.Platform = ConvertIEnumerableToArray(platforms);
+        searchParams.Priority = ConvertIEnumerableToArray(priorities);
+        searchParams.Product = ConvertIEnumerableToArray(products);
+        searchParams.Resolution = ConvertIEnumerableToArray(resolutions);
+        searchParams.Severity = ConvertIEnumerableToArray(severities);
+        searchParams.Status = ConvertIEnumerableToArray(statuses);
+        searchParams.Summary = ConvertIEnumerableToArray(summaries);
+        searchParams.TargetMilestone = ConvertIEnumerableToArray(targetMilestones);
+        searchParams.QAContact = ConvertIEnumerableToArray(qaContacts);
+        searchParams.Url = ConvertIEnumerableToArray(urls);
+        searchParams.Version = ConvertIEnumerableToArray(versions);
+        searchParams.Whiteboard = ConvertIEnumerableToArray(statusWhiteboard);
+
+        if (creationTime.HasValue)
+          searchParams.CreationTime = creationTime.Value;
+
+        if (lastChangeTime.HasValue)
+          searchParams.LastChangeTime = lastChangeTime.Value;
+
+        searchParams.Limit = limit;
+        searchParams.Offset = offset;
+
+        BugSearchResponse resp = mBugProxy.Search(searchParams);
+        return resp.Bugs.Select(info => new Bug(info, mBugProxy, GetCustomFieldValuesForBug(info)));
+      }
+      catch (XmlRpcFaultException e)
+      {
+        throw new BugzillaException(string.Format("Error searching for bugs. Details: {0}", e.Message));
+      }
+    }
+
+    /// <summary>
     /// Sends an invitation email to the specified email address with a link to create a new account.
     /// </summary>
     /// <param name="email">Email address to send the invitation to.</param>
@@ -754,8 +848,8 @@ namespace Bugzilla
     /// <exception cref="CommentAccessDeniedException">One or more of the requested comments are inaccessible to the current user.</exception>
     /// <exception cref="InvalidCommentIDException">One or more invalid comment IDs specified.</exception>
     public CommentCollection GetComments(IEnumerable<string> bugIDsOrAliases, 
-                                          IEnumerable<int> commentIDs,
-                                          DateTime? startDate)
+                                         IEnumerable<int> commentIDs,
+                                         DateTime? startDate)
     {
       //Either bug IDs/aliases or comment IDs must be set
       if (bugIDsOrAliases == null && commentIDs == null)
@@ -976,24 +1070,23 @@ namespace Bugzilla
       }
     }
 
-    /// <summary>
-    /// Gets a custom fields "template" ready for each field's value to be set for creating new bugs.
-    /// </summary>
-    /// <remarks>Each call to this method will return back a new <see cref="BugCustomFields"/> instance.</remarks>
-    /// <returns>A new <see cref="BugCustomFields"/> template without any field values set.</returns>
-    public BugCustomFields GetNewBugCustomFieldsTemplate()
-    {
-      List<BugCustomField> copiedCustomFields = new List<BugCustomField>();
-
-      foreach (BugCustomField customField in mCustomFieldTemplate)
-        copiedCustomFields.Add(new BugCustomField(customField.FieldName, customField.FieldType));
-
-      return new BugCustomFields(copiedCustomFields);
-    }
-
     #endregion
 
     #region Private Methods
+
+    /// <summary>
+    /// Helper method which converts a generic IEnumerable into an array of equivalent type or <code>null</code>/>
+    /// </summary>
+    /// <typeparam name="T">Type of the returned array.</typeparam>
+    /// <param name="val">Sequence to convert to an array.</param>
+    /// <returns><code>null</code>, if <paramref name="val"/> is <code>null</code>, otherwise an array containing <paramref name="val"/>'s elements.</returns>
+    private T[] ConvertIEnumerableToArray<T>(IEnumerable<T> val)
+    {
+      if (val == null)
+        return null;
+
+      return val.ToArray();
+    }
 
     /// <summary>
     /// Fetches details of allowable custom fields from the remote server.
