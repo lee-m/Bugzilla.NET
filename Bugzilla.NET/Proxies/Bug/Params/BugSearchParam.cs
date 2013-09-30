@@ -51,7 +51,7 @@ namespace Bugzilla.Proxies.Bug.Params
     /// Set of creation date/time to search on.
     /// </summary>
     [XmlRpcMember("creation_time")]
-    public DateTime[] CreationTime;
+    public DateTime CreationTime;
 
     /// <summary>
     /// List of users who logged the bugs.
@@ -69,7 +69,7 @@ namespace Bugzilla.Proxies.Bug.Params
     /// Last modification date/time to search on.
     /// </summary>
     [XmlRpcMember("last_change_time")]
-    public DateTime[] LastChangeTime;
+    public DateTime LastChangeTime;
 
     /// <summary>
     /// Maximum number of bugs to return.
@@ -161,5 +161,4 @@ namespace Bugzilla.Proxies.Bug.Params
     [XmlRpcMember("whiteboard")]
     public string[] Whiteboard;
   }
-
 }

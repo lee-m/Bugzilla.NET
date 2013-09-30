@@ -93,7 +93,6 @@
     <Compile Include="Proxies\Bugzilla\Responses\GetVersionResponse.cs" />
     <Compile Include="Proxies\Bug\Params\AddAttachmentParams.cs" />
     <Compile Include="Proxies\Bug\Params\AddCommentParam.cs" />
-    <Compile Include="Proxies\Bug\BugInfo.cs" />
     <Compile Include="Proxies\Bug\Params\BugSearchParam.cs" />
     <Compile Include="Proxies\Bug\Params\CommentParam.cs" />
     <Compile Include="Proxies\Bug\Params\GetCommentParams.cs" />
