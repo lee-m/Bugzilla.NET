@@ -51,7 +51,7 @@ namespace Bugzilla
     /// <param name="fieldName">Name of the custom field.</param>
     /// <param name="fieldType">Type of the custom field.</param>
     /// </summary>
-    public BugCustomField(string fieldName, BugFieldDetails.BugFieldType fieldType) : this(fieldName, fieldType, null)
+    internal BugCustomField(string fieldName, BugFieldDetails.BugFieldType fieldType) : this(fieldName, fieldType, null)
     {
     }
 
@@ -61,7 +61,7 @@ namespace Bugzilla
     /// <param name="fieldName">Name of the custom field.</param>
     /// <param name="fieldType">Type of the custom field.</param>
     /// <param name="fieldValue">Value of the custom field.</param>
-    public BugCustomField(string fieldName, BugFieldDetails.BugFieldType fieldType, object fieldValue)
+    internal BugCustomField(string fieldName, BugFieldDetails.BugFieldType fieldType, object fieldValue)
     {
       mFieldName = fieldName;
       mFieldType = fieldType;
