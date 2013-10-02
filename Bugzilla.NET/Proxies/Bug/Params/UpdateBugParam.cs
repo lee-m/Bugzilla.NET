@@ -95,14 +95,14 @@ namespace Bugzilla.Proxies.Bug.Params
     /// </summary>
     [XmlRpcMember("keywords")]
     [XmlRpcMissingMapping(MappingAction.Ignore)]
-    public XmlRpcStruct KeywordModifications;
+    public XmlRpcStruct Keywords;
 
     /// <summary>
     /// The set of usernames to add or remove on the bug.
     /// </summary>
     [XmlRpcMember("cc")]
     [XmlRpcMissingMapping(MappingAction.Ignore)]
-    public XmlRpcStruct CCListModifications;
+    public XmlRpcStruct CCList;
 
     /// <summary>
     /// The alias of the bug to update.
@@ -130,14 +130,14 @@ namespace Bugzilla.Proxies.Bug.Params
     /// </summary>
     [XmlRpcMember("depends_on")]
     [XmlRpcMissingMapping(MappingAction.Ignore)]
-    public XmlRpcStruct DependsOnModifications;
+    public XmlRpcStruct DependsOn;
 
     /// <summary>
     /// Set of bug IDs this bug blocks.
     /// </summary>
     [XmlRpcMember("blocks")]
     [XmlRpcMissingMapping(MappingAction.Ignore)]
-    public XmlRpcStruct BlocksModifications;
+    public XmlRpcStruct Blocks;
 
     /// <summary>
     /// Whether or not users in the CC list are allowed to access the bug, even if 
@@ -145,7 +145,7 @@ namespace Bugzilla.Proxies.Bug.Params
     /// </summary>
     [XmlRpcMember("is_cc_accessible")]
     [XmlRpcMissingMapping(MappingAction.Ignore)]
-    public bool? AccessibleToCCList;
+    public bool? IsCCAccessible;
 
     /// <summary>
     /// The component the bug is in.
@@ -173,7 +173,7 @@ namespace Bugzilla.Proxies.Bug.Params
     /// </summary>
     [XmlRpcMember("estimated_time")]
     [XmlRpcMissingMapping(MappingAction.Ignore)]
-    public double? EstimatedResolutionTime;
+    public double? EstimatedTime;
 
     /// <summary>
     /// The operating system field on the bug.
@@ -209,7 +209,7 @@ namespace Bugzilla.Proxies.Bug.Params
     /// </summary>
     [XmlRpcMember("is_creator_accessible")]
     [XmlRpcMissingMapping(MappingAction.Ignore)]
-    public bool? IsAccessibleByReporter;
+    public bool? IsCreatorAccessible;
 
     /// <summary>
     /// The severity field on the bug.

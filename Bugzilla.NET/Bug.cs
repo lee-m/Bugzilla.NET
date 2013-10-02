@@ -635,19 +635,19 @@ namespace Bugzilla
 
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
-      updateParams.KeywordModifications = new XmlRpcStruct();
+      updateParams.Keywords = new XmlRpcStruct();
 
       if (!string.IsNullOrEmpty(changeComment))
         updateParams.Comment = GetChangeCommentParameter(changeComment, changeCommentVisibility);
 
       if(newKeywords != null)
-        updateParams.KeywordModifications.Add("add", newKeywords.ToArray());
+        updateParams.Keywords.Add("add", newKeywords.ToArray());
 
       if(deletedKeywords != null)
-        updateParams.KeywordModifications.Add("remove", deletedKeywords.ToArray());
+        updateParams.Keywords.Add("remove", deletedKeywords.ToArray());
 
       if(resetKeywords != null)
-        updateParams.KeywordModifications.Add("set", resetKeywords.ToArray());
+        updateParams.Keywords.Add("set", resetKeywords.ToArray());
 
       try
       {
@@ -689,16 +689,16 @@ namespace Bugzilla
 
       UpdateBugParam updateParams = new UpdateBugParam();
       updateParams.Ids = new int[] { Id };
-      updateParams.CCListModifications = new XmlRpcStruct();
+      updateParams.CCList = new XmlRpcStruct();
 
       if (!string.IsNullOrEmpty(changeComment))
         updateParams.Comment = GetChangeCommentParameter(changeComment, changeCommentVisibility);
 
       if (usersToAdd != null)
-        updateParams.CCListModifications.Add("add", usersToAdd.ToArray());
+        updateParams.CCList.Add("add", usersToAdd.ToArray());
 
       if (usersToRemove != null)
-        updateParams.CCListModifications.Add("remove", usersToRemove.ToArray());
+        updateParams.CCList.Add("remove", usersToRemove.ToArray());
 
       try
       {
@@ -732,16 +732,16 @@ namespace Bugzilla
       updateParams.Ids = new int[] { Id };
       updateParams.Product = Product;
       updateParams.AssignedTo = AssignedTo;
-      updateParams.AccessibleToCCList = AccessibleToCCListMembers;
+      updateParams.IsCCAccessible = AccessibleToCCListMembers;
       updateParams.Component = Component;
       updateParams.Deadline = Deadline;
       updateParams.DuplicateOf = DuplicateOf;
-      updateParams.EstimatedResolutionTime = EstimatedResolutionTimeHours;
+      updateParams.EstimatedTime = EstimatedResolutionTimeHours;
       updateParams.OperatingSystem = OperatingSystem;
       updateParams.Platform = Platform;
       updateParams.Priority = Priority;
       updateParams.QAContact = QAContact;
-      updateParams.IsAccessibleByReporter = IsAccessibleByReporter;
+      updateParams.IsCreatorAccessible = IsAccessibleByReporter;
       updateParams.Resolution = Resolution;
       updateParams.Severity = Severity;
       updateParams.Status = Status;
@@ -756,16 +756,16 @@ namespace Bugzilla
         updateParams.Comment = GetChangeCommentParameter(changeComment, changeCommentVisibility);
 
       //Set the depends on field to the current list of dependencies
-      updateParams.DependsOnModifications = new XmlRpcStruct();
-      updateParams.DependsOnModifications.Add("set", DependsOn);
+      updateParams.DependsOn = new XmlRpcStruct();
+      updateParams.DependsOn.Add("set", DependsOn);
 
       //Set the blocks list to
-      updateParams.BlocksModifications = new XmlRpcStruct();
-      updateParams.BlocksModifications.Add("set", Blocks);
+      updateParams.Blocks = new XmlRpcStruct();
+      updateParams.Blocks.Add("set", Blocks);
 
       //Set the list of keywords
-      updateParams.KeywordModifications = new XmlRpcStruct();
-      updateParams.KeywordModifications.Add("set", Keywords);
+      updateParams.Keywords = new XmlRpcStruct();
+      updateParams.Keywords.Add("set", Keywords);
 
       //Set any custom field values
       if (mCustomFields.Any())
