@@ -64,6 +64,11 @@ namespace Bugzilla
     private IEnumerable<string> mUpdatedKeywords;
 
     /// <summary>
+    /// If the CC list for this bug have been updated, this is the new CC list for this bug.
+    /// </summary>
+    private IEnumerable<string> mUpdatedCCList;
+
+    /// <summary>
     /// Creates a instance with the specified bug details.
     /// </summary>
     /// <param name="info">Bug details</param>
@@ -617,57 +622,6 @@ namespace Bugzilla
     }
 
     /// <summary>
-    /// Updates the CC list for this bug.
-    /// </summary>
-    /// <param name="usersToAdd">Set of <b>full</b> usernames to add to the CC list.</param>
-    /// <param name="usersToRemove">Set of <b>full</b> usernames to remove from the CC list.</param>
-    /// <param name="changeComment">If set, the text of a comment to add at the same time as updating the CC list.</param>
-    /// <param name="changeCommentVisibility">If adding a change comment, indicates whether the comment is private or not.</param>
-    /// <exception cref="ArgumentException">Both <paramref name="usersToAdd"/> and <paramref name="usersToRemove"/> are null/Nothing.</exception>
-    /// <returns>Details of the changes which were made to the bug.</returns>
-    public UpdateBugModifications UpdateCCList(IEnumerable<string> usersToAdd, 
-                                               IEnumerable<string> usersToRemove,
-                                               string changeComment,
-                                               Comment.CommentVisibility? changeCommentVisibility)
-    {
-      if (usersToAdd == null
-         && usersToRemove == null)
-        throw new ArgumentException("At least one set of users to add and/or remove must be provided.");
-
-      UpdateBugParam updateParams = new UpdateBugParam();
-      updateParams.Ids = new int[] { Id };
-      updateParams.CCList = new XmlRpcStruct();
-
-      if (!string.IsNullOrEmpty(changeComment))
-        updateParams.Comment = GetChangeCommentParameter(changeComment, changeCommentVisibility);
-
-      if (usersToAdd != null)
-        updateParams.CCList.Add("add", usersToAdd.ToArray());
-
-      if (usersToRemove != null)
-        updateParams.CCList.Add("remove", usersToRemove.ToArray());
-
-      try
-      {
-        return new UpdateBugModifications(mProxy.UpdateBug(updateParams).Changes.First());
-      }
-      catch (XmlRpcFaultException e)
-      {
-        switch (e.FaultCode)
-        {
-          case 51:
-            throw new InvalidUserException(e.FaultString);
-
-          case 115:
-            throw new BugEditAccessDeniedException(Id.ToString());
-
-          default:
-            throw new BugzillaException(string.Format("Error updating bug CC list. Details: {0}", e.Message));
-        }
-      }
-    }
-
-    /// <summary>
     /// Updates this bug's fields to the values set on the various properties.
     /// </summary>
     /// <param name="changeComment">If set, the text of a comment to add at the same time as updating the CC list.</param>
@@ -733,6 +687,22 @@ namespace Bugzilla
           updateParams.Groups.Add("remove", removedGroups.ToArray());
       }
 
+      //Determine the CC list changes
+      if(mUpdatedCCList != null)
+      {
+        updateParams.CCList = new XmlRpcStruct();
+
+        IEnumerable<string> origCCList = ((Array)mBugInfo["cc"]).OfType<string>();
+        IEnumerable<string> newCCList = mUpdatedCCList.Except(origCCList);
+        IEnumerable<string> removedCCList = origCCList.Except(mUpdatedCCList);
+
+        if (newCCList.Any())
+          updateParams.CCList.Add("add", newCCList.ToArray());
+
+        if (removedCCList.Any())
+          updateParams.CCList.Add("remove", removedCCList.ToArray());
+      }
+
       //Set any custom field values
       if (mCustomFields.Any())
       {
@@ -750,9 +720,6 @@ namespace Bugzilla
       {
         switch(e.FaultCode)
         {
-          case 51:
-            throw new InvalidKeywordException(e.FaultString);
-
           case 50:
           case 52:
           case 54:
@@ -992,9 +959,13 @@ namespace Bugzilla
     { 
       get 
       {
+        if (mUpdatedCCList != null)
+          return mUpdatedCCList.ToArray();
+
         Array arr = (Array)mBugInfo["cc"];
         return arr.OfType<string>().ToArray();
-      } 
+      }
+      set { mUpdatedCCList = value; }
     }
 
     /// <summary>
