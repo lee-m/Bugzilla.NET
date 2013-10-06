@@ -761,6 +761,9 @@ namespace Bugzilla
     /// <param name="changeComment">If set, the text of a comment to add at the same time as updating the CC list.</param>
     /// <param name="changeCommentVisibility">If adding a change comment, indicates whether the comment is private or not.</param>
     /// <returns>Details of the changes which were made to the bug.</returns>
+    /// <exception cref="BugEditAccessDeniedException">Logged in user does not have permission to edit this bug.</exception>
+    /// <exception cref="CyclicBugDuplicateException">Attempt to create a cyclic dependency between two or more bugs.</exception>
+    /// <exception cref="BugzillaException">Unknown error occurred attempting to update the bug.</exception>
     public UpdateBugModifications MarkAsDuplicate(int duplicateBugID, 
                                                   string changeComment, 
                                                   Comment.CommentVisibility? changeCommentVisibility)
