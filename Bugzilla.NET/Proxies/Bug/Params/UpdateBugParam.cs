@@ -91,6 +91,13 @@ namespace Bugzilla.Proxies.Bug.Params
     public XmlRpcStruct CommentVisibilityChanges;
 
     /// <summary>
+    /// The set of groups to add or remove.
+    /// </summary>
+    [XmlRpcMember("groups")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public XmlRpcStruct Groups;
+
+    /// <summary>
     /// The set of keywords to add, remove or set on the bug.
     /// </summary>
     [XmlRpcMember("keywords")]

@@ -54,6 +54,11 @@ namespace Bugzilla
     private IBugProxy mProxy;
 
     /// <summary>
+    /// If the groups for this bug have been updated, these are the newly set groups for this bug.
+    /// </summary>
+    private IEnumerable<string> mUpdatedGroups;
+
+    /// <summary>
     /// Creates a instance with the specified bug details.
     /// </summary>
     /// <param name="info">Bug details</param>
@@ -759,13 +764,29 @@ namespace Bugzilla
       updateParams.DependsOn = new XmlRpcStruct();
       updateParams.DependsOn.Add("set", DependsOn);
 
-      //Set the blocks list to
+      //Set the blocks list
       updateParams.Blocks = new XmlRpcStruct();
       updateParams.Blocks.Add("set", Blocks);
 
       //Set the list of keywords
       updateParams.Keywords = new XmlRpcStruct();
       updateParams.Keywords.Add("set", Keywords);
+
+      //Work out those groups which have been added or removed
+      if(mUpdatedGroups != null)
+      {
+        updateParams.Groups = new XmlRpcStruct();
+
+        IEnumerable<string> origGroups = ((Array)mBugInfo["groups"]).OfType<string>();
+        IEnumerable<string> newGroups = mUpdatedGroups.Except(origGroups);
+        IEnumerable<string> removedGroups = origGroups.Except(mUpdatedGroups);
+
+        if (newGroups.Any())
+          updateParams.Groups.Add("add", newGroups.ToArray());
+
+        if (removedGroups.Any())
+          updateParams.Groups.Add("remove", removedGroups.ToArray());
+      }
 
       //Set any custom field values
       if (mCustomFields.Any())
@@ -1011,7 +1032,7 @@ namespace Bugzilla
       get 
       {
         Array arr = (Array)mBugInfo["depends_on"];
-        return arr.OfType<int>();
+        return arr.OfType<int>().ToArray();
       }
       set { mBugInfo["depends_on"] = value.ToArray(); }
     }
@@ -1024,7 +1045,7 @@ namespace Bugzilla
       get 
       {
         Array arr = (Array)mBugInfo["cc"];
-        return arr.OfType<string>();
+        return arr.OfType<string>().ToArray();
       } 
     }
 
@@ -1084,9 +1105,13 @@ namespace Bugzilla
     { 
       get 
       {
+        if (mUpdatedGroups != null)
+          return mUpdatedGroups;
+
         Array arr = (Array)mBugInfo["groups"];
-        return arr.OfType<string>();
+        return arr.OfType<string>().ToArray();
       }
+      set { mUpdatedGroups = value; }
     }
 
     /// <summary>
@@ -1098,7 +1123,7 @@ namespace Bugzilla
       get 
       {
         Array arr = (Array)mBugInfo["keywords"];
-        return arr.OfType<string>();
+        return arr.OfType<string>().ToArray();
       }
       set { mBugInfo["keywords"] = value.ToArray(); }
     }
@@ -1170,7 +1195,7 @@ namespace Bugzilla
       get 
       {
         Array arr = (Array)mBugInfo["see_also"];
-        return arr.OfType<string>();
+        return arr.OfType<string>().ToArray();
       } 
     }
 
