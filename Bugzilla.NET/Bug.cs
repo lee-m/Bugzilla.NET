@@ -59,6 +59,11 @@ namespace Bugzilla
     private IEnumerable<string> mUpdatedGroups;
 
     /// <summary>
+    /// If the keywords for this bug have been updated, these are the newly set keywords for this bug.
+    /// </summary>
+    private IEnumerable<string> mUpdatedKeywords;
+
+    /// <summary>
     /// Creates a instance with the specified bug details.
     /// </summary>
     /// <param name="info">Bug details</param>
@@ -612,69 +617,6 @@ namespace Bugzilla
     }
 
     /// <summary>
-    /// Updates the set of keywords on this bug to add new keywords, remove deleted keywords or set a new set of keywords.
-    /// </summary>
-    /// <param name="newKeywords">If non-null, the new keywords to add.</param>
-    /// <param name="deletedKeywords">If non-null, the keywords to remove from the bug.</param>
-    /// <param name="resetKeywords">If non-null, the new set of keywords to set on the bug.</param>
-    /// <param name="changeComment">If non-null, the text of a comment to add at the same time as resetting the keywords.</param>
-    /// <param name="changeCommentVisibility">If adding a change comment, whether the comment should be private or not.</param>
-    /// <remarks>
-    /// Specifying <paramref name="resetKeywords"/> will override any values passed in via <paramref name="newKeywords"/>
-    /// or <paramref name="deletedKeywords"/>.
-    /// </remarks>
-    /// <exception cref="InvalidKeywordException">One or more invalid keywords were specified.</exception>
-    /// <exception cref="BugEditAccessDeniedException">Currently logged in user does not have the required security rights to modify this bug.</exception>
-    /// <returns>Details of the changes which were made to the bug.</returns>
-    public UpdateBugModifications UpdateKeywords(IEnumerable<string> newKeywords, 
-                                                 IEnumerable<string> deletedKeywords,
-                                                 IEnumerable<string> resetKeywords,
-                                                 string changeComment, 
-                                                 Comment.CommentVisibility? changeCommentVisibility)
-    {
-      //At least one of the new, deleted or reset parameters need to be specified otherwise there's nothing to do.
-      if (newKeywords == null
-          && deletedKeywords == null
-          && resetKeywords == null)
-        throw new ArgumentException("At least one of new keywords, deleted keywords or keywords to set needs to be provided.");
-
-      UpdateBugParam updateParams = new UpdateBugParam();
-      updateParams.Ids = new int[] { Id };
-      updateParams.Keywords = new XmlRpcStruct();
-
-      if (!string.IsNullOrEmpty(changeComment))
-        updateParams.Comment = GetChangeCommentParameter(changeComment, changeCommentVisibility);
-
-      if(newKeywords != null)
-        updateParams.Keywords.Add("add", newKeywords.ToArray());
-
-      if(deletedKeywords != null)
-        updateParams.Keywords.Add("remove", deletedKeywords.ToArray());
-
-      if(resetKeywords != null)
-        updateParams.Keywords.Add("set", resetKeywords.ToArray());
-
-      try
-      {
-        return new UpdateBugModifications(mProxy.UpdateBug(updateParams).Changes.First());
-      }
-      catch (XmlRpcFaultException e)
-      {
-        switch (e.FaultCode)
-        {
-          case 51:
-            throw new InvalidKeywordException(e.FaultString);
-
-          case 115:
-            throw new BugEditAccessDeniedException(Id.ToString());
-
-          default:
-            throw new BugzillaException(string.Format("Error updating bug keywords. Details: {0}", e.Message));
-        }
-      }
-    }
-
-    /// <summary>
     /// Updates the CC list for this bug.
     /// </summary>
     /// <param name="usersToAdd">Set of <b>full</b> usernames to add to the CC list.</param>
@@ -768,9 +710,12 @@ namespace Bugzilla
       updateParams.Blocks = new XmlRpcStruct();
       updateParams.Blocks.Add("set", Blocks);
 
-      //Set the list of keywords
-      updateParams.Keywords = new XmlRpcStruct();
-      updateParams.Keywords.Add("set", Keywords);
+      //Set the list of keywords if something's changed
+      if (mUpdatedKeywords != null)
+      {
+        updateParams.Keywords = new XmlRpcStruct();
+        updateParams.Keywords.Add("set", mUpdatedKeywords.ToArray());
+      }
 
       //Work out those groups which have been added or removed
       if(mUpdatedGroups != null)
@@ -805,6 +750,9 @@ namespace Bugzilla
       {
         switch(e.FaultCode)
         {
+          case 51:
+            throw new InvalidKeywordException(e.FaultString);
+
           case 50:
           case 52:
           case 54:
@@ -1122,10 +1070,13 @@ namespace Bugzilla
     {
       get 
       {
+        if (mUpdatedKeywords != null)
+          return mUpdatedKeywords.ToArray();
+
         Array arr = (Array)mBugInfo["keywords"];
         return arr.OfType<string>().ToArray();
       }
-      set { mBugInfo["keywords"] = value.ToArray(); }
+      set { mUpdatedKeywords = value; }
     }
 
     /// <summary>
