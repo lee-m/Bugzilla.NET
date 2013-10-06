@@ -991,14 +991,14 @@ namespace Bugzilla
     /// </summary>
     /// <remarks>Updating the blocks list this way will overwrite any existing blocks list with the
     /// new value.</remarks>
-    public int[] Blocks
+    public IEnumerable<int> Blocks
     {
       get 
       {
         Array arr = (Array)mBugInfo["blocks"];
         return arr.OfType<int>().ToArray();
       }
-      set { mBugInfo["blocks"] = value; }
+      set { mBugInfo["blocks"] = value.ToArray(); }
     }
 
     /// <summary>
@@ -1006,25 +1006,25 @@ namespace Bugzilla
     /// </summary>
     /// <remarks>Updating the depends on list this way will overwrite any existing depends on list with the
     /// new value.</remarks>
-    public int[] DependsOn
+    public IEnumerable<int> DependsOn
     {
       get 
       {
         Array arr = (Array)mBugInfo["depends_on"];
-        return arr.OfType<int>().ToArray();
+        return arr.OfType<int>();
       }
-      set { mBugInfo["depends_on"] = value; }
+      set { mBugInfo["depends_on"] = value.ToArray(); }
     }
 
     /// <summary>
     /// Accessor for the CC list.
     /// </summary>
-    public string[] CCList 
+    public IEnumerable<string> CCList 
     { 
       get 
       {
         Array arr = (Array)mBugInfo["cc"];
-        return arr.OfType<string>().ToArray();
+        return arr.OfType<string>();
       } 
     }
 
@@ -1080,27 +1080,27 @@ namespace Bugzilla
     /// <summary>
     /// The names of all groups this bug is in.
     /// </summary>
-    public string[] Groups 
+    public IEnumerable<string> Groups 
     { 
       get 
       {
         Array arr = (Array)mBugInfo["groups"];
-        return arr.OfType<string>().ToArray();
-      } 
+        return arr.OfType<string>();
+      }
     }
 
     /// <summary>
     /// Keywords set on the bug.
     /// </summary>
     /// <remarks>Updating the keywords list this way will overwrite any existing keywords.</remarks>
-    public string[] Keywords
+    public IEnumerable<string> Keywords
     {
       get 
       {
         Array arr = (Array)mBugInfo["keywords"];
-        return arr.OfType<string>().ToArray();
+        return arr.OfType<string>();
       }
-      set { mBugInfo["keywords"] = value; }
+      set { mBugInfo["keywords"] = value.ToArray(); }
     }
 
     /// <summary>
@@ -1165,12 +1165,12 @@ namespace Bugzilla
     /// <summary>
     /// The URLs in the See Also field on the bug.
     /// </summary>
-    public string[] SeeAlso 
+    public IEnumerable<string> SeeAlso 
     { 
       get 
       {
         Array arr = (Array)mBugInfo["see_also"];
-        return arr.OfType<string>().ToArray();
+        return arr.OfType<string>();
       } 
     }
 
