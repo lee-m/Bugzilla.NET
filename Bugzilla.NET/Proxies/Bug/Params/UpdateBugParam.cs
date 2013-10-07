@@ -74,14 +74,14 @@ namespace Bugzilla.Proxies.Bug.Params
     /// </summary>
     [XmlRpcMember("remaining_time")]
     [XmlRpcMissingMapping(MappingAction.Ignore)]
-    public double? WorkTimeRemaining;
+    public double? RemainingTime;
 
     /// <summary>
     /// The amount of time worked (in hours) on the bug.
     /// </summary>
     [XmlRpcMember("work_time")]
     [XmlRpcMissingMapping(MappingAction.Ignore)]
-    public double? TimeWorked;
+    public double? WorkTIme;
 
     /// <summary>
     /// If set, the public/private status of a set of comments on the bug to update.

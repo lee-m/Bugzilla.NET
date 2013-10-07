@@ -54,9 +54,9 @@ namespace Bugzilla
     /// <summary>
     /// Creates a new instance of this class.
     /// </summary>
-    /// <param name="bugIDOrAlias">Bug ID or alias which the user attempted to edit.</param>
-    public BugEditAccessDeniedException(string bugIDOrAlias)
-      : base(string.Format("Currently logged in user does not have rights to edit big {0}.", bugIDOrAlias))
+    /// <param name="message">Server returned fault message.</param>
+    public BugEditAccessDeniedException(string message)
+      : base(message)
     {
     }
 
