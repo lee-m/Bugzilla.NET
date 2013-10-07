@@ -69,6 +69,16 @@ namespace Bugzilla
     private IEnumerable<string> mUpdatedCCList;
 
     /// <summary>
+    /// If the blocks list for this bug has been updated, this is the new blocks list.
+    /// </summary>
+    private IEnumerable<int> mUpdatedBlocks;
+
+    /// <summary>
+    /// If the dependency list for this bug has been updated, this is the new depends on list.
+    /// </summary>
+    private IEnumerable<int> mUpdatedDependsOn;
+
+    /// <summary>
     /// Creates a instance with the specified bug details.
     /// </summary>
     /// <param name="info">Bug details</param>
@@ -128,7 +138,7 @@ namespace Bugzilla
             throw new InvalidBugIDOrAliasException(Id.ToString());
 
           case 109:
-            throw new BugEditAccessDeniedException(Id.ToString());
+            throw new BugEditAccessDeniedException(e.FaultString);
 
           case 113:
             throw new InsufficientSecurityPrivilagesException();
@@ -420,7 +430,7 @@ namespace Bugzilla
             throw new BugAccessDeniedException();
 
           case 119:
-            throw new BugEditAccessDeniedException(Id.ToString());
+            throw new BugEditAccessDeniedException(e.FaultString);
 
           case 112:
             throw new InvalidSeeAlsoURLException();
@@ -460,7 +470,7 @@ namespace Bugzilla
         switch(e.FaultCode)
         {
           case 115:
-            throw new BugEditAccessDeniedException(Id.ToString());
+            throw new BugEditAccessDeniedException(e.FaultString);
 
           default:
             throw new BugzillaException(string.Format("Error resetting the assigned to field. Details: {0}", e.Message));
@@ -494,87 +504,10 @@ namespace Bugzilla
         switch (e.FaultCode)
         {
           case 115:
-            throw new BugEditAccessDeniedException(Id.ToString());
+            throw new BugEditAccessDeniedException(e.FaultString);
 
           default:
             throw new BugzillaException(string.Format("Error resetting the QA contact. Details: {0}", e.Message));
-        }
-      }
-    }
-
-    /// <summary>
-    /// Sets the number of hours work remaining on the bug.
-    /// </summary>
-    /// <param name="remainingWorkTime">The amount of work time remaining in hours.</param>
-    /// <param name="changeComment">If set, the text of a comment to add at the same time as the remaining work time is updated.</param>
-    /// <param name="changeCommentVisibility">
-    /// If adding a comment, indicates whether the comment is private or not. Defaults to a 
-    /// public comment if a change comment is provided but this parameter is <code>null</code>.</param>
-    /// <returns>Details of the changes which were made to the bug.</returns>
-    public UpdateBugModifications SetNumberOfHoursWorkRemaining(double remainingWorkTime, 
-                                                                string changeComment,
-                                                                Comment.CommentVisibility? changeCommentVisibility)
-    {
-      UpdateBugParam updateParams = new UpdateBugParam();
-      updateParams.Ids = new int[] { Id };
-      updateParams.WorkTimeRemaining = remainingWorkTime;
-
-      if (!string.IsNullOrEmpty(changeComment))
-        updateParams.Comment = GetChangeCommentParameter(changeComment, changeCommentVisibility);
-
-      try
-      {
-        return new UpdateBugModifications(mProxy.UpdateBug(updateParams).Changes.First());
-      }
-      catch (XmlRpcFaultException e)
-      {
-        switch (e.FaultCode)
-        {
-          case 115:
-            throw new BugEditAccessDeniedException(Id.ToString());
-
-          default:
-            throw new BugzillaException(string.Format("Error setting the number of hours work remaining. Details: {0}", e.Message));
-        }
-      }
-    }
-
-    /// <summary>
-    /// Updates the number of hours worked on this bug.
-    /// </summary>
-    /// <param name="hoursWorked">Number of hours worked on the bug.</param>
-    /// <param name="remainingTime">The number of hours left to work on this bug.</param>
-    /// <param name="changeComment">If set, the text of a comment to add whilst updating the remaining work time.</param>
-    /// <param name="changeCommentVisibility">If adding a comment, whether the comment is private or not. If not set, defaults to public if a change comment text was specified.</param>
-    /// <remarks>If <paramref name="remainingTime"/> is not set, the value of <paramref name="hoursWorked"/> will be deducted
-    /// from the bugs remaining time.</remarks>
-    /// <returns>Details of the changes which were made to the bug.</returns>
-    public UpdateBugModifications UpdateNumberOfHoursWorked(double hoursWorked, 
-                                                            double? remainingTime,
-                                                            string changeComment,
-                                                            Comment.CommentVisibility? changeCommentVisibility)
-    {
-      UpdateBugParam updateParams = new UpdateBugParam();
-      updateParams.Ids = new int[] { Id };
-      updateParams.TimeWorked = hoursWorked;
-      updateParams.WorkTimeRemaining = remainingTime;
-
-      if (!string.IsNullOrEmpty(changeComment))
-        updateParams.Comment = GetChangeCommentParameter(changeComment, changeCommentVisibility);
-
-      try
-      {
-        return new UpdateBugModifications(mProxy.UpdateBug(updateParams).Changes.First());
-      }
-      catch (XmlRpcFaultException e)
-      {
-        switch (e.FaultCode)
-        {
-          case 115:
-            throw new BugEditAccessDeniedException(Id.ToString());
-
-          default:
-            throw new BugzillaException(string.Format("Error updating number of hours worked. Details: {0}", e.Message));
         }
       }
     }
@@ -613,7 +546,7 @@ namespace Bugzilla
         switch (e.FaultCode)
         {
           case 115:
-            throw new BugEditAccessDeniedException(Id.ToString());
+            throw new BugEditAccessDeniedException(e.FaultString);
 
           default:
             throw new BugzillaException(string.Format("Error toggling comments privacy statuses. Details: {0}", e.Message));
@@ -637,7 +570,8 @@ namespace Bugzilla
       updateParams.Component = Component;
       updateParams.Deadline = Deadline;
       updateParams.DuplicateOf = DuplicateOf;
-      updateParams.EstimatedTime = EstimatedResolutionTimeHours;
+      updateParams.EstimatedTime = EstimatedTotalResolutionTime;
+      updateParams.RemainingTime = RemainingTime;
       updateParams.OperatingSystem = OperatingSystem;
       updateParams.Platform = Platform;
       updateParams.Priority = Priority;
@@ -652,18 +586,27 @@ namespace Bugzilla
       updateParams.Version = Version;
       updateParams.Whiteboard = StatusWhiteboard;
 
+      if (mBugInfo["work_time"] != null)
+        updateParams.WorkTIme = (double)mBugInfo["work_time"];
+
       //Set any change comment
       if (!string.IsNullOrEmpty(changeComment))
         updateParams.Comment = GetChangeCommentParameter(changeComment, changeCommentVisibility);
 
       //Set the depends on field to the current list of dependencies
-      updateParams.DependsOn = new XmlRpcStruct();
-      updateParams.DependsOn.Add("set", DependsOn);
+      if (mUpdatedDependsOn != null)
+      {
+        updateParams.DependsOn = new XmlRpcStruct();
+        updateParams.DependsOn.Add("set", mUpdatedDependsOn.ToArray());
+      }
 
       //Set the blocks list
-      updateParams.Blocks = new XmlRpcStruct();
-      updateParams.Blocks.Add("set", Blocks);
-
+      if(mUpdatedBlocks != null)
+      {
+        updateParams.Blocks = new XmlRpcStruct();
+        updateParams.Blocks.Add("set", mUpdatedBlocks.ToArray());
+      }
+      
       //Set the list of keywords if something's changed
       if (mUpdatedKeywords != null)
       {
@@ -729,7 +672,7 @@ namespace Bugzilla
             throw new InvalidBugFieldValueException(e.FaultString);
 
           case 115:
-            throw new BugEditAccessDeniedException(Id.ToString());
+            throw new BugEditAccessDeniedException(e.FaultString);
 
           case 116:
             throw new CyclicBugDependenciesException(e.FaultString);
@@ -784,7 +727,7 @@ namespace Bugzilla
         switch(e.FaultCode)
         {
           case 115:
-            throw new BugEditAccessDeniedException(Id.ToString());
+            throw new BugEditAccessDeniedException(e.FaultString);
 
           case 118:
             throw new CyclicBugDuplicateException(e.FaultString);
@@ -934,10 +877,13 @@ namespace Bugzilla
     {
       get 
       {
+        if (mUpdatedBlocks != null)
+          return mUpdatedBlocks.ToArray();
+
         Array arr = (Array)mBugInfo["blocks"];
         return arr.OfType<int>().ToArray();
       }
-      set { mBugInfo["blocks"] = value.ToArray(); }
+      set { mUpdatedBlocks = value; }
     }
 
     /// <summary>
@@ -949,10 +895,13 @@ namespace Bugzilla
     {
       get 
       {
+        if (mUpdatedDependsOn != null)
+          return mUpdatedDependsOn.ToArray();
+
         Array arr = (Array)mBugInfo["depends_on"];
         return arr.OfType<int>().ToArray();
       }
-      set { mBugInfo["depends_on"] = value.ToArray(); }
+      set { mUpdatedDependsOn = value; }
     }
 
     /// <summary>
@@ -1014,10 +963,27 @@ namespace Bugzilla
     /// <summary>
     /// Number of hours estimated this bug will take to fix.
     /// </summary>
-    public double? EstimatedResolutionTimeHours
+    public double? EstimatedTotalResolutionTime
     {
       get { return GetValueTypeFieldValue<double>("estimated_time"); }
       set { mBugInfo["estimated_time"] = value; }
+    }
+
+    /// <summary>
+    /// Number of estimated hours left until this bug is resolved.
+    /// </summary>
+    public double? RemainingTime
+    {
+      get { return GetValueTypeFieldValue<double>("remaining_time"); }
+      set { mBugInfo["remaining_time"] = value; }
+    }
+
+    /// <summary>
+    /// The number of hours worked on this bug.
+    /// </summary>
+    public double WorkTime
+    {
+      set { mBugInfo["work_time"] = value; }
     }
 
     /// <summary>
