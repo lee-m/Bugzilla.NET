@@ -496,6 +496,14 @@ namespace Bugzilla
     /// </summary>
     /// <param name="changeComment">If set, the text of a comment to add at the same time as updating the CC list.</param>
     /// <param name="changeCommentVisibility">If adding a change comment, indicates whether the comment is private or not.</param>
+    /// <exception cref="BugEditAccessDeniedException">Attempted to edit a bug or a field to which the logged on user does not have access.</exception>
+    /// <exception cref="CyclicBugDependenciesException">Attempted to update <see cref="Blocks"/> or <see cref="DependsOn"/> with a value that causes a dependency loop.</exception>
+    /// <exception cref="CyclicBugDuplicateException">Attempted to update <see cref="DuplicateOf"/> to a value which would result in an infinite loop of duplicates.</exception>
+    /// <exception cref="InvalidBugFieldValueException">An invalid value was specified for a field on this bug.</exception>
+    /// <exception cref="InvalidBugResolutionChangeException">Attempted to change the bug's resolution to an invalid value, or other required fields were not set correctly (e.g. resolving as duplicate but not specifying the duplicate bug ID).</exception>
+    /// <exception cref="GroupEditAccessDeniedException">Attempted to add or remove a group that the logged in user doesn't have permission to modify for this bug, or attempted to add a group that isn't valid in this product.</exception>
+    /// <exception cref="InvalidBugStatusTransitionException">Attempted to change from one status to another, but the status workflow rules don't allow that change.</exception>
+    /// <exception cref="BugzillaException">Unknown server error occurred.</exception>
     /// <returns>Details of the changes which were made to the bug.</returns>
     public UpdateBugModifications Update(string changeComment, Comment.CommentVisibility? changeCommentVisibility)
     {
