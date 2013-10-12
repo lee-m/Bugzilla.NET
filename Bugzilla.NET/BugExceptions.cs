@@ -59,14 +59,6 @@ namespace Bugzilla
       : base(message)
     {
     }
-
-    /// <summary>
-    /// Default constructor.
-    /// </summary>
-    public BugEditAccessDeniedException()
-      : base("Currently logged in user does not have rights to edit one or more of the specified bugs.")
-    {
-    }
   }
 
   /// <summary>
@@ -337,20 +329,6 @@ namespace Bugzilla
   }
 
   /// <summary>
-  /// Thrown when an invalid URL is passed when updating the see also field.
-  /// </summary>
-  public sealed class InvalidSeeAlsoURLException : BugzillaException
-  {
-    /// <summary>
-    /// Default constructor.
-    /// </summary>
-    public InvalidSeeAlsoURLException()
-      : base("Invalid see also URL specified.")
-    {
-    }
-  }
-
-  /// <summary>
   /// Thrown when an invalid keyword is specified for a bug.
   /// </summary>
   public sealed class InvalidKeywordException : BugzillaException
@@ -361,20 +339,6 @@ namespace Bugzilla
     /// <param name="msg">Exception message text.</param>
     public InvalidKeywordException(string msg)
       : base(msg)
-    {
-    }
-  }
-
-  /// <summary>
-  /// Thrown when the currenltly logged in user does not have security access to edit the see also on a particular bug.
-  /// </summary>
-  public sealed class SeeAlsoEditAccessDenied : BugzillaException
-  {
-    /// <summary>
-    /// Default constructor.
-    /// </summary>
-    public SeeAlsoEditAccessDenied()
-      : base("Currently logged in user has insufficient security rights to edit the see also field.")
     {
     }
   }
