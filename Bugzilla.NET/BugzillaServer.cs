@@ -41,6 +41,9 @@ using Bugzilla.Proxies.User.Responses;
 using Bugzilla.Proxies.Product;
 using Bugzilla.Proxies.Product.Responses;
 using Bugzilla.Proxies.Product.Params;
+using Bugzilla.Proxies.Group;
+using Bugzilla.Proxies.Group.Params;
+using Bugzilla.Proxies.Group.Responses;
 
 namespace Bugzilla
 {
@@ -84,6 +87,11 @@ namespace Bugzilla
     /// Proxy for interacting with the product web service API.
     /// </summary>
     private readonly IProductProxy mProductProxy;
+
+    /// <summary>
+    /// Proxy for interacting with the group web service API.
+    /// </summary>
+    private readonly IGroupProxy mGroupProxy;
 
     /// <summary>
     /// Whether a user is logged in or not.
@@ -148,6 +156,7 @@ namespace Bugzilla
       mUserProxy = XmlRpcProxyGen.Create<IUserProxy>();
       mBugzillaProxy = XmlRpcProxyGen.Create<IBugzillaProxy>();
       mProductProxy = XmlRpcProxyGen.Create<IProductProxy>();
+      mGroupProxy = XmlRpcProxyGen.Create<IGroupProxy>();
       mCreateBugTypes = new Dictionary<int, Type>();
 
 #if DEBUG
@@ -157,6 +166,7 @@ namespace Bugzilla
       tracer.Attach(mUserProxy);
       tracer.Attach(mBugzillaProxy);
       tracer.Attach(mProductProxy);
+      tracer.Attach(mGroupProxy);
 
 #endif
 
@@ -164,6 +174,7 @@ namespace Bugzilla
       mUserProxy.Url = mURL;
       mBugzillaProxy.Url = mURL;
       mProductProxy.Url = mURL;
+      mGroupProxy.Url = mURL;
 
       if (loginCookies != null)
       {
@@ -892,6 +903,51 @@ namespace Bugzilla
       }
     }
 
+    /// <summary>
+    /// Creates a new group.
+    /// </summary>
+    /// <param name="shortName">Short name of the group - must be unique.</param>
+    /// <param name="description">Description of the group.</param>
+    /// <param name="userRegExp">A regular expression. Any user whose Bugzilla username matches this regular expression will automatically be granted membership in this group.</param>
+    /// <param name="isActive"><code>true</code> if this group can be used for bugs, <code>false</code> if this is a group that will only contain users and no bugs will be restricted to it.</param>
+    /// <param name="iconURL">A URL pointing to a small icon used to identify the group.</param>
+    /// <returns></returns>
+    public int CreateGroup(string shortName, string description, string userRegExp, bool isActive, string iconURL)
+    {
+      if (string.IsNullOrEmpty(shortName))
+        throw new ArgumentNullException("shortName");
+
+      if (string.IsNullOrEmpty(description))
+        throw new ArgumentNullException("description");
+
+      CreateGroupParams createParams = new CreateGroupParams();
+      createParams.ShortName = shortName;
+      createParams.Description = description;
+      createParams.UserRegularExpression = userRegExp;
+      createParams.IsActive = isActive;
+      createParams.IconURL = iconURL;
+
+      try
+      {
+        CreateGroupResponse resp = mGroupProxy.CreateGroup(createParams);
+        return resp.GroupID;
+      }
+      catch(XmlRpcFaultException e)
+      {
+        switch(e.FaultCode)
+        {
+          case 801:
+            throw new DuplicateGroupNameException(e.FaultString);
+
+          case 803:
+            throw new InvalidGroupRegExpException(e.FaultString);
+
+          default:
+            throw new BugzillaException(string.Format("Error creating group. Details: {0}", e.FaultString));
+        }
+      }
+    }
+
     #endregion
 
     #region Private Methods
@@ -956,6 +1012,7 @@ namespace Bugzilla
         mBugProxy.CookieContainer.Add(cookie);
         mBugzillaProxy.CookieContainer.Add(cookie);
         mProductProxy.CookieContainer.Add(cookie);
+        mGroupProxy.CookieContainer.Add(cookie);
       }
     }
 
