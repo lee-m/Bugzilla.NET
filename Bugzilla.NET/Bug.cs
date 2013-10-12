@@ -79,6 +79,11 @@ namespace Bugzilla
     private IEnumerable<int> mUpdatedDependsOn;
 
     /// <summary>
+    /// If the see also URLs for this bug has been updated, this is the new list of URLs.
+    /// </summary>
+    private IEnumerable<string> mUpdatedSeeAlso;
+
+    /// <summary>
     /// Creates a instance with the specified bug details.
     /// </summary>
     /// <param name="info">Bug details</param>
@@ -377,74 +382,6 @@ namespace Bugzilla
     }
 
     /// <summary>
-    /// Adds or removes URLs from the "see also" field on the bug.
-    /// </summary>
-    /// <param name="urlsToAdd">URLs to add. If a URL does not start with "http://" or "https://" then "http://" will be automatically added.</param>
-    /// <param name="urlsToRemove">URLs to remove.</param>
-    /// <exception cref="InvalidBugIDOrAliasException">No bug exists with the specified ID.</exception>
-    /// <exception cref="BugAccessDeniedException">Requested bug is inaccessible to the current user.</exception>
-    /// <exception cref="InvalidSeeAlsoURLException">One or more of the specified URLs are invalid.</exception>
-    /// <exception cref="SeeAlsoEditAccessDenied">Currently logged in user does not have security access to edit this bug's see also field.</exception>
-    /// <returns>Details of the actual changes which were made to the bug.</returns>
-    /// <remarks>
-    /// <para>
-    /// Attempting to add an already added URL or attempts to remove an invalid URL will be silently ignored.
-    /// </para>
-    /// If the same URL is specified in both <paramref name="urlsToAdd"/> and <paramref name="urlsToRemove"/> it will be <b>added</b>.
-    /// <para>
-    /// </para>
-    /// </remarks>
-    public SeeAlsoModifications UpdateSeeAlsoURLs(IEnumerable<string> urlsToAdd, IEnumerable<string> urlsToRemove)
-    {
-      UpdateSeeAlsoParams updateParams = new UpdateSeeAlsoParams();
-      updateParams.IdsOrAliases = new string[] { Id.ToString() };
-
-      if (urlsToAdd != null)
-        updateParams.URLsToAdd = urlsToAdd.ToArray();
-
-      if (urlsToRemove != null)
-        updateParams.URLsToRemove = urlsToRemove.ToArray();
-
-      try
-      {
-        UpdateSeeAlsoResponse resp = mProxy.UpdateSeeAlso(updateParams);
-
-        //Parse the response
-        object key = resp.Changes.Keys.Cast<object>().First();
-        XmlRpcStruct mods = (XmlRpcStruct)((XmlRpcStruct)resp.Changes[key])["see_also"];
-
-        int bugID = int.Parse(key.ToString());
-        object[] added = (object[])mods["added"];
-        object[] removed = (object[])mods["removed"];
-        return new SeeAlsoModifications(bugID, added.Cast<string>().ToArray(), removed.Cast<string>().ToArray());
-      }
-      catch(XmlRpcFaultException e)
-      {
-        switch(e.FaultCode)
-        {
-          case 100:
-          case 101:
-            throw new InvalidBugIDOrAliasException(Id.ToString());
-
-          case 102:
-            throw new BugAccessDeniedException();
-
-          case 119:
-            throw new BugEditAccessDeniedException(e.FaultString);
-
-          case 112:
-            throw new InvalidSeeAlsoURLException();
-
-          case 115:
-            throw new SeeAlsoEditAccessDenied();
-
-          default:
-            throw new BugzillaException(string.Format("Error updating see also field for bug. Details: {0}", e.Message));
-        }
-      }
-    }
-
-    /// <summary>
     /// Resets the assignee for this bug back to the default for its component.
     /// </summary>
     /// <param name="changeComment">The text of any comment to add whilst making the changes. May be <code>null</code> or a blank string
@@ -630,6 +567,22 @@ namespace Bugzilla
           updateParams.Groups.Add("remove", removedGroups.ToArray());
       }
 
+      //Work out the see also changes
+      if(mUpdatedSeeAlso != null)
+      {
+        updateParams.SeeAlso = new XmlRpcStruct();
+
+        IEnumerable<string> origSeeAlso = ((Array)mBugInfo["see_also"]).OfType<string>();
+        IEnumerable<string> newSeeAlso = mUpdatedGroups.Except(origSeeAlso);
+        IEnumerable<string> removedSeeAlso = origSeeAlso.Except(mUpdatedGroups);
+
+        if (newSeeAlso.Any())
+          updateParams.SeeAlso.Add("add", newSeeAlso.ToArray());
+
+        if (removedSeeAlso.Any())
+          updateParams.SeeAlso.Add("remove", removedSeeAlso.ToArray());
+      }
+      
       //Determine the CC list changes
       if(mUpdatedCCList != null)
       {
@@ -1085,9 +1038,13 @@ namespace Bugzilla
     { 
       get 
       {
+        if (mUpdatedSeeAlso != null)
+          return mUpdatedSeeAlso.ToArray();
+
         Array arr = (Array)mBugInfo["see_also"];
         return arr.OfType<string>().ToArray();
-      } 
+      }
+      set { mUpdatedSeeAlso = value; }
     }
 
     /// <summary>

@@ -259,5 +259,12 @@ namespace Bugzilla.Proxies.Bug.Params
     [XmlRpcMember("whiteboard")]
     [XmlRpcMissingMapping(MappingAction.Ignore)]
     public string Whiteboard;
+
+    /// <summary>
+    /// Set of URLs to add/remove/set for the See Also field.
+    /// </summary>
+    [XmlRpcMember("see_also")]
+    [XmlRpcMissingMapping(MappingAction.Ignore)]
+    public XmlRpcStruct SeeAlso;
   }
 }
