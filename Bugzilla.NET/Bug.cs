@@ -573,8 +573,8 @@ namespace Bugzilla
         updateParams.SeeAlso = new XmlRpcStruct();
 
         IEnumerable<string> origSeeAlso = ((Array)mBugInfo["see_also"]).OfType<string>();
-        IEnumerable<string> newSeeAlso = mUpdatedGroups.Except(origSeeAlso);
-        IEnumerable<string> removedSeeAlso = origSeeAlso.Except(mUpdatedGroups);
+        IEnumerable<string> newSeeAlso = mUpdatedSeeAlso.Except(origSeeAlso);
+        IEnumerable<string> removedSeeAlso = origSeeAlso.Except(mUpdatedSeeAlso);
 
         if (newSeeAlso.Any())
           updateParams.SeeAlso.Add("add", newSeeAlso.ToArray());
