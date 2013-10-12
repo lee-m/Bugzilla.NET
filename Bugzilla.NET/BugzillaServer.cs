@@ -273,7 +273,7 @@ namespace Bugzilla
     /// <exception cref="DuplicateAccountException">An account already exists with the specified email address.</exception>
     /// <exception cref="IllegalEmailAddressException">An illegal email address was specified or account creation is disabled.</exception>
     /// <exception cref="PasswordTooShortException">The length of the password is too short.</exception>
-    public int CreateNewUser(string email, string password, string fullName)
+    public int CreateUser(string email, string password, string fullName)
     {
       if (string.IsNullOrEmpty(email))
         throw new ArgumentNullException("email");
