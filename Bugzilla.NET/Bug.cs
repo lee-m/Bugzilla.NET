@@ -23,6 +23,7 @@ using System.IO;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 
 using CookComputing.XmlRpc;
 
@@ -513,7 +514,12 @@ namespace Bugzilla
       updateParams.AssignedTo = AssignedTo;
       updateParams.IsCCAccessible = AccessibleToCCListMembers;
       updateParams.Component = Component;
-      updateParams.Deadline = Deadline;
+
+      if (Deadline == null)
+        updateParams.Deadline = string.Empty;
+      else
+        updateParams.Deadline = Deadline.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
       updateParams.DuplicateOf = DuplicateOf;
       updateParams.EstimatedTime = EstimatedTotalResolutionTime;
       updateParams.RemainingTime = RemainingTime;
@@ -925,10 +931,25 @@ namespace Bugzilla
     /// <summary>
     /// Day that the bug is due to be completed. Format is 'YYYY-MM-DD'.
     /// </summary>
-    public string Deadline
+    public DateTime? Deadline
     {
-      get { return (string)mBugInfo["deadline"]; }
-      set { mBugInfo["deadline"] = value; }
+      get 
+      { 
+        object deadlineVal = mBugInfo["deadline"];
+
+        if(deadlineVal == null || deadlineVal.ToString().Length == 0)
+          return null;
+
+        DateTime parsedVal = DateTime.ParseExact(deadlineVal.ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture);
+        return parsedVal;
+      }
+      set 
+      {
+        if (value == null)
+          mBugInfo["deadline"] = string.Empty;
+        else
+          mBugInfo["deadline"] = value.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture); 
+      }
     }
 
     /// <summary>
