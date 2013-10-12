@@ -264,6 +264,32 @@ namespace Bugzilla
     }
 
     /// <summary>
+    /// Get the details of all the fields which can be set on a bug.
+    /// </summary>
+    /// <returns>Details of those fields which can be set on a bug.</returns>
+    public IEnumerable<BugFieldDetails> GetBugFields()
+    {
+      //Only interested in the name, whether the field is custom or not and the type.
+      GetFieldsParam getFieldsParam = new GetFieldsParam();
+
+      try
+      {
+        GetFieldsResponse getFieldsResp = mBugProxy.GetValidFields(getFieldsParam);
+
+        List<BugFieldDetails> fields = new List<BugFieldDetails>();
+
+        foreach (Proxies.Bug.Responses.BugField field in getFieldsResp.Fields)
+          fields.Add(new BugFieldDetails(field));
+
+        return fields;
+      }
+      catch (XmlRpcFaultException)
+      {
+        throw new BugzillaException("Error attempting to get fields for bug.");
+      }
+    }
+
+    /// <summary>
     /// Creates a new user.
     /// </summary>
     /// <param name="email">Email address of the new user (required).</param>
