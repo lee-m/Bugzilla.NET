@@ -122,7 +122,7 @@ namespace Bugzilla.Proxies.Bug.Responses
     /// <summary>
     /// Sort key for the field.
     /// </summary>
-    [XmlRpcMember("sortkey")]
+    [XmlRpcMember("sort_key")]
     public int SortKey;
 
     /// <summary>
