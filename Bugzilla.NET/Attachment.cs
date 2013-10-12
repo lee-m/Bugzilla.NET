@@ -84,11 +84,6 @@ namespace Bugzilla
     private bool mIsPatch;
 
     /// <summary>
-    /// True if the attachment is a URL instead of actual data, False otherwise. 
-    /// </summary>
-    private bool mIsURL;
-
-    /// <summary>
     /// The login name of the user that created the attachment.
     /// </summary>
     private string mCreator;
@@ -125,7 +120,6 @@ namespace Bugzilla
       mMIMEType = responseAttachmentDets["content_type"].ToString();
       mVisibility = int.Parse(responseAttachmentDets["is_private"].ToString()) ==  1 ? AttachmentVisibility.Private : AttachmentVisibility.Public;
       mIsObsolete = int.Parse(responseAttachmentDets["is_obsolete"].ToString()) ==  1 ? true : false;
-      mIsURL = int.Parse(responseAttachmentDets["is_url"].ToString())==  1 ? true : false;
       mIsPatch = int.Parse(responseAttachmentDets["is_patch"].ToString())==  1 ? true : false;
       mCreator = responseAttachmentDets["creator"].ToString();
     }
@@ -185,11 +179,6 @@ namespace Bugzilla
     /// Accessor for whether this attachment is a patch or not.
     /// </summary>
     public bool IsPatch { get { return mIsPatch; } }
-
-    /// <summary>
-    /// Accessor for whether this attachment is a URL or not.
-    /// </summary>
-    public bool IsURL { get { return mIsURL; } }
 
     /// <summary>
     /// Accessor for the login name of the person who created the attachment.
