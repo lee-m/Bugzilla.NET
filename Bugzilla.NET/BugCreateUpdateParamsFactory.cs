@@ -80,7 +80,8 @@ namespace Bugzilla
     public CreateBugParams GetCreateBugParamsTypeInstance(BugCustomFields customFields)
     {
       //If there aren't any custom fields, we can use the type we already have
-      if (!customFields.Any())
+      if (customFields == null
+          || !customFields.Any())
         return new CreateBugParams();
 
       //Calculate the hash code for each custom field to see if we already have a type defined
@@ -108,7 +109,8 @@ namespace Bugzilla
     public UpdateBugParam GetUpdateBugParamInstance(BugCustomFields customFields)
     {
       //If we don't have any custom fields we can use the existing type
-      if (!customFields.Any())
+      if (customFields == null
+          || !customFields.Any())
         return new UpdateBugParam();
 
       //Calculate the hash code for each custom field to see if we already have a type defined
