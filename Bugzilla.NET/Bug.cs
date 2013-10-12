@@ -546,7 +546,7 @@ namespace Bugzilla
       }
 
       //Set the blocks list
-      if(mUpdatedBlocks != null)
+      if (mUpdatedBlocks != null)
       {
         updateParams.Blocks = new XmlRpcStruct();
         updateParams.Blocks.Add("set", mUpdatedBlocks.ToArray());
@@ -833,7 +833,7 @@ namespace Bugzilla
     /// Accessor for the bug ids this bug blocks.
     /// </summary>
     /// <remarks>Updating the blocks list this way will overwrite any existing blocks list with the
-    /// new value.</remarks>
+    /// new value. To clear the blocks list, use <code>Enumerable.Empty</code> instead of <code>null</code>.</remarks>
     public IEnumerable<int> Blocks
     {
       get 
@@ -844,14 +844,20 @@ namespace Bugzilla
         Array arr = (Array)mBugInfo["blocks"];
         return arr.OfType<int>().ToArray();
       }
-      set { mUpdatedBlocks = value; }
+      set 
+      {
+        if (value == null)
+          throw new ArgumentNullException("value");
+
+        mUpdatedBlocks = value; 
+      }
     }
 
     /// <summary>
     /// Accessor for the bug ids this bug depends on.
     /// </summary>
     /// <remarks>Updating the depends on list this way will overwrite any existing depends on list with the
-    /// new value.</remarks>
+    /// new value. To clear the dependency list, use <code>Enumerable.Empty</code> instead of <code>null</code>.</remarks>
     public IEnumerable<int> DependsOn
     {
       get 
@@ -862,12 +868,19 @@ namespace Bugzilla
         Array arr = (Array)mBugInfo["depends_on"];
         return arr.OfType<int>().ToArray();
       }
-      set { mUpdatedDependsOn = value; }
+      set 
+      {
+        if (value == null)
+          throw new ArgumentNullException("value");
+
+        mUpdatedDependsOn = value; 
+      }
     }
 
     /// <summary>
     /// Accessor for the CC list.
     /// </summary>
+    /// <remarks>To clear the CC list, use <code>Enumerable.Empty</code> instead of <code>null</code>.</remarks>
     public IEnumerable<string> CCList 
     { 
       get 
@@ -878,7 +891,13 @@ namespace Bugzilla
         Array arr = (Array)mBugInfo["cc"];
         return arr.OfType<string>().ToArray();
       }
-      set { mUpdatedCCList = value; }
+      set 
+      {
+        if (value == null)
+          throw new ArgumentNullException("value");
+
+        mUpdatedCCList = value; 
+      }
     }
 
     /// <summary>
@@ -950,6 +969,7 @@ namespace Bugzilla
     /// <summary>
     /// The names of all groups this bug is in.
     /// </summary>
+    /// <remarks>To clear the groups, use <code>Enumerable.Empty</code> instead of <code>null</code>.</remarks>
     public IEnumerable<string> Groups 
     { 
       get 
@@ -960,13 +980,20 @@ namespace Bugzilla
         Array arr = (Array)mBugInfo["groups"];
         return arr.OfType<string>().ToArray();
       }
-      set { mUpdatedGroups = value; }
+      set 
+      {
+        if (value == null)
+          throw new ArgumentNullException("value");
+
+        mUpdatedGroups = value; 
+      }
     }
 
     /// <summary>
     /// Keywords set on the bug.
     /// </summary>
-    /// <remarks>Updating the keywords list this way will overwrite any existing keywords.</remarks>
+    /// <remarks>Updating the keywords list this way will overwrite any existing keywords. To clear the keywords, 
+    /// use <code>Enumerable.Empty</code> instead of <code>null</code>.</remarks>
     public IEnumerable<string> Keywords
     {
       get 
@@ -977,7 +1004,13 @@ namespace Bugzilla
         Array arr = (Array)mBugInfo["keywords"];
         return arr.OfType<string>().ToArray();
       }
-      set { mUpdatedKeywords = value; }
+      set 
+      {
+        if (value == null)
+          throw new ArgumentNullException("value");
+
+        mUpdatedKeywords = value; 
+      }
     }
 
     /// <summary>
@@ -1042,6 +1075,7 @@ namespace Bugzilla
     /// <summary>
     /// The URLs in the See Also field on the bug.
     /// </summary>
+    /// <remarks>To clear the see also list, use <code>Enumerable.Empty</code> instead of <code>null</code>.</remarks>
     public IEnumerable<string> SeeAlso 
     { 
       get 
@@ -1052,7 +1086,13 @@ namespace Bugzilla
         Array arr = (Array)mBugInfo["see_also"];
         return arr.OfType<string>().ToArray();
       }
-      set { mUpdatedSeeAlso = value; }
+      set 
+      {
+        if (value == null)
+          throw new ArgumentNullException("value");
+
+        mUpdatedSeeAlso = value; 
+      }
     }
 
     /// <summary>
