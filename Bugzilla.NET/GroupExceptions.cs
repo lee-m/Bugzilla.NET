@@ -24,8 +24,12 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an attempt is made to create a group with a name that already exists
   /// </summary>
-  class DuplicateGroupNameException : BugzillaException
+  public class DuplicateGroupNameException : BugzillaException
   {
+    /// <summary>
+    /// Initialises a new instance with the specified message.
+    /// </summary>
+    /// <param name="message">Exception message.</param>
     public DuplicateGroupNameException(string message)
       : base(message) { }
   }
@@ -33,8 +37,12 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an attempt is made to create a group with an invalid user regular expression.
   /// </summary>
-  class InvalidGroupRegExpException : BugzillaException
+  public class InvalidGroupRegExpException : BugzillaException
   {
+    /// <summary>
+    /// Initialises a new instance with the specified message.
+    /// </summary>
+    /// <param name="message">Exception message.</param>
     public InvalidGroupRegExpException(string message)
       : base(message) { }
   }

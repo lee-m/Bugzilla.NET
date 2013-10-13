@@ -937,7 +937,10 @@ namespace Bugzilla
     /// <param name="userRegExp">A regular expression. Any user whose Bugzilla username matches this regular expression will automatically be granted membership in this group.</param>
     /// <param name="isActive"><code>true</code> if this group can be used for bugs, <code>false</code> if this is a group that will only contain users and no bugs will be restricted to it.</param>
     /// <param name="iconURL">A URL pointing to a small icon used to identify the group.</param>
-    /// <returns></returns>
+    /// <exception cref="DuplicateGroupNameException">Attemped to create a group with a duplicate name.</exception>
+    /// <exception cref="InvalidGroupRegExpException">Invalid user regular expression specified.</exception>
+    /// <exception cref="BugzillaException">Unknown server error when creating the new group.</exception>
+    /// <returns>The ID of the new group.</returns>
     public int CreateGroup(string shortName, string description, string userRegExp, bool isActive, string iconURL)
     {
       if (string.IsNullOrEmpty(shortName))
