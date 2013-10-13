@@ -62,6 +62,7 @@
     <Compile Include="Extension.cs" />
     <Compile Include="GroupExceptions.cs" />
     <Compile Include="Milestone.cs" />
+    <Compile Include="ProductExceptions.cs" />
     <Compile Include="ProductVersion.cs" />
     <Compile Include="Proxies\Bug\Params\CreateBugParams.cs" />
     <Compile Include="Proxies\Bug\Params\GetAttachmentsParam.cs" />
@@ -78,6 +79,8 @@
     <Compile Include="Proxies\Group\IGroupProxy.cs" />
     <Compile Include="Proxies\Group\Params\CreateGroupParams.cs" />
     <Compile Include="Proxies\Group\Responses\CreateGroupResponse.cs" />
+    <Compile Include="Proxies\Product\Params\CreateProductParams.cs" />
+    <Compile Include="Proxies\Product\Responses\CreateProductResponse.cs" />
     <Compile Include="SeeAlsoModifications.cs" />
     <Compile Include="UpdateBugModifications.cs" />
     <Compile Include="UserExceptions.cs" />

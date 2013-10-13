@@ -115,6 +115,11 @@ namespace Bugzilla
     /// </summary>
     private List<BugCustomField> mCustomFieldTemplate;
 
+    /// <summary>
+    /// Max length of a product name.
+    /// </summary>
+    private const int ProductNameMaxLength = 64;
+
     #region Public Methods
 
     /// <summary>
@@ -973,6 +978,77 @@ namespace Bugzilla
 
           default:
             throw new BugzillaException(string.Format("Error creating group. Details: {0}", e.FaultString));
+        }
+      }
+    }
+
+    /// <summary>
+    /// Creates a new product.
+    /// </summary>
+    /// <param name="name">Name of the product.</param>
+    /// <param name="description">Description of the product.</param>
+    /// <param name="defaultVersion">Default version for the product.</param>
+    /// <param name="hasUnconfirmedStatus">Whether the product has the UNCONFIRMED status or not.</param>
+    /// <param name="classification">The name of the Classification which contains this product.</param>
+    /// <param name="defaultMilestone">The default milestone for this product.</param>
+    /// <param name="openForBugEntry">Whether the product allows new bugs to be recorded against it or not.</param>
+    /// <param name="createChartSeries">Whether to create new chart series for the product.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="name"/>, <paramref name="description"/> or <paramref name="defaultVersion"/> is null or blank.</exception>
+    /// <exception cref="ArgumentException"><paramref name="name"/> exceeds the max length.</exception>
+    /// <exception cref="InvalidClassificationException"><paramref name="classification"/> does not exist.></exception>
+    /// <exception cref="DuplicateProductNameException">A product already exists with <paramref name="name"/></exception>
+    /// <exception cref="BugzillaException">Unknown server error creating the new product.</exception>
+    /// <returns>ID of the newly created product.</returns>
+    public int CreateProduct(string name, 
+                             string description, 
+                             string defaultVersion, 
+                             bool hasUnconfirmedStatus, 
+                             string classification,
+                             string defaultMilestone, 
+                             bool openForBugEntry, 
+                             bool createChartSeries)
+    {
+      //Name is required
+      if (string.IsNullOrEmpty(name))
+        throw new ArgumentNullException("name");
+      else if(name.Length > ProductNameMaxLength)
+        throw new ArgumentException(string.Format("Product name cannot exceed {0} characters.", ProductNameMaxLength));
+
+      //Description is required
+      if (string.IsNullOrEmpty(description))
+        throw new ArgumentNullException("description");
+
+      //Default version is required
+      if (string.IsNullOrEmpty(defaultVersion))
+        throw new ArgumentNullException("defaultVersion");
+
+      CreateProductParams createParams = new CreateProductParams();
+      createParams.Classification = classification;
+      createParams.CreateChartSeries = createChartSeries;
+      createParams.DefaultMilestone = defaultMilestone;
+      createParams.DefaultVersion = defaultVersion;
+      createParams.Description = description;
+      createParams.HasUnconfirmedStatus = hasUnconfirmedStatus;
+      createParams.IsOpenForBugEntry = openForBugEntry;
+      createParams.Name = name;
+      
+      try
+      {
+        CreateProductResponse resp = mProductProxy.CreateProduct(createParams);
+        return resp.ID;
+      }
+      catch(XmlRpcFaultException e)
+      {
+        switch(e.FaultCode)
+        {
+          case 51:
+            throw new InvalidClassificationException(e.FaultString);
+
+          case 702:
+            throw new DuplicateProductNameException(e.FaultString);
+
+          default:
+            throw new BugzillaException(string.Format("Error creating product. Details: {0}", e.FaultString));
         }
       }
     }
