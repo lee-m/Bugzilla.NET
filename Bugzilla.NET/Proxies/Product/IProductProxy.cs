@@ -59,5 +59,13 @@ namespace Bugzilla.Proxies.Product
     /// <returns>A list of product IDs.</returns>
     [XmlRpcMethod("Product.get_selectable_products")]
     ProductIDsResponse GetSelectableProducts();
+
+    /// <summary>
+    /// Creates a new product.
+    /// </summary>
+    /// <param name="createParams">Details of the new product to create.</param>
+    /// <returns>ID of the newly created product.</returns>
+    [XmlRpcMethod("Product.create")]
+    CreateProductResponse CreateProduct(CreateProductParams createParams);
   }
 }

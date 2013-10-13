@@ -18,33 +18,19 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //THE SOFTWARE.
 
-using System;
+using CookComputing.XmlRpc;
 
-namespace Bugzilla
+namespace Bugzilla.Proxies.Product.Responses
 {
   /// <summary>
-  /// Thrown when an attempt is made to create a group with a name that already exists
+  /// Response received when creating a new product.
   /// </summary>
-  public class DuplicateGroupNameException : BugzillaException
+  internal struct CreateProductResponse
   {
     /// <summary>
-    /// Initialises a new instance with the specified message.
+    /// ID of the newly created product.
     /// </summary>
-    /// <param name="message">Exception message.</param>
-    public DuplicateGroupNameException(string message)
-      : base(message) { }
-  }
-
-  /// <summary>
-  /// Thrown when an attempt is made to create a group with an invalid user regular expression.
-  /// </summary>
-  public class InvalidGroupRegExpException : BugzillaException
-  {
-    /// <summary>
-    /// Initialises a new instance with the specified message.
-    /// </summary>
-    /// <param name="message">Exception message.</param>
-    public InvalidGroupRegExpException(string message)
-      : base(message) { }
+    [XmlRpcMember("id")]
+    public int ID;
   }
 }

@@ -23,28 +23,32 @@ using System;
 namespace Bugzilla
 {
   /// <summary>
-  /// Thrown when an attempt is made to create a group with a name that already exists
+  /// Thrown when an invalid classification is specified.
   /// </summary>
-  public class DuplicateGroupNameException : BugzillaException
+  public class InvalidClassificationException : BugzillaException
   {
     /// <summary>
     /// Initialises a new instance with the specified message.
     /// </summary>
     /// <param name="message">Exception message.</param>
-    public DuplicateGroupNameException(string message)
-      : base(message) { }
+    public InvalidClassificationException(string message)
+      : base(message)
+    {
+    }
   }
 
   /// <summary>
-  /// Thrown when an attempt is made to create a group with an invalid user regular expression.
+  /// Thrown when an attempt is made to create a product with a duplicate name.
   /// </summary>
-  public class InvalidGroupRegExpException : BugzillaException
+  public class DuplicateProductNameException : BugzillaException
   {
     /// <summary>
     /// Initialises a new instance with the specified message.
     /// </summary>
     /// <param name="message">Exception message.</param>
-    public InvalidGroupRegExpException(string message)
-      : base(message) { }
+    public DuplicateProductNameException(string message)
+      : base(message)
+    {
+    }
   }
 }
