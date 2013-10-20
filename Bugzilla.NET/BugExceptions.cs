@@ -133,20 +133,6 @@ namespace Bugzilla
   }
 
   /// <summary>
-  /// Thrown when attempting to get comments with an invalid comment ID.
-  /// </summary>
-  public sealed class InvalidCommentIDException : BugzillaException
-  {
-    /// <summary>
-    /// Default constructor.
-    /// </summary>
-    public InvalidCommentIDException()
-      : base("One or more of the specified comment IDs do not exist.")
-    {
-    }
-  }
-
-  /// <summary>
   /// Thrown when an attempt is made to get a private comment when the logged in user does not have
   /// the necessary privilages to see private comments.
   /// </summary>
