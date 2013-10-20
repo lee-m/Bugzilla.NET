@@ -25,7 +25,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an invalid classification is specified.
   /// </summary>
-  public class InvalidClassificationException : BugzillaException
+  public sealed class InvalidClassificationException : BugzillaException
   {
     /// <summary>
     /// Initialises a new instance with the specified message.
@@ -40,7 +40,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an attempt is made to create a product with a duplicate name.
   /// </summary>
-  public class DuplicateProductNameException : BugzillaException
+  public sealed class DuplicateProductNameException : BugzillaException
   {
     /// <summary>
     /// Initialises a new instance with the specified message.

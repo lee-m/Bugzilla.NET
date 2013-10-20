@@ -25,7 +25,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an attempt is made to create a group with a name that already exists
   /// </summary>
-  public class DuplicateGroupNameException : BugzillaException
+  public sealed class DuplicateGroupNameException : BugzillaException
   {
     /// <summary>
     /// Initialises a new instance with the specified message.
@@ -38,7 +38,7 @@ namespace Bugzilla
   /// <summary>
   /// Thrown when an attempt is made to create a group with an invalid user regular expression.
   /// </summary>
-  public class InvalidGroupRegExpException : BugzillaException
+  public sealed class InvalidGroupRegExpException : BugzillaException
   {
     /// <summary>
     /// Initialises a new instance with the specified message.
