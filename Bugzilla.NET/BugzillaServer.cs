@@ -832,7 +832,7 @@ namespace Bugzilla
     /// <returns>Comment details for the requested comments.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="commentIDs"/> is null.</exception>
     /// <exception cref="CommentAccessDeniedException">One or more of the requested comments are inaccessible to the current user.</exception>
-    /// <exception cref="InvalidCommentIDException">One or more invalid comment IDs specified.</exception>
+    /// <exception cref="ArgumentException">One or more invalid comment IDs specified.</exception>
     public IEnumerable<Comment> GetComments(IEnumerable<int> commentIDs)
     {
       if (commentIDs == null)
@@ -865,7 +865,7 @@ namespace Bugzilla
             throw new CommentAccessDeniedException();
 
           case 111:
-            throw new InvalidCommentIDException();
+            throw new ArgumentException(e.FaultString);
 
           default:
             throw new BugzillaException(string.Format("Error getting comments. Details: {0}", e.Message));
