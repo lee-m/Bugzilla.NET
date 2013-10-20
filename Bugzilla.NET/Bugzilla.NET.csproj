@@ -64,6 +64,7 @@
     <Compile Include="Milestone.cs" />
     <Compile Include="ProductExceptions.cs" />
     <Compile Include="ProductVersion.cs" />
+    <Compile Include="Proxies\Bugzilla\Responses\LastAuditTimeResponse.cs" />
     <Compile Include="Proxies\Bug\Params\CreateBugParams.cs" />
     <Compile Include="Proxies\Bug\Params\GetAttachmentsParam.cs" />
     <Compile Include="Proxies\Bug\Params\GetBugHistoryParams.cs" />
