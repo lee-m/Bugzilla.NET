@@ -1,4 +1,4 @@
-﻿//Copyright (C) 2012 by Lee Millward
+﻿//Copyright (C) 2013 by Lee Millward
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -18,50 +18,43 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //THE SOFTWARE.
 
-using CookComputing.XmlRpc;
-using Bugzilla.Proxies.Bugzilla.Responses;
+using Bugzilla.Proxies.Classification.Responses;
 
-namespace Bugzilla.Proxies.Bugzilla
+namespace Bugzilla
 {
   /// <summary>
-  /// Proxy interface for interacting with the global Bugzilla web service API.
+  /// Details about a single product within a classification that the logged in user has access to.
   /// </summary>
-  [XmlRpcProxyAssemblyName("IBugzillaProxy")]
-  internal interface IBugzillaProxy : IXmlRpcProxy
+  public class ClassificationProduct
   {
     /// <summary>
-    /// Gets the version number of the Bugzilla instance.
+    /// Details about the product.
     /// </summary>
-    /// <returns>The version number of the Bugzilla instance.</returns>
-    [XmlRpcMethod("Bugzilla.version")]
-    GetVersionResponse GetVersion();
+    private readonly ClassificationProductDets mDets;
 
     /// <summary>
-    /// Gets time information from the Bugzilla instance.
+    /// Initialises this instance with the specified details.
     /// </summary>
-    /// <returns></returns>
-    [XmlRpcMethod("Bugzilla.time")]
-    GetTimeResponse GetTime();
+    /// <param name="details">Details about the product.</param>
+    internal ClassificationProduct(ClassificationProductDets details)
+    {
+      mDets = details;
+    }
 
     /// <summary>
-    /// Gets details of enabled extensions.
+    /// ID of the product.
     /// </summary>
-    /// <returns></returns>
-    [XmlRpcMethod("Bugzilla.extensions")]
-    GetExtensionsResponse GetExtensions();
+    public int ID { get { return mDets.ID; } }
 
     /// <summary>
-    /// Gets the last modification date/time from the audit log.
+    /// Name of the product.
     /// </summary>
-    /// <returns></returns>
-    [XmlRpcMethod("Bugzilla.last_audit_time")]
-    LastAuditTimeResponse GetLastAuditTime();
+    public string Name { get { return mDets.Name; } }
 
     /// <summary>
-    /// Gets the various parameter values of the remote server.
+    /// Description of the product.
     /// </summary>
-    /// <returns></returns>
-    [XmlRpcMethod("Bugzilla.parameters")]
-    XmlRpcStruct GetParameters();
+    public string Description { get { return mDets.Description; } }
+
   }
 }
