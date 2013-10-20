@@ -283,9 +283,9 @@ namespace Bugzilla
 
         return fields;
       }
-      catch (XmlRpcFaultException)
+      catch (XmlRpcFaultException e)
       {
-        throw new BugzillaException("Error attempting to get fields for bug.");
+        throw new BugzillaException(string.Format("Error attempting to get fields for bug. Details: {0}", e.FaultString));
       }
     }
 
