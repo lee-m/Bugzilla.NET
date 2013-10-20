@@ -1148,6 +1148,16 @@ namespace Bugzilla
     }
 
     /// <summary>
+    /// Accessor for the last modification date/time from the audit log.
+    /// </summary>
+    public DateTime LastAuditTime
+    {
+      get
+      {
+        return mBugzillaProxy.GetLastAuditTime().LastAuditTime;
+      }
+    }
+    /// <summary>
     /// Accessor for the set of installed extensions.
     /// </summary>
     public IEnumerable<Extension> InstalledExtensions

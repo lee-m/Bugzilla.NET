@@ -1,4 +1,4 @@
-﻿//Copyright (C) 2012 by Lee Millward
+﻿//Copyright (C) 2013 by Lee Millward
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -18,43 +18,21 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //THE SOFTWARE.
 
-using CookComputing.XmlRpc;
-using Bugzilla.Proxies.Bugzilla.Responses;
+using System;
 
-namespace Bugzilla.Proxies.Bugzilla
+using CookComputing.XmlRpc;
+
+namespace Bugzilla.Proxies.Bugzilla.Responses
 {
   /// <summary>
-  /// Proxy interface for interacting with the global Bugzilla web service API.
+  /// Response value from calling Bugzilla.last_audit_time
   /// </summary>
-  [XmlRpcProxyAssemblyName("IBugzillaProxy")]
-  internal interface IBugzillaProxy : IXmlRpcProxy
+  internal struct LastAuditTimeResponse
   {
     /// <summary>
-    /// Gets the version number of the Bugzilla instance.
+    /// Last modification date/time from the audit log.
     /// </summary>
-    /// <returns>The version number of the Bugzilla instance.</returns>
-    [XmlRpcMethod("Bugzilla.version")]
-    GetVersionResponse GetVersion();
-
-    /// <summary>
-    /// Gets time information from the Bugzilla instance.
-    /// </summary>
-    /// <returns></returns>
-    [XmlRpcMethod("Bugzilla.time")]
-    GetTimeResponse GetTime();
-
-    /// <summary>
-    /// Gets details of enabled extensions.
-    /// </summary>
-    /// <returns></returns>
-    [XmlRpcMethod("Bugzilla.extensions")]
-    GetExtensionsResponse GetExtensions();
-
-    /// <summary>
-    /// Gets the last modification date/time from the audit log.
-    /// </summary>
-    /// <returns></returns>
-    [XmlRpcMethod("Bugzilla.last_audit_time")]
-    LastAuditTimeResponse GetLastAuditTime();
+    [XmlRpcMember("last_audit_time")]
+    public DateTime LastAuditTime;
   }
 }
