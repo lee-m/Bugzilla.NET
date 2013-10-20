@@ -62,6 +62,7 @@
     <Compile Include="Extension.cs" />
     <Compile Include="GroupExceptions.cs" />
     <Compile Include="Milestone.cs" />
+    <Compile Include="Parameter.cs" />
     <Compile Include="ProductExceptions.cs" />
     <Compile Include="ProductVersion.cs" />
     <Compile Include="Proxies\Bugzilla\Responses\LastAuditTimeResponse.cs" />
