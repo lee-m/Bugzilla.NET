@@ -44,6 +44,9 @@ using Bugzilla.Proxies.Product.Params;
 using Bugzilla.Proxies.Group;
 using Bugzilla.Proxies.Group.Params;
 using Bugzilla.Proxies.Group.Responses;
+using Bugzilla.Proxies.Classification;
+using Bugzilla.Proxies.Classification.Params;
+using Bugzilla.Proxies.Classification.Responses;
 
 namespace Bugzilla
 {
@@ -92,6 +95,11 @@ namespace Bugzilla
     /// Proxy for interacting with the group web service API.
     /// </summary>
     private readonly IGroupProxy mGroupProxy;
+
+    /// <summary>
+    /// Proxy for interacting with the classification web services API.
+    /// </summary>
+    private readonly IClassificationProxy mClassificationProy;
 
     /// <summary>
     /// Whether a user is logged in or not.
@@ -162,6 +170,8 @@ namespace Bugzilla
       mBugzillaProxy = XmlRpcProxyGen.Create<IBugzillaProxy>();
       mProductProxy = XmlRpcProxyGen.Create<IProductProxy>();
       mGroupProxy = XmlRpcProxyGen.Create<IGroupProxy>();
+      mClassificationProy = XmlRpcProxyGen.Create<IClassificationProxy>();
+
       mCreateBugTypes = new Dictionary<int, Type>();
 
 #if DEBUG
@@ -180,6 +190,7 @@ namespace Bugzilla
       mBugzillaProxy.Url = mURL;
       mProductProxy.Url = mURL;
       mGroupProxy.Url = mURL;
+      mClassificationProy.Url = mURL;
 
       if (loginCookies != null)
       {
@@ -303,6 +314,38 @@ namespace Bugzilla
       {
         throw new BugzillaException("Error attempting to get fields for bug.");
       }
+    }
+
+    /// <summary>
+    /// Gets details of classifications based on their IDs.
+    /// </summary>
+    /// <param name="ids">IDs of the classifications to get.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="ids"/> is <code>null</code>.</exception>
+    /// <exception cref="ArgumentException">One or more invalid IDs were specified.</exception>
+    /// <exception cref="ClassificationsDisabledException">Classifications have been disabled within the Bugzilla server.</exception>
+    /// <returns></returns>
+    public IEnumerable<Classification> GetClassifications(IEnumerable<int> ids)
+    {
+      if(ids == null)
+        throw new ArgumentNullException("ids");
+
+      return GetClassificationsFromParams(new GetClassificationParams() { IDs = ids.ToArray() });
+    }
+
+    /// <summary>
+    /// Gets details of classifications based on their names.
+    /// </summary>
+    /// <param name="names">Names of the classifications to get.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="names"/> is <code>null</code>.</exception>
+    /// <exception cref="ArgumentException">One or more invalid names were specified.</exception>
+    /// <exception cref="ClassificationsDisabledException">Classifications have been disabled within the Bugzilla server.</exception>
+    /// <returns></returns>
+    public IEnumerable<Classification> GetClassifications(IEnumerable<string> names)
+    {
+      if(names == null)
+        throw new ArgumentNullException("names");
+
+      return GetClassificationsFromParams(new GetClassificationParams() { Names = names.ToArray() });
     }
 
     /// <summary>
@@ -1058,6 +1101,34 @@ namespace Bugzilla
     #region Private Methods
 
     /// <summary>
+    /// Helper method to get a set of classifications based on a set of get parameters.
+    /// </summary>
+    /// <param name="getParams">Parameters used to query for classifications.</param>
+    /// <returns></returns>
+    private IEnumerable<Classification> GetClassificationsFromParams(GetClassificationParams getParams)
+    {
+      try
+      {
+        GetClassificationResponse resp = mClassificationProy.GetClassifications(getParams);
+        return resp.Classifications.Select(c => new Classification(c)).ToList();
+      }
+      catch (XmlRpcFaultException e)
+      {
+        switch (e.FaultCode)
+        {
+          case 51:
+            throw new ArgumentException(e.FaultString);
+
+          case 900:
+            throw new ClassificationsDisabledException(e.FaultString);
+
+          default:
+            throw new BugzillaException(string.Format("Error getting classifications. Details: {0}", e.FaultString));
+        }
+      }
+    }
+
+    /// <summary>
     /// Helper method which converts a generic IEnumerable into an array of equivalent type or <code>null</code>/>
     /// </summary>
     /// <typeparam name="T">Type of the returned array.</typeparam>
@@ -1118,6 +1189,7 @@ namespace Bugzilla
         mBugzillaProxy.CookieContainer.Add(cookie);
         mProductProxy.CookieContainer.Add(cookie);
         mGroupProxy.CookieContainer.Add(cookie);
+        mClassificationProy.CookieContainer.Add(cookie);
       }
     }
 

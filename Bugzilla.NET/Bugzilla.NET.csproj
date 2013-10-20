@@ -55,6 +55,9 @@
     <Compile Include="BugCustomFields.cs" />
     <Compile Include="BugHistory.cs" />
     <Compile Include="BugzillaException.cs" />
+    <Compile Include="Classification.cs" />
+    <Compile Include="ClassificationExceptions.cs" />
+    <Compile Include="ClassificationProduct.cs" />
     <Compile Include="Comment.cs" />
     <Compile Include="BugExceptions.cs" />
     <Compile Include="BugFieldDetails.cs" />
@@ -78,6 +81,9 @@
     <Compile Include="Proxies\Bug\Responses\GetFieldsResponse.cs" />
     <Compile Include="Proxies\Bug\Responses\UpdateBugResponse.cs" />
     <Compile Include="Proxies\Bug\Responses\UpdateSeeAlsoResponse.cs" />
+    <Compile Include="Proxies\Classification\IClassificationProxy.cs" />
+    <Compile Include="Proxies\Classification\Params\GetClassificationParams.cs" />
+    <Compile Include="Proxies\Classification\Responses\GetClassificationResponse.cs" />
     <Compile Include="Proxies\Group\IGroupProxy.cs" />
     <Compile Include="Proxies\Group\Params\CreateGroupParams.cs" />
     <Compile Include="Proxies\Group\Responses\CreateGroupResponse.cs" />
