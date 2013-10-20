@@ -833,7 +833,7 @@ namespace Bugzilla
     /// <exception cref="ArgumentNullException"><paramref name="commentIDs"/> is null.</exception>
     /// <exception cref="CommentAccessDeniedException">One or more of the requested comments are inaccessible to the current user.</exception>
     /// <exception cref="InvalidCommentIDException">One or more invalid comment IDs specified.</exception>
-    public IEnumerable<Comment> GetCommentsByID(IEnumerable<int> commentIDs)
+    public IEnumerable<Comment> GetComments(IEnumerable<int> commentIDs)
     {
       if (commentIDs == null)
         throw new ArgumentNullException("commentIDs");
@@ -882,7 +882,7 @@ namespace Bugzilla
     /// <exception cref="InvalidBugIDOrAliasException">One or more invalid bug IDs/aliases specified.</exception>
     /// <exception cref="BugAccessDeniedException">Current user does not have access one or more of the specified bugs.</exception>
     /// <exception cref="AttachmentAccessDeniedException">One or more of the specified attachments are private but the current user is not in the "insiders" group.</exception>
-    public IEnumerable<Attachment> GetAttachmentsByID(IEnumerable<int> attachmentIDs)
+    public IEnumerable<Attachment> GetAttachments(IEnumerable<int> attachmentIDs)
     {
       if (attachmentIDs == null)
         throw new ArgumentNullException("attachmentIDs");
