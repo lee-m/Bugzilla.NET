@@ -1216,6 +1216,23 @@ namespace Bugzilla
     }
 
     /// <summary>
+    /// Accessor for the configuration parameters.
+    /// </summary>
+    public IEnumerable<Parameter> Parameters
+    {
+      get 
+      {
+        XmlRpcStruct resp = mBugzillaProxy.GetParameters();
+        XmlRpcStruct paramResp = (XmlRpcStruct)resp["parameters"];
+        List<Parameter> parameters = new List<Parameter>();
+
+        foreach (string paramName in paramResp.Keys)
+          parameters.Add(new Parameter(paramName, paramResp[paramName]));
+
+        return parameters;
+      }
+    }
+    /// <summary>
     /// Accessor for the login cookies to remember the login across sessions.
     /// </summary>
     public CookieCollection LoginCookies

@@ -1,4 +1,4 @@
-﻿//Copyright (C) 2012 by Lee Millward
+﻿//Copyright (C) 2013 by Lee Millward
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -18,50 +18,46 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //THE SOFTWARE.
 
-using CookComputing.XmlRpc;
-using Bugzilla.Proxies.Bugzilla.Responses;
+using System;
 
-namespace Bugzilla.Proxies.Bugzilla
+using CookComputing.XmlRpc;
+
+namespace Bugzilla
 {
   /// <summary>
-  /// Proxy interface for interacting with the global Bugzilla web service API.
+  /// Stores details of a single parameter of the remote server.
   /// </summary>
-  [XmlRpcProxyAssemblyName("IBugzillaProxy")]
-  internal interface IBugzillaProxy : IXmlRpcProxy
+  public struct Parameter
   {
     /// <summary>
-    /// Gets the version number of the Bugzilla instance.
+    /// Name of the parameter.
     /// </summary>
-    /// <returns>The version number of the Bugzilla instance.</returns>
-    [XmlRpcMethod("Bugzilla.version")]
-    GetVersionResponse GetVersion();
+    private readonly string mParamName;
 
     /// <summary>
-    /// Gets time information from the Bugzilla instance.
+    /// Value of the parameter.
     /// </summary>
-    /// <returns></returns>
-    [XmlRpcMethod("Bugzilla.time")]
-    GetTimeResponse GetTime();
+    private readonly object mParamValue;
 
     /// <summary>
-    /// Gets details of enabled extensions.
+    /// Creates a new instance with the specified name and value.
     /// </summary>
-    /// <returns></returns>
-    [XmlRpcMethod("Bugzilla.extensions")]
-    GetExtensionsResponse GetExtensions();
+    /// <param name="name">Name of the parameter.</param>
+    /// <param name="value">Value of the parameter.</param>
+    internal Parameter(string name, object value)
+    {
+      mParamName = name;
+      mParamValue = value;
+    }
 
     /// <summary>
-    /// Gets the last modification date/time from the audit log.
+    /// Accessor for the parameter name.
     /// </summary>
-    /// <returns></returns>
-    [XmlRpcMethod("Bugzilla.last_audit_time")]
-    LastAuditTimeResponse GetLastAuditTime();
+    public string Name { get { return mParamName; } }
 
     /// <summary>
-    /// Gets the various parameter values of the remote server.
+    /// Accessor for the parameter value.
     /// </summary>
-    /// <returns></returns>
-    [XmlRpcMethod("Bugzilla.parameters")]
-    XmlRpcStruct GetParameters();
+    public object Value { get { return mParamValue; } }
   }
 }
