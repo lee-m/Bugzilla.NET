@@ -18,6 +18,9 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //THE SOFTWARE.
 
+using System.Linq;
+using System.Collections.Generic;
+
 using Bugzilla.Proxies.Product.Responses;
 
 namespace Bugzilla
@@ -55,5 +58,41 @@ namespace Bugzilla
     /// Accessor for the product description.
     /// </summary>
     public string Description { get { return mDets.Description; } }
+
+    /// <summary>
+    /// Indicates whether this product is active or not.
+    /// </summary>
+    public bool IsActive { get { return mDets.IsActive; } }
+
+    /// <summary>
+    /// Name of the default milestone.
+    /// </summary>
+    public string DefaultMilestone { get { return mDets.DefaultMilestone; } }
+
+    /// <summary>
+    /// Whether this produce has the UNCONFIRMED status.
+    /// </summary>
+    public bool HasUnconfirmedStatus { get { return mDets.HasUnconfirmedStatus; } }
+
+    /// <summary>
+    /// Name of the classification this product belongs to.
+    /// </summary>
+    public string Classification { get { return mDets.Classification; } }
+
+    /// <summary>
+    /// The set of componets available for this product.
+    /// </summary>
+    public IEnumerable<Component> Components { get { return mDets.Components.Select(dets => new Component(dets)).ToList(); } }
+
+    /// <summary>
+    /// The set of versions available for this product.
+    /// </summary>
+    public IEnumerable<ProductVersion> Versions { get { return mDets.Versions.Select(dets => new ProductVersion(dets)).ToList(); } }
+
+    /// <summary>
+    /// The set of milestones available for this product.
+    /// </summary>
+    public IEnumerable<Milestone> Milestones { get { return mDets.Milestones.Select(dets => new Milestone(dets)).ToList(); } }
   }
 }
+
