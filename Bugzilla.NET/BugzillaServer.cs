@@ -41,6 +41,9 @@ using Bugzilla.Proxies.User.Responses;
 using Bugzilla.Proxies.Product;
 using Bugzilla.Proxies.Product.Responses;
 using Bugzilla.Proxies.Product.Params;
+using Bugzilla.Proxies.Group;
+using Bugzilla.Proxies.Group.Params;
+using Bugzilla.Proxies.Group.Responses;
 
 namespace Bugzilla
 {
@@ -86,6 +89,11 @@ namespace Bugzilla
     private readonly IProductProxy mProductProxy;
 
     /// <summary>
+    /// Proxy for interacting with the group web service API.
+    /// </summary>
+    private readonly IGroupProxy mGroupProxy;
+
+    /// <summary>
     /// Whether a user is logged in or not.
     /// </summary>
     private bool mLoggedIn;
@@ -106,6 +114,11 @@ namespace Bugzilla
     /// The type of each custom field which can be set on a bug keyed off the field name.
     /// </summary>
     private List<BugCustomField> mCustomFieldTemplate;
+
+    /// <summary>
+    /// Max length of a product name.
+    /// </summary>
+    private const int ProductNameMaxLength = 64;
 
     #region Public Methods
 
@@ -148,6 +161,7 @@ namespace Bugzilla
       mUserProxy = XmlRpcProxyGen.Create<IUserProxy>();
       mBugzillaProxy = XmlRpcProxyGen.Create<IBugzillaProxy>();
       mProductProxy = XmlRpcProxyGen.Create<IProductProxy>();
+      mGroupProxy = XmlRpcProxyGen.Create<IGroupProxy>();
       mCreateBugTypes = new Dictionary<int, Type>();
 
 #if DEBUG
@@ -157,6 +171,7 @@ namespace Bugzilla
       tracer.Attach(mUserProxy);
       tracer.Attach(mBugzillaProxy);
       tracer.Attach(mProductProxy);
+      tracer.Attach(mGroupProxy);
 
 #endif
 
@@ -164,6 +179,7 @@ namespace Bugzilla
       mUserProxy.Url = mURL;
       mBugzillaProxy.Url = mURL;
       mProductProxy.Url = mURL;
+      mGroupProxy.Url = mURL;
 
       if (loginCookies != null)
       {
@@ -933,6 +949,125 @@ namespace Bugzilla
       }
     }
 
+    /// <summary>
+    /// Creates a new group.
+    /// </summary>
+    /// <param name="shortName">Short name of the group - must be unique.</param>
+    /// <param name="description">Description of the group.</param>
+    /// <param name="userRegExp">A regular expression. Any user whose Bugzilla username matches this regular expression will automatically be granted membership in this group.</param>
+    /// <param name="isActive"><code>true</code> if this group can be used for bugs, <code>false</code> if this is a group that will only contain users and no bugs will be restricted to it.</param>
+    /// <param name="iconURL">A URL pointing to a small icon used to identify the group.</param>
+    /// <exception cref="DuplicateGroupNameException">Attemped to create a group with a duplicate name.</exception>
+    /// <exception cref="InvalidGroupRegExpException">Invalid user regular expression specified.</exception>
+    /// <exception cref="BugzillaException">Unknown server error when creating the new group.</exception>
+    /// <returns>The ID of the new group.</returns>
+    public int CreateGroup(string shortName, string description, string userRegExp, bool isActive, string iconURL)
+    {
+      if (string.IsNullOrEmpty(shortName))
+        throw new ArgumentNullException("shortName");
+
+      if (string.IsNullOrEmpty(description))
+        throw new ArgumentNullException("description");
+
+      CreateGroupParams createParams = new CreateGroupParams();
+      createParams.ShortName = shortName;
+      createParams.Description = description;
+      createParams.UserRegularExpression = userRegExp;
+      createParams.IsActive = isActive;
+      createParams.IconURL = iconURL;
+
+      try
+      {
+        CreateGroupResponse resp = mGroupProxy.CreateGroup(createParams);
+        return resp.GroupID;
+      }
+      catch(XmlRpcFaultException e)
+      {
+        switch(e.FaultCode)
+        {
+          case 801:
+            throw new DuplicateGroupNameException(e.FaultString);
+
+          case 803:
+            throw new InvalidGroupRegExpException(e.FaultString);
+
+          default:
+            throw new BugzillaException(string.Format("Error creating group. Details: {0}", e.FaultString));
+        }
+      }
+    }
+
+    /// <summary>
+    /// Creates a new product.
+    /// </summary>
+    /// <param name="name">Name of the product.</param>
+    /// <param name="description">Description of the product.</param>
+    /// <param name="defaultVersion">Default version for the product.</param>
+    /// <param name="hasUnconfirmedStatus">Whether the product has the UNCONFIRMED status or not.</param>
+    /// <param name="classification">The name of the Classification which contains this product.</param>
+    /// <param name="defaultMilestone">The default milestone for this product.</param>
+    /// <param name="openForBugEntry">Whether the product allows new bugs to be recorded against it or not.</param>
+    /// <param name="createChartSeries">Whether to create new chart series for the product.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="name"/>, <paramref name="description"/> or <paramref name="defaultVersion"/> is null or blank.</exception>
+    /// <exception cref="ArgumentException"><paramref name="name"/> exceeds the max length.</exception>
+    /// <exception cref="InvalidClassificationException"><paramref name="classification"/> does not exist.></exception>
+    /// <exception cref="DuplicateProductNameException">A product already exists with <paramref name="name"/></exception>
+    /// <exception cref="BugzillaException">Unknown server error creating the new product.</exception>
+    /// <returns>ID of the newly created product.</returns>
+    public int CreateProduct(string name, 
+                             string description, 
+                             string defaultVersion, 
+                             bool hasUnconfirmedStatus, 
+                             string classification,
+                             string defaultMilestone, 
+                             bool openForBugEntry, 
+                             bool createChartSeries)
+    {
+      //Name is required
+      if (string.IsNullOrEmpty(name))
+        throw new ArgumentNullException("name");
+      else if(name.Length > ProductNameMaxLength)
+        throw new ArgumentException(string.Format("Product name cannot exceed {0} characters.", ProductNameMaxLength));
+
+      //Description is required
+      if (string.IsNullOrEmpty(description))
+        throw new ArgumentNullException("description");
+
+      //Default version is required
+      if (string.IsNullOrEmpty(defaultVersion))
+        throw new ArgumentNullException("defaultVersion");
+
+      CreateProductParams createParams = new CreateProductParams();
+      createParams.Classification = classification;
+      createParams.CreateChartSeries = createChartSeries;
+      createParams.DefaultMilestone = defaultMilestone;
+      createParams.DefaultVersion = defaultVersion;
+      createParams.Description = description;
+      createParams.HasUnconfirmedStatus = hasUnconfirmedStatus;
+      createParams.IsOpenForBugEntry = openForBugEntry;
+      createParams.Name = name;
+      
+      try
+      {
+        CreateProductResponse resp = mProductProxy.CreateProduct(createParams);
+        return resp.ID;
+      }
+      catch(XmlRpcFaultException e)
+      {
+        switch(e.FaultCode)
+        {
+          case 51:
+            throw new InvalidClassificationException(e.FaultString);
+
+          case 702:
+            throw new DuplicateProductNameException(e.FaultString);
+
+          default:
+            throw new BugzillaException(string.Format("Error creating product. Details: {0}", e.FaultString));
+        }
+      }
+    }
+
     #endregion
 
     #region Private Methods
@@ -997,6 +1132,7 @@ namespace Bugzilla
         mBugProxy.CookieContainer.Add(cookie);
         mBugzillaProxy.CookieContainer.Add(cookie);
         mProductProxy.CookieContainer.Add(cookie);
+        mGroupProxy.CookieContainer.Add(cookie);
       }
     }
 
