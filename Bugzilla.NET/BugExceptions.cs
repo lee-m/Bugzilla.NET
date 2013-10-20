@@ -169,10 +169,11 @@ namespace Bugzilla
   public sealed class BugAccessDeniedException : BugzillaException
   {
     /// <summary>
-    /// Default constructor.
+    /// Initialises this instance with the specified message.
+    /// <param name="message">Exception message.</param>
     /// </summary>
-    public BugAccessDeniedException()
-      : base("One or more of the requested bugs are not accessible to the current user.")
+    public BugAccessDeniedException(string message)
+      : base(message)
     {
     }
   }
