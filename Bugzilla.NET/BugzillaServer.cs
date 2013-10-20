@@ -527,14 +527,19 @@ namespace Bugzilla
     /// </summary>
     /// <param name="ids">IDs of the bug instances to fetch/create.</param>
     /// <returns>A bug instance for the specified ID.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="ids"/> is <code>null</code>.</exception>
     /// <exception cref="InvalidOperationException">Attempted to fetch details of the bug from the remote server when a user isn't logged in.</exception>
-    /// <exception cref="InvalidBugIDOrAliasException">No bug exists with the specified ID.</exception>
+    /// <exception cref="ArgumentException">No bug exists with the specified ID.</exception>
     /// <exception cref="BugAccessDeniedException">Requested bug is inaccessible to the current user.</exception>
+    /// <exception cref="BugzillaException">Unknown error querying for the requested bugs.</exception>
     public IEnumerable<Bug> GetBugs(IEnumerable<int> ids)
     {
       //Someone must be logged in to fetch bug details from the server
       if (!mLoggedIn)
         throw new InvalidOperationException("A user must be logged in before getting bug details from remote server.");
+
+      if (ids == null)
+        throw new ArgumentNullException("ids");
 
       GetBugParams getParams = new GetBugParams();
       getParams.IDsOrAliases = ids.Select(id => id.ToString()).ToArray();
@@ -552,7 +557,17 @@ namespace Bugzilla
       }
       catch (XmlRpcFaultException e)
       {
-        throw new BugzillaException(string.Format("Error getting bug(s) details. Details: {0}", e.Message));
+        switch (e.FaultCode)
+        {
+          case 101:
+            throw new ArgumentException(e.FaultString);
+
+          case 102:
+            throw new BugAccessDeniedException(e.FaultString);
+
+          default:
+            throw new BugzillaException(string.Format("Error getting bug(s) details. Details: {0}", e.FaultString));
+        }
       }
     }
 

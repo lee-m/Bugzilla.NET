@@ -338,7 +338,7 @@ namespace Bugzilla
             throw new InvalidBugIDOrAliasException(Id.ToString());
 
           case 102:
-            throw new BugAccessDeniedException();
+            throw new BugAccessDeniedException(e.FaultString);
 
           case 304:
             throw new AttachmentAccessDeniedException();
@@ -374,7 +374,7 @@ namespace Bugzilla
             throw new InvalidBugIDOrAliasException(Id.ToString());
 
           case 102:
-            throw new BugAccessDeniedException();
+            throw new BugAccessDeniedException(e.FaultString);
 
           default:
             throw new BugzillaException(string.Format("Error getting history for bug. Details: {0}", e.Message));
