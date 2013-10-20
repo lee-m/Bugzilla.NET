@@ -389,7 +389,7 @@ namespace Bugzilla
             throw new UserAccessDeniedException();
 
           case (int)UserProxyErrorCodes.UserMatchingDenied:
-            throw new InvalidOperationException("Logged-out users cannot use the user matching functionality.");
+            throw new InvalidOperationException(e.FaultString);
 
           default:
             throw new BugzillaException(string.Format("Error searching users. Details: {0}", e.Message));
