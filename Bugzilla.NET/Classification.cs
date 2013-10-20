@@ -1,4 +1,4 @@
-﻿//Copyright (C) 2012 by Lee Millward
+﻿//Copyright (C) 2013 by Lee Millward
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -18,50 +18,59 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //THE SOFTWARE.
 
-using CookComputing.XmlRpc;
-using Bugzilla.Proxies.Bugzilla.Responses;
+using System;
+using System.Linq;
+using System.Collections.Generic;
 
-namespace Bugzilla.Proxies.Bugzilla
+using Bugzilla.Proxies.Classification.Responses;
+
+namespace Bugzilla
 {
   /// <summary>
-  /// Proxy interface for interacting with the global Bugzilla web service API.
+  /// Represents a single classification configured on the remote server.
   /// </summary>
-  [XmlRpcProxyAssemblyName("IBugzillaProxy")]
-  internal interface IBugzillaProxy : IXmlRpcProxy
+  public class Classification
   {
     /// <summary>
-    /// Gets the version number of the Bugzilla instance.
+    /// Details about this classification.
     /// </summary>
-    /// <returns>The version number of the Bugzilla instance.</returns>
-    [XmlRpcMethod("Bugzilla.version")]
-    GetVersionResponse GetVersion();
+    private readonly ClassificationDets mDets;
 
     /// <summary>
-    /// Gets time information from the Bugzilla instance.
+    /// Initialises this instance with the specified details
     /// </summary>
-    /// <returns></returns>
-    [XmlRpcMethod("Bugzilla.time")]
-    GetTimeResponse GetTime();
+    /// <param name="details">Details about this classification.</param>
+    internal Classification(ClassificationDets details)
+    {
+      mDets = details;
+    }
 
     /// <summary>
-    /// Gets details of enabled extensions.
+    /// ID of the classification.
     /// </summary>
-    /// <returns></returns>
-    [XmlRpcMethod("Bugzilla.extensions")]
-    GetExtensionsResponse GetExtensions();
+    public int ID { get { return mDets.ID; } }
 
     /// <summary>
-    /// Gets the last modification date/time from the audit log.
+    /// Name of the classification.
     /// </summary>
-    /// <returns></returns>
-    [XmlRpcMethod("Bugzilla.last_audit_time")]
-    LastAuditTimeResponse GetLastAuditTime();
+    public string Name { get { return mDets.Name; } }
 
     /// <summary>
-    /// Gets the various parameter values of the remote server.
+    /// Description of the classification.
     /// </summary>
-    /// <returns></returns>
-    [XmlRpcMethod("Bugzilla.parameters")]
-    XmlRpcStruct GetParameters();
+    public string Description { get { return mDets.Description; } }
+
+    /// <summary>
+    /// Sort order of the classification.
+    /// </summary>
+    public int SortKey { get { return mDets.SortKey; } }
+
+    /// <summary>
+    /// Accessor for the available products within this classification.
+    /// </summary>
+    public IEnumerable<ClassificationProduct> Products 
+    { 
+      get { return mDets.AssociatedProducts.Select(c => new ClassificationProduct(c)).ToList(); }
+    }
   }
 }

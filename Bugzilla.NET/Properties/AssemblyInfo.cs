@@ -23,6 +23,7 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("IProductProxy")]
 [assembly: InternalsVisibleTo("IBugzillaProxy")]
 [assembly: InternalsVisibleTo("IGroupProxy")]
+[assembly: InternalsVisibleTo("IClassificationProxy")]
 
 //This is the name given to the in-memory assembly used to hold dynamically generated types used when creating
 //new or updating existing bugs to store the custom field values

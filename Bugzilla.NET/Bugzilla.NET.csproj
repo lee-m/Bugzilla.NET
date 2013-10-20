@@ -55,6 +55,9 @@
     <Compile Include="BugCustomFields.cs" />
     <Compile Include="BugHistory.cs" />
     <Compile Include="BugzillaException.cs" />
+    <Compile Include="Classification.cs" />
+    <Compile Include="ClassificationExceptions.cs" />
+    <Compile Include="ClassificationProduct.cs" />
     <Compile Include="Comment.cs" />
     <Compile Include="BugExceptions.cs" />
     <Compile Include="BugFieldDetails.cs" />
@@ -62,8 +65,10 @@
     <Compile Include="Extension.cs" />
     <Compile Include="GroupExceptions.cs" />
     <Compile Include="Milestone.cs" />
+    <Compile Include="Parameter.cs" />
     <Compile Include="ProductExceptions.cs" />
     <Compile Include="ProductVersion.cs" />
+    <Compile Include="Proxies\Bugzilla\Responses\LastAuditTimeResponse.cs" />
     <Compile Include="Proxies\Bug\Params\CreateBugParams.cs" />
     <Compile Include="Proxies\Bug\Params\GetAttachmentsParam.cs" />
     <Compile Include="Proxies\Bug\Params\GetBugHistoryParams.cs" />
@@ -76,6 +81,9 @@
     <Compile Include="Proxies\Bug\Responses\GetFieldsResponse.cs" />
     <Compile Include="Proxies\Bug\Responses\UpdateBugResponse.cs" />
     <Compile Include="Proxies\Bug\Responses\UpdateSeeAlsoResponse.cs" />
+    <Compile Include="Proxies\Classification\IClassificationProxy.cs" />
+    <Compile Include="Proxies\Classification\Params\GetClassificationParams.cs" />
+    <Compile Include="Proxies\Classification\Responses\GetClassificationResponse.cs" />
     <Compile Include="Proxies\Group\IGroupProxy.cs" />
     <Compile Include="Proxies\Group\Params\CreateGroupParams.cs" />
     <Compile Include="Proxies\Group\Responses\CreateGroupResponse.cs" />
@@ -143,7 +151,7 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) "$(ProjectDir)\..\bin\Bugzilla 4.2"</PostBuildEvent>
+    <PostBuildEvent>copy $(TargetPath) "$(ProjectDir)\..\bin\Bugzilla 4.4"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
