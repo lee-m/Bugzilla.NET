@@ -64,6 +64,11 @@ namespace Bugzilla
     private CommentVisibility mVisibilityStatus;
 
     /// <summary>
+    /// The position of this comment relative to other comments on the bug.
+    /// </summary>
+    private int mCommentPosition;
+
+    /// <summary>
     /// Public/private visibility of a comment.
     /// </summary>
     public enum CommentVisibility
@@ -88,8 +93,9 @@ namespace Bugzilla
       mID = int.Parse(responseCommentDets["id"].ToString());
       mBugID = int.Parse(responseCommentDets["bug_id"].ToString());
       mCommentText = responseCommentDets["text"].ToString();
-      mAuthor = responseCommentDets["author"].ToString();
-      mCreatedDate = DateTime.Parse(responseCommentDets["time"].ToString());
+      mAuthor = responseCommentDets["creator"].ToString();
+      mCreatedDate = DateTime.Parse(responseCommentDets["creation_time"].ToString());
+      mCommentPosition = int.Parse(responseCommentDets["count"].ToString());
 
       if (Boolean.Parse(responseCommentDets["is_private"].ToString()))
         mVisibilityStatus = CommentVisibility.Private;
@@ -135,5 +141,11 @@ namespace Bugzilla
     /// Accessor for whether the comment is private or not.
     /// </summary>
     public CommentVisibility Visibility { get { return mVisibilityStatus; } }
+
+    /// <summary>
+    /// The position of this comment relative to other comments on the bug.
+    /// </summary>
+    /// <remarks>Descriptions are position 0 with actual comments starting at position 1.</remarks>
+    public int Position { get { return mCommentPosition; } }
   }
 }
