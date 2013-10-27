@@ -802,15 +802,15 @@ namespace Bugzilla
     /// <param name="comment">Comment text to add along with the attachment.</param>
     /// <param name="isPatch">Whether the attachment is a patch file or not.</param>
     /// <param name="isPrivate">Whether the attachment should be private or not.</param>
-    /// <returns>Details of the newly created attachments.</returns>
+    /// <returns>IDs of the newly created attachments.</returns>
     /// <remarks>The MIME type will be automatically determined from either the extension of the file, or it's data..</remarks>
     /// <exception cref="ArgumentNullException"><paramref name="fileName"/> is null or blank.</exception>
-    public IEnumerable<Attachment> AddAttachmentToBugs(IEnumerable<string> idsOrAliases,
-                                                       string fileName, 
-                                                       string summary, 
-                                                       string comment, 
-                                                       bool isPatch, 
-                                                       bool isPrivate)
+    public IEnumerable<int> AddAttachmentToBugs(IEnumerable<string> idsOrAliases,
+                                                string fileName, 
+                                                string summary, 
+                                                string comment, 
+                                                bool isPatch, 
+                                                bool isPrivate)
     {
       if (string.IsNullOrEmpty(fileName))
         throw new ArgumentNullException("fileName");
@@ -834,21 +834,21 @@ namespace Bugzilla
     /// <param name="comment">Comment text to add to each bug along with the attachment.</param>
     /// <param name="isPatch">Whether the attachment is a patch file or not.</param>
     /// <param name="isPrivate">Whether the attachment should be private or not.</param>
-    /// <returns>Details of the newly created attachments.</returns>
+    /// <returns>IDs of the newly created attachments.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="attachmentData"/> not specified.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="summary"/> is null or blank.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="mimeType"/> is null or blank.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="idsOrAliases"/> is null.</exception>
     /// <exception cref="AttachmentTooLargeException">Size of the attachment is too large.</exception>
     /// <exception cref="InvalidMIMETypeException"><paramref name="mimeType"/> is invalid.</exception>
-    public IEnumerable<Attachment> AddAttachmentToBugs(IEnumerable<string> idsOrAliases,
-                                                       byte[] attachmentData, 
-                                                       string fileName, 
-                                                       string summary, 
-                                                       string mimeType,
-                                                       string comment, 
-                                                       bool isPatch, 
-                                                       bool isPrivate)
+    public IEnumerable<int> AddAttachmentToBugs(IEnumerable<string> idsOrAliases,
+                                                byte[] attachmentData, 
+                                                string fileName, 
+                                                string summary, 
+                                                string mimeType,
+                                                string comment, 
+                                                bool isPatch, 
+                                                bool isPrivate)
     {
       //Check that the required parameters are set
       if (attachmentData == null)
@@ -876,12 +876,7 @@ namespace Bugzilla
       try
       {
         AddAttachmentResponse resp = mBugProxy.AddAttachment(attachmentParams);
-        List<Attachment> retColl = new List<Attachment>();
-
-        foreach (var attachmentID in resp.Attachments.Keys)
-          retColl.Add(new Attachment((XmlRpcStruct)resp.Attachments[attachmentID]));
-
-        return retColl;
+        return resp.IDs;
       }
       catch (XmlRpcFaultException e)
       {
