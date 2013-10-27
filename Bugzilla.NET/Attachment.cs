@@ -19,6 +19,8 @@
 //THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+
 using CookComputing.XmlRpc;
 
 namespace Bugzilla
@@ -89,6 +91,16 @@ namespace Bugzilla
     private string mCreator;
 
     /// <summary>
+    /// Size of the attachment in bytes.
+    /// </summary>
+    private int mSize;
+
+    /// <summary>
+    /// List of flags set on this attachment.
+    /// </summary>
+    private List<Flag> mFlags;
+
+    /// <summary>
     /// Visibility of an attachment.
     /// </summary>
     public enum AttachmentVisibility
@@ -122,6 +134,11 @@ namespace Bugzilla
       mIsObsolete = int.Parse(responseAttachmentDets["is_obsolete"].ToString()) ==  1 ? true : false;
       mIsPatch = int.Parse(responseAttachmentDets["is_patch"].ToString())==  1 ? true : false;
       mCreator = responseAttachmentDets["creator"].ToString();
+      mSize = int.Parse(responseAttachmentDets["size"].ToString());
+      mFlags = new List<Flag>();
+
+      foreach (object flagDets in (object[])responseAttachmentDets["flags"])
+        mFlags.Add(new Flag((XmlRpcStruct)flagDets));
     }
 
 
@@ -184,5 +201,15 @@ namespace Bugzilla
     /// Accessor for the login name of the person who created the attachment.
     /// </summary>
     public string Creator { get { return mCreator; } }
+
+    /// <summary>
+    /// Size of the attachment in bytes.
+    /// </summary>
+    public int Size { get { return mSize; } }
+
+    /// <summary>
+    /// Accessor for any flags set on this bug.
+    /// </summary>
+    public IEnumerable<Flag> Flags { get { return mFlags; } }
   }
 }
