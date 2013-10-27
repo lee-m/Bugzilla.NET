@@ -30,7 +30,7 @@ namespace Bugzilla.Proxies.Bug.Responses
     /// <summary>
     /// Details of the newly created attachments.
     /// </summary>
-    [XmlRpcMember("attachments")]
-    public XmlRpcStruct Attachments;
+    [XmlRpcMember("ids")]
+    public int[] IDs;
   }
 }

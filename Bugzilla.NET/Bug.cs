@@ -206,10 +206,10 @@ namespace Bugzilla
     /// <param name="changeComment">Comment text to add along with the attachment.</param>
     /// <param name="isPatch">Whether the attachment is a patch file or not.</param>
     /// <param name="attachmentVisibility">Whether the attachment should be public or private.</param>
-    /// <returns>Details of the newly created attachment.</returns>
+    /// <returns>ID of the newly created attachment.</returns>
     /// <remarks>The MIME type will be automatically determined from either the extension of the file, or it's data..</remarks>
     /// <exception cref="ArgumentNullException"><paramref name="fileName">fileName</paramref> is null or blank.</exception>
-    public Attachment AddAttachment(string fileName, 
+    public int AddAttachment(string fileName, 
                               string summary, 
                               string changeComment, 
                               bool isPatch, 
@@ -237,14 +237,14 @@ namespace Bugzilla
     /// <param name="changeComment">Comment text to add along with the attachment.</param>
     /// <param name="isPatch">Whether the attachment is a patch file or not.</param>
     /// <param name="attachmentVisibility">Whether the attachment should be private or not.</param>
-    /// <returns>Details of the newly created attachment.</returns>
+    /// <returns>ID of the newly created attachment.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="attachmentData">Attachment data</paramref> not specified.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="summary">summary</paramref> is null or blank.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="mimeType">mimeType</paramref> is null or blank.</exception>
     /// <exception cref="ArgumentException"><paramref name="attachmentData"/> has zero length.</exception>
     /// <exception cref="InvalidAttachmentURLException">An attempt was made to add a URL as an attachment but the attachment data was invalid.</exception>
     /// <exception cref="URLAttachmentsDisabledException">Attaching of URLs is disabled.</exception>
-    public Attachment AddAttachment(byte[] attachmentData, 
+    public int AddAttachment(byte[] attachmentData, 
                                     string fileName, 
                                     string summary, 
                                     string mimeType, 
@@ -278,7 +278,7 @@ namespace Bugzilla
       try
       {
         AddAttachmentResponse resp = mProxy.AddAttachment(attachmentParams);
-        return new Attachment(resp.Attachments.Values.Cast<XmlRpcStruct>().ToArray()[0]);
+        return resp.IDs.First();
       }
       catch (XmlRpcFaultException e)
       {
