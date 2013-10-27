@@ -63,6 +63,7 @@
     <Compile Include="BugFieldDetails.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="Extension.cs" />
+    <Compile Include="Flag.cs" />
     <Compile Include="GroupExceptions.cs" />
     <Compile Include="Milestone.cs" />
     <Compile Include="Parameter.cs" />
